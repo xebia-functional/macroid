@@ -5,11 +5,8 @@ import scala.util.Try
 import scala.util.continuations._
 import android.os.{ Looper, Handler }
 import akka.dataflow.DataflowFuture
-import scala.collection.IterableLike
 
 trait Concurrency {
-  /* Saving UI thread from hard work */
-
   lazy val handler = new Handler(Looper.getMainLooper)
   lazy val uiThread = Looper.getMainLooper.getThread
 
@@ -34,22 +31,10 @@ trait Concurrency {
     }
   }
 
-  /* CPS routines */
-
   @inline def await[A](f: Future[A])(implicit c: ExecutionContext) = f.apply()
 
   @inline def switchToUiThread(): Unit @cps[Future[Any]] = shift { f: (Unit ⇒ Future[Any]) ⇒
     runOnUiThread(f())
-  }
-
-  // see http://stackoverflow.com/questions/8934226/continuations-and-for-comprehensions-whats-the-incompatibility
-  implicit def cpsIterable[A, Repr](xs: IterableLike[A, Repr]) = new {
-    def cps[B] = new {
-      def foreach(f: A ⇒ Any @cpsParam[B, B]): Unit @cpsParam[B, B] = {
-        val it = xs.iterator
-        while (it.hasNext) f(it.next())
-      }
-    }
   }
 }
 

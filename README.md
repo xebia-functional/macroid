@@ -30,7 +30,7 @@ val view = l[LinearLayout](
 
 The three main components are:
 * ```l[...]``` — a macro to create layouts. Supports arbitrary ```ViewGroup```s
-* ```w[...]``` — a macro to create widgets. Supports arbitrary ```View```s, even with parameters (as in ```ProgressBar``` example. The only requirement is that ```Context``` parameter is the first one in ```View```’s constructor.
+* ```w[...]``` — a macro to create widgets. Supports arbitrary ```View```s, even with parameters (as in ```ProgressBar``` example). The only requirement is that ```Context``` parameter is the first one in ```View```’s constructor.
 * ```f[...]``` — a macro to create fragments. It creates the fragment if not already created, wraps in a ```FrameLayout``` and returns it. The map is converted to a ```Bundle``` and passed to ```setArguments```.
 
 Notice these little things:

@@ -16,7 +16,7 @@ Let’s see what we have.
 
 ```scala
 var bar: ProgressBar = _
-l[LinearLayout](
+val view = l[LinearLayout](
   w[TextView] ~> text("Loading...") ~> { x ⇒
     // extra initialization
   },

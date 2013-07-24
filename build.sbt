@@ -10,7 +10,7 @@ name := "macroid"
 
 organization := "org.macroid"
 
-version := "1.0"
+version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.10.3-SNAPSHOT"
 
@@ -37,7 +37,6 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-	"org.scaloid" % "scaloid" % "1.1_8_2.10",
 	"com.typesafe.akka" %% "akka-dataflow" % "2.2.0-RC1",
 	"com.scalarx" %% "scalarx" % "0.1",
 	"me.lessis" %% "retry-core" % "0.1.0"

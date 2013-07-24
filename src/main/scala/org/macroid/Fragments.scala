@@ -3,18 +3,14 @@ package org.macroid
 import android.app.{ FragmentTransaction, ActionBar, Fragment }
 import android.widget.FrameLayout
 import android.content.Context
-import android.view.View
 import android.app.ActionBar.Tab
 
 trait Fragments { self: ViewSearch ⇒
-  def fragment(frag: ⇒ Fragment, id: Int, tag: String, hide: Boolean = false)(implicit ctx: Context): FrameLayout = {
+  def fragment(frag: ⇒ Fragment, id: Int, tag: String)(implicit ctx: Context): FrameLayout = {
     Option(findFrag[Fragment](tag)) getOrElse {
       fragmentManager.beginTransaction().add(id, frag, tag).commit()
     }
-    new FrameLayout(ctx) {
-      setId(id)
-      if (hide) setVisibility(View.GONE)
-    }
+    new FrameLayout(ctx) { setId(id) }
   }
 
   class TabListener(frag: ⇒ Fragment, tag: String, onSelect: Option[Tab ⇒ Any] = None) extends ActionBar.TabListener {

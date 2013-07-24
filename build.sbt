@@ -6,6 +6,12 @@ ScalariformKeys.preferences := FormattingPreferences()
 .setPreference(RewriteArrowSymbols, true)
 .setPreference(PreserveDanglingCloseParenthesis, true)
 
+seq(githubRepoSettings: _*)
+
+localRepo := Path.userHome / "macroid-staging"
+
+githubRepo := "https://github.com/stanch/macroid.git"
+
 name := "macroid"
 
 organization := "org.macroid"

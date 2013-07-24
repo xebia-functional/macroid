@@ -110,6 +110,7 @@ resolvers ++= Seq(
 
 libraryDependencies += ("org.macroid" %% "macroid" % "1.0-SNAPSHOT") exclude ("org.scala-lang.macro-paradise", "scala-library")
 ```
+For explanation of the weirdness see https://github.com/scalamacros/sbt-example-paradise210/issues/1#issuecomment-21445002.
 
 In your activity:
 ```scala

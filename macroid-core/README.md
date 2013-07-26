@@ -3,7 +3,7 @@
 ### Requirements
 
 * Scala ```2.10+```
-* Android ```API 17+``` (see https://github.com/stanch/macroid/issues/1)
+* Android ```API 11+``` (uses ```Fragment```s from the support library and the stock ```ActionBar```)
 
 ### What’s the buzz
 

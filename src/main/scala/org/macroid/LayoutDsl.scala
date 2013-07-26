@@ -1,7 +1,7 @@
 package org.macroid
 
 import scala.language.experimental.macros
-import android.app.Fragment
+import android.support.v4.app.Fragment
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import android.widget.FrameLayout
 import android.view.{ ViewGroup, View }

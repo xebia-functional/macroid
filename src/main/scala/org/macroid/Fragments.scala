@@ -23,12 +23,14 @@ trait Fragments { self: ViewSearch ⇒
       } getOrElse {
         ft.add(android.R.id.content, frag, tag)
       }
+      ft.commit()
       onSelect.foreach(_.apply(tab))
     }
 
     def onTabUnselected(tab: Tab, dummy: FragmentTransaction) {
       val ft = fragmentManager.beginTransaction()
       Option(findFrag[Fragment](tag)).map(ft.detach(_))
+      ft.commit()
     }
 
     def onTabReselected(tab: Tab, dummy: FragmentTransaction) {

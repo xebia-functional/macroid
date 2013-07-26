@@ -34,7 +34,9 @@ libraryDependencies <+= (scalaVersion) {
 	v => "org.scala-lang.macro-paradise" % "scala-reflect" % v
 }
 
-unmanagedClasspath in Compile += new File(System.getenv("ANDROID_SDK_HOME")) / "platforms" / "android-17" / "android.jar"
+unmanagedClasspath in Compile += new File(System.getenv("ANDROID_SDK_HOME")) / "platforms/android-17/android.jar"
+
+unmanagedClasspath in Compile += new File(System.getenv("ANDROID_SDK_HOME")) / "extras/android/support/v13/android-support-v13.jar"
 
 scalacOptions += "-P:continuations:enable"
 

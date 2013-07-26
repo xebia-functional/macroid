@@ -1,6 +1,8 @@
 package org.macroid
 
-import android.app.{ FragmentTransaction, ActionBar, Fragment }
+import android.app.ActionBar
+import android.app.FragmentTransaction
+import android.support.v4.app.Fragment
 import android.widget.FrameLayout
 import android.content.Context
 import android.app.ActionBar.Tab
@@ -14,7 +16,8 @@ trait Fragments { self: ViewSearch ⇒
   }
 
   class TabListener(frag: ⇒ Fragment, tag: String, onSelect: Option[Tab ⇒ Any] = None) extends ActionBar.TabListener {
-    def onTabSelected(tab: Tab, ft: FragmentTransaction) {
+    def onTabSelected(tab: Tab, dummy: FragmentTransaction) {
+      val ft = fragmentManager.beginTransaction()
       Option(findFrag[Fragment](tag)) map {
         ft.attach(_)
       } getOrElse {
@@ -23,11 +26,12 @@ trait Fragments { self: ViewSearch ⇒
       onSelect.foreach(_.apply(tab))
     }
 
-    def onTabUnselected(tab: Tab, ft: FragmentTransaction) {
+    def onTabUnselected(tab: Tab, dummy: FragmentTransaction) {
+      val ft = fragmentManager.beginTransaction()
       Option(findFrag[Fragment](tag)).map(ft.detach(_))
     }
 
-    def onTabReselected(tab: Tab, ft: FragmentTransaction) {
+    def onTabReselected(tab: Tab, dummy: FragmentTransaction) {
       onSelect.foreach(_.apply(tab))
     }
   }

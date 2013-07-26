@@ -2,7 +2,7 @@ package org.macroid
 
 import scala.language.dynamics
 import android.view.View
-import android.app.{ Activity, Fragment, FragmentManager }
+import android.support.v4.app.{ FragmentActivity, Fragment, FragmentManager }
 import java.util.concurrent.atomic.AtomicInteger
 
 class IdGen(start: Int) extends Dynamic {
@@ -29,8 +29,8 @@ sealed trait ViewSearch {
   def findFrag[A <: Fragment](tag: String) = fragmentManager.findFragmentByTag(tag).asInstanceOf[A]
 }
 
-trait ActivityViewSearch extends ViewSearch { self: Activity ⇒
-  def fragmentManager = getFragmentManager
+trait ActivityViewSearch extends ViewSearch { self: FragmentActivity ⇒
+  def fragmentManager = getSupportFragmentManager
   def findView[A <: View](id: Int) = findViewById(id).asInstanceOf[A]
 }
 

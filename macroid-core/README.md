@@ -3,7 +3,7 @@
 ### Requirements
 
 * Scala ```2.10+```
-* Android ```API 17+```
+* Android ```API 17+``` (see https://github.com/stanch/macroid/issues/1)
 
 ### What’s the buzz
 

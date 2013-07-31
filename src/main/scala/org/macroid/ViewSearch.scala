@@ -25,6 +25,7 @@ sealed trait ViewSearch {
   implicit val Id = new IdGen(1000)
   implicit val Tag = new TagGen
 
+  def findView[A <: View](root: View, id: Int): A = root.findViewById(id).asInstanceOf[A]
   def findView[A <: View](id: Int): A
   def findFrag[A <: Fragment](tag: String) = fragmentManager.findFragmentByTag(tag).asInstanceOf[A]
 }

@@ -1,5 +1,6 @@
 package org.macroid
 
+import scala.language.dynamics
 import scala.language.experimental.macros
 import android.view.{ ViewGroup, Gravity, View }
 import ViewGroup.LayoutParams._
@@ -33,6 +34,10 @@ object Transforms {
   def wire[A <: View](v: A): ViewMutator[A] = macro wireImpl[A]
 
   def addViews[A <: ViewGroup](children: Seq[View]): ViewMutator[A] = x ⇒ children.foreach(c ⇒ x.addView(c))
+
+  object On extends Dynamic {
+    def applyDynamic[A <: View](event: String)(f: Any) = macro onImpl[A]
+  }
 }
 
 object TransformMacros {
@@ -64,13 +69,18 @@ object TransformMacros {
     import c.universe._
     val helper = new Helper[c.type](c)
     val L = newTermName("l")
-    c.enclosingMethod.find(_.children.exists(_.children.exists(_.pos == c.macroApplication.pos))) flatMap {
+    val lay: PartialFunction[Tree, Boolean] = { case Apply(TypeApply(Ident(L), _), _) ⇒ true }
+    def isParent(x: Tree) = lay.isDefinedAt(x) && x.find(_.pos == c.macroApplication.pos).isDefined
+    val parentLayout = c.enclosingMethod.find { x ⇒
+      isParent(x) && x.children.find(isParent(_)).isEmpty
+    } flatMap {
       case x @ Apply(TypeApply(Ident(L), t), _) ⇒
         // avoid recursive type-checking
         val empty = Apply(TypeApply(Ident(L), t), List())
         Some(c.typeCheck(empty).tpe)
       case _ ⇒ None
-    } map { x ⇒
+    }
+    parentLayout map { x ⇒
       var tp = x
       while (scala.util.Try {
         c.typeCheck(helper.layoutParams(c.weakTypeOf[A], newTermName(tp.typeSymbol.name.decoded), params))
@@ -78,6 +88,7 @@ object TransformMacros {
         tp = tp.baseClasses(1).asType.toType
       }
       if (tp.baseClasses.length > 2) {
+        c.info(c.enclosingPosition, s"Using $tp.LayoutParams", force = true)
         c.Expr[ViewMutator[A]](helper.layoutParams(c.weakTypeOf[A], newTermName(tp.typeSymbol.name.decoded), params))
       } else {
         c.error(c.enclosingPosition, "Could not find the appropriate LayoutParams constructor")
@@ -87,5 +98,10 @@ object TransformMacros {
       c.error(c.enclosingPosition, "Could not find layout type")
       c.Expr[ViewMutator[A]](helper.emptyMutator(c.weakTypeOf[A]))
     }
+  }
+
+  def onImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[ViewMutator[A]] = {
+    val helper = new Helper[c.type](c)
+    c.Expr[ViewMutator[A]](helper.emptyMutator(c.weakTypeOf[A]))
   }
 }

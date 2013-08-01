@@ -21,6 +21,9 @@ object Transforms {
     x.setLayoutParams(new FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, ch | cv))
   }
 
+  def layoutParams[A <: View](params: Any*): ViewMutator[A] = macro layoutParamsImpl[A]
+  def lp[A <: View](params: Any*): ViewMutator[A] = macro layoutParamsImpl[A]
+
   def text[A <: TextView](text: CharSequence): ViewMutator[A] = x ⇒ x.setText(text)
   def text[A <: TextView](text: Int): ViewMutator[A] = x ⇒ x.setText(text)
 
@@ -28,6 +31,8 @@ object Transforms {
   def horizontal[A <: LinearLayout]: ViewMutator[A] = x ⇒ x.setOrientation(LinearLayout.HORIZONTAL)
 
   def wire[A <: View](v: A): ViewMutator[A] = macro wireImpl[A]
+
+  def addViews[A <: ViewGroup](children: Seq[View]): ViewMutator[A] = x ⇒ children.foreach(c ⇒ x.addView(c))
 }
 
 object TransformMacros {
@@ -39,11 +44,48 @@ object TransformMacros {
     def createWire(tpe: c.Type, v: c.Tree) = q"""
       { x: $tpe ⇒ $v = x }
     """
+
+    def emptyMutator(tpe: c.Type) = q"""
+      { x: $tpe ⇒ () }
+    """
+
+    def layoutParams(tpe: c.Type, l: c.TermName, params: Seq[c.Expr[Any]]) = q"""
+      { x: $tpe ⇒ x.setLayoutParams(new $l.LayoutParams(..$params)) }
+    """
   }
 
   def wireImpl[A <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[A]): c.Expr[ViewMutator[A]] = {
     val helper = new Helper[c.type](c)
     val wire = helper.createWire(c.weakTypeOf[A], v.tree)
     c.Expr[ViewMutator[A]](wire)
+  }
+
+  def layoutParamsImpl[A <: View: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[ViewMutator[A]] = {
+    import c.universe._
+    val helper = new Helper[c.type](c)
+    val L = newTermName("l")
+    c.enclosingMethod.find(_.children.exists(_.children.exists(_.pos == c.macroApplication.pos))) flatMap {
+      case x @ Apply(TypeApply(Ident(L), t), _) ⇒
+        // avoid recursive type-checking
+        val empty = Apply(TypeApply(Ident(L), t), List())
+        Some(c.typeCheck(empty).tpe)
+      case _ ⇒ None
+    } map { x ⇒
+      var tp = x
+      while (scala.util.Try {
+        c.typeCheck(helper.layoutParams(c.weakTypeOf[A], newTermName(tp.typeSymbol.name.decoded), params))
+      }.isFailure && tp.baseClasses.length > 2) {
+        tp = tp.baseClasses(1).asType.toType
+      }
+      if (tp.baseClasses.length > 2) {
+        c.Expr[ViewMutator[A]](helper.layoutParams(c.weakTypeOf[A], newTermName(tp.typeSymbol.name.decoded), params))
+      } else {
+        c.error(c.enclosingPosition, "Could not find the appropriate LayoutParams constructor")
+        c.Expr[ViewMutator[A]](helper.emptyMutator(c.weakTypeOf[A]))
+      }
+    } getOrElse {
+      c.error(c.enclosingPosition, "Could not find layout type")
+      c.Expr[ViewMutator[A]](helper.emptyMutator(c.weakTypeOf[A]))
+    }
   }
 }

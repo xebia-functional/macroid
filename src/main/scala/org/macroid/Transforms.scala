@@ -54,7 +54,7 @@ object TransformMacros {
       { x: $tpe ⇒ () }
     """
 
-    def layoutParams(tpe: c.Type, l: c.TermName, params: Seq[c.Expr[Any]]) = q"""
+    def layoutParams(tpe: c.Type, l: c.Symbol, params: Seq[c.Expr[Any]]) = q"""
       { x: $tpe ⇒ x.setLayoutParams(new $l.LayoutParams(..$params)) }
     """
   }
@@ -83,13 +83,13 @@ object TransformMacros {
     parentLayout map { x ⇒
       var tp = x
       while (scala.util.Try {
-        c.typeCheck(helper.layoutParams(c.weakTypeOf[A], newTermName(tp.typeSymbol.name.decoded), params))
+        c.typeCheck(helper.layoutParams(c.weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
       }.isFailure && tp.baseClasses.length > 2) {
         tp = tp.baseClasses(1).asType.toType
       }
       if (tp.baseClasses.length > 2) {
         c.info(c.enclosingPosition, s"Using $tp.LayoutParams", force = true)
-        c.Expr[ViewMutator[A]](helper.layoutParams(c.weakTypeOf[A], newTermName(tp.typeSymbol.name.decoded), params))
+        c.Expr[ViewMutator[A]](helper.layoutParams(c.weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
       } else {
         c.error(c.enclosingPosition, "Could not find the appropriate LayoutParams constructor")
         c.Expr[ViewMutator[A]](helper.emptyMutator(c.weakTypeOf[A]))
@@ -102,6 +102,19 @@ object TransformMacros {
 
   def onImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[ViewMutator[A]] = {
     val helper = new Helper[c.type](c)
+    import c.universe._
+    val Expr(Literal(Constant(eventName: String))) = event
+    val setter = weakTypeOf[A].member(newTermName(s"setOn${eventName.capitalize}Listener"))
+    if (setter == NoSymbol) {
+      c.error(c.enclosingPosition, s"Could not find method setOn${eventName.capitalize}Listener")
+    } else scala.util.Try {
+      val signature = setter.asMethod.paramss(0)(0).typeSignature
+      val handler = signature.member(newTermName(s"on${eventName.capitalize}")).asMethod
+      assert(handler != NoSymbol)
+      println(handler.typeSignature, f.actualType.member(newTermName("apply")).asMethod.typeSignature)
+    } getOrElse {
+      c.error(c.enclosingPosition, s"Unsupported event handler class in $setter")
+    }
     c.Expr[ViewMutator[A]](helper.emptyMutator(c.weakTypeOf[A]))
   }
 }

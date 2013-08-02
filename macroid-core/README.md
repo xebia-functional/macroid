@@ -140,18 +140,34 @@ libraryDependencies += ("org.macroid" %% "macroid" % "1.0-SNAPSHOT") exclude ("o
 ```
 For explanation of the weirdness see https://github.com/scalamacros/sbt-example-paradise210/issues/1#issuecomment-21445002.
 
-In your activity:
+### Imports and traits
+
+Most of the stuff comes both in ```trait``` and ```object``` flavors. You can use
 ```scala
-import org.macroid._
-class MyActivity extends Activity with ActivityViewSearch with LayoutDsl {
-  ...
+import org.macroid.Concurrency
+class MyActivity extends Activity with Concurrency {
+...
+}
+```
+or
+```scala
+import org.macroid.Concurrency._
+class MyActivity extends Activity {
+...
 }
 ```
 
-In your fragment:
+Likewise, to use ```LayoutDsl```, inherit from it or import from it.
+The ```f[...]``` macro, however, requires ```FragmentDsl``` *trait*, which in its turn depends on either ```ActivityViewSearch``` or ```FragmentViewSearch```.
+Thus, the usage is
 ```scala
 import org.macroid._
-class MyFragment extends Fragment with FragmentViewSearch with LayoutDsl {
-  ...
+class MyActivity extends Activity with ActivityViewSearch with LayoutDsl with FragmentDsl {
+...
+}
+class MyFragment extends Fragment with FragmentViewSearch with LayoutDsl with FragmentDsl {
+...
 }
 ```
+
+Finally, ```Transforms``` come both in a trait and in an object.

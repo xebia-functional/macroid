@@ -46,19 +46,19 @@ object TransformMacros {
   class Helper[CTX <: MacroContext](val c: CTX) extends QuasiquoteCompat {
     import c.universe._
 
-    def createWire(tpe: c.Type, v: c.Tree) = q"""
+    def createWire(tpe: Type, v: Tree) = q"""
       { x: $tpe ⇒ $v = x }
     """
 
-    def emptyMutator(tpe: c.Type) = q"""
+    def emptyMutator(tpe: Type) = q"""
       { x: $tpe ⇒ () }
     """
 
-    def layoutParams(tpe: c.Type, l: c.Symbol, params: Seq[c.Expr[Any]]) = q"""
+    def layoutParams(tpe: Type, l: Symbol, params: Seq[c.Expr[Any]]) = q"""
       { x: $tpe ⇒ x.setLayoutParams(new $l.LayoutParams(..$params)) }
     """
 
-    def getListener(tpe: c.Type, setter: MethodSymbol, listener: c.Type, on: MethodSymbol, f: c.Expr[Any], func: Boolean) = {
+    def getListener(tpe: Type, setter: MethodSymbol, listener: Type, on: MethodSymbol, f: c.Expr[Any], func: Boolean) = {
       val args = on.paramss(0).indices.map(i ⇒ newTermName(s"arg$i"))
       val params = args zip on.paramss(0) map { case (a, p) ⇒ q"val $a: ${p.typeSignature}" }
       if (func) {
@@ -92,9 +92,15 @@ object TransformMacros {
   def layoutParamsImpl[A <: View: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[ViewMutator[A]] = {
     import c.universe._
     val helper = new Helper[c.type](c)
+
+    // this isDefined at l[SomeLayout] macro applications
     val L = newTermName("l")
     val lay: PartialFunction[Tree, Boolean] = { case Apply(TypeApply(Ident(L), _), _) ⇒ true }
+
+    // a parent layout contains the current macro application
     def isParent(x: Tree) = lay.isDefinedAt(x) && x.find(_.pos == c.macroApplication.pos).isDefined
+
+    // an immediate parent layout is a parent and contains no other parents
     val parentLayoutType = c.enclosingMethod.find { x ⇒
       isParent(x) && x.children.find(isParent(_)).isEmpty
     } flatMap {
@@ -104,16 +110,18 @@ object TransformMacros {
         Some(c.typeCheck(empty).tpe)
       case _ ⇒ None
     }
+
+    // go up the inheritance chain until we find a suitable LayoutParams class in the companion
     parentLayoutType map { x ⇒
       var tp = x
       while (scala.util.Try {
-        c.typeCheck(helper.layoutParams(c.weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
+        c.typeCheck(helper.layoutParams(weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
       }.isFailure && tp.baseClasses.length > 2) {
         tp = tp.baseClasses(1).asType.toType
       }
       if (tp.baseClasses.length > 2) {
         c.info(c.enclosingPosition, s"Using $tp.LayoutParams", force = true)
-        c.Expr[ViewMutator[A]](helper.layoutParams(c.weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
+        c.Expr[ViewMutator[A]](helper.layoutParams(weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
       } else {
         refuse[A](c)(helper, "Could not find the appropriate LayoutParams constructor")
       }
@@ -123,19 +131,23 @@ object TransformMacros {
   }
 
   def onImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[ViewMutator[A]] = {
-    val helper = new Helper[c.type](c)
     import c.universe._
+    val helper = new Helper[c.type](c)
+
     val Expr(Literal(Constant(eventName: String))) = event
     val setter = weakTypeOf[A].member(newTermName(s"setOn${eventName.capitalize}Listener")).asMethod
     if (setter == NoSymbol) {
-      refuse[A](c)(helper, s"Could not find method setOn${eventName.capitalize}Listener in ${c.weakTypeOf[A]}")
+      refuse[A](c)(helper, s"Could not find method setOn${eventName.capitalize}Listener in ${weakTypeOf[A]}")
     } else scala.util.Try {
+      // find the method to override
       val listener = setter.paramss(0)(0).typeSignature
       val on = listener.member(newTermName(s"on${eventName.capitalize}")).asMethod
       assert(on != NoSymbol)
       scala.util.Try {
+        // try to use `f` as a function
         c.Expr[ViewMutator[A]](c.typeCheck(helper.getListener(weakTypeOf[A], setter, listener, on, f, func = true)))
       } orElse scala.util.Try {
+        // try to use `f` as a lazy block
         c.info(c.enclosingPosition, "Using lazy block as event listener", force = true)
         c.Expr[ViewMutator[A]](c.typeCheck(helper.getListener(weakTypeOf[A], setter, listener, on, f, func = false)))
       } getOrElse {

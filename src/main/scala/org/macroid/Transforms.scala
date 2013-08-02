@@ -57,6 +57,30 @@ object TransformMacros {
     def layoutParams(tpe: c.Type, l: c.Symbol, params: Seq[c.Expr[Any]]) = q"""
       { x: $tpe ⇒ x.setLayoutParams(new $l.LayoutParams(..$params)) }
     """
+
+    def getListener(tpe: c.Type, setter: MethodSymbol, listener: c.Type, on: MethodSymbol, f: c.Expr[Any], func: Boolean) = {
+      val args = on.paramss(0).indices.map(i ⇒ newTermName(s"arg$i"))
+      val params = args zip on.paramss(0) map { case (a, p) ⇒ q"val $a: ${p.typeSignature}" }
+      if (func) {
+        val appl = args.map(a ⇒ Ident(a))
+        q"""
+          { x: $tpe ⇒ x.$setter(new $listener {
+            override def ${on.name}(..$params) = $f(..$appl)
+          })}
+        """
+      } else {
+        q"""
+          { x: $tpe ⇒ x.$setter(new $listener {
+            override def ${on.name}(..$params) = { ${f.tree} }
+          })}
+        """
+      }
+    }
+  }
+
+  def refuse[A <: View: c.WeakTypeTag](c: MacroContext)(helper: Helper[c.type], msg: String) = {
+    c.error(c.enclosingPosition, msg)
+    c.Expr[ViewMutator[A]](helper.emptyMutator(c.weakTypeOf[A]))
   }
 
   def wireImpl[A <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[A]): c.Expr[ViewMutator[A]] = {
@@ -71,7 +95,7 @@ object TransformMacros {
     val L = newTermName("l")
     val lay: PartialFunction[Tree, Boolean] = { case Apply(TypeApply(Ident(L), _), _) ⇒ true }
     def isParent(x: Tree) = lay.isDefinedAt(x) && x.find(_.pos == c.macroApplication.pos).isDefined
-    val parentLayout = c.enclosingMethod.find { x ⇒
+    val parentLayoutType = c.enclosingMethod.find { x ⇒
       isParent(x) && x.children.find(isParent(_)).isEmpty
     } flatMap {
       case x @ Apply(TypeApply(Ident(L), t), _) ⇒
@@ -80,7 +104,7 @@ object TransformMacros {
         Some(c.typeCheck(empty).tpe)
       case _ ⇒ None
     }
-    parentLayout map { x ⇒
+    parentLayoutType map { x ⇒
       var tp = x
       while (scala.util.Try {
         c.typeCheck(helper.layoutParams(c.weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
@@ -91,12 +115,10 @@ object TransformMacros {
         c.info(c.enclosingPosition, s"Using $tp.LayoutParams", force = true)
         c.Expr[ViewMutator[A]](helper.layoutParams(c.weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
       } else {
-        c.error(c.enclosingPosition, "Could not find the appropriate LayoutParams constructor")
-        c.Expr[ViewMutator[A]](helper.emptyMutator(c.weakTypeOf[A]))
+        refuse[A](c)(helper, "Could not find the appropriate LayoutParams constructor")
       }
     } getOrElse {
-      c.error(c.enclosingPosition, "Could not find layout type")
-      c.Expr[ViewMutator[A]](helper.emptyMutator(c.weakTypeOf[A]))
+      refuse[A](c)(helper, "Could not find layout type")
     }
   }
 
@@ -104,17 +126,23 @@ object TransformMacros {
     val helper = new Helper[c.type](c)
     import c.universe._
     val Expr(Literal(Constant(eventName: String))) = event
-    val setter = weakTypeOf[A].member(newTermName(s"setOn${eventName.capitalize}Listener"))
+    val setter = weakTypeOf[A].member(newTermName(s"setOn${eventName.capitalize}Listener")).asMethod
     if (setter == NoSymbol) {
-      c.error(c.enclosingPosition, s"Could not find method setOn${eventName.capitalize}Listener")
+      refuse[A](c)(helper, s"Could not find method setOn${eventName.capitalize}Listener in ${c.weakTypeOf[A]}")
     } else scala.util.Try {
-      val signature = setter.asMethod.paramss(0)(0).typeSignature
-      val handler = signature.member(newTermName(s"on${eventName.capitalize}")).asMethod
-      assert(handler != NoSymbol)
-      println(handler.typeSignature, f.actualType.member(newTermName("apply")).asMethod.typeSignature)
+      val listener = setter.paramss(0)(0).typeSignature
+      val on = listener.member(newTermName(s"on${eventName.capitalize}")).asMethod
+      assert(on != NoSymbol)
+      scala.util.Try {
+        c.Expr[ViewMutator[A]](c.typeCheck(helper.getListener(weakTypeOf[A], setter, listener, on, f, func = true)))
+      } orElse scala.util.Try {
+        c.info(c.enclosingPosition, "Using lazy block as event listener", force = true)
+        c.Expr[ViewMutator[A]](c.typeCheck(helper.getListener(weakTypeOf[A], setter, listener, on, f, func = false)))
+      } getOrElse {
+        refuse[A](c)(helper, s"$f should be either a function or a lazy block")
+      }
     } getOrElse {
-      c.error(c.enclosingPosition, s"Unsupported event handler class in $setter")
+      refuse[A](c)(helper, s"Unsupported event listener class in $setter")
     }
-    c.Expr[ViewMutator[A]](helper.emptyMutator(c.weakTypeOf[A]))
   }
 }

@@ -159,7 +159,7 @@ object TransformMacros {
         c.info(c.enclosingPosition, "Using lazy block as event listener", force = true)
         c.Expr[ViewMutator[A]](c.typeCheck(helper.getListener(weakTypeOf[A], setter, listener, on, f, func = false)))
       } getOrElse {
-        refuse[A](c)(helper, s"Event handler should be either a function of type ${on.typeSignature} or a lazy block. The return type should be ${on.returnType}")
+        refuse[A](c)(helper, s"Event listener should be either a function of type ${on.typeSignature} or a lazy block. The return type should be ${on.returnType}")
       }
     }
   }

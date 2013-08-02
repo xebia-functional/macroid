@@ -65,7 +65,7 @@ def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
   l[LinearLayout](
       w[Button] ~>
         text("Click me") ~>
-        On.click(toast("Howdy?") ~> // using a lazy block
+        On.click(toast("Howdy?")) ~> // using a lazy block
         On.longClick { toast("Splash!"); true }, // using a lazy block that needs to return a value
       w[Button] ~>
         text("Don’t click me") ~>

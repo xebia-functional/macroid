@@ -37,24 +37,52 @@ Notice these little things:
 * ```Id.foo``` automatically generates and id for you. The id will be the same upon consequent calls. **Note that ids are not checked.** They are generated starting from 1000. You can override the default id generator.
 * ```Tag.bar``` is a fancy way of saying ```"bar"```, added for symmetry.
 
-Configuration of views is done with ```~>```. The idea is to provide as many convenient and common modifiers as possible.
+Configuration of views is done with ```~>```. The idea is to provide as many convenient and common transforms as possible.
 It is easy to make one yourself:
 ```scala
 def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
 ```
-This feature is of course inspired by [scaloid](https://github.com/pocorall/scaloid) styles.
 
-One interesting thing though is the ```wire``` modifier. As you may have guessed, it assigns the view to the ```var``` you provide.
+#### Noteworthy predefined transforms
 
-### Searching for views and fragments
+* ```wire``` assigns the view to the ```var``` you provide (see example above).
+* ```hide```, ```show```.
+* ```layoutParams``` or ```lp```:
+  Automatically uses ```LayoutParams``` constructor from the parent layout or its superclass.
+  ```scala
+  import ViewGroup.LayoutParams._ // to get WRAP_CONTENT and MATCH_PARENT
+  import org.macroid.Transforms._ // to get layoutParams or lp
+  
+  l[MyShinyLayout](
+      w[Button] ~> layoutParams(WRAP_CONTENT, MATCH_PARENT) ~> text("Click me")
+  )
+  ```
+* You can setup almost any ```View``` event listener with the following syntax:
+  ```scala
+  import org.scaloid.common._ // to get toast
+  import org.macroid.Transforms._ // to get most of the stuff
 
-*Macroid* offers two utils:
+  l[LinearLayout](
+      w[Button] ~>
+        text("Click me") ~>
+        On.click(toast("Howdy?") ~> // using a lazy block
+        On.longClick { toast("Splash!"); true }, // using a lazy block that needs to return a value
+      w[Button] ~>
+        text("Don’t click me") ~>
+        On.click { v: View ⇒ toast(v.getText) } // using function of the same type as OnClickListener.onClick
+  ) ~> vertical
+  ```
+
+#### Searching for views and fragments
+
+*Macroid* offers three utils:
 * ```def findView[A <: View](id: Int): A```
+* ```def findView[A <: View](root: View, id: Int): A```
 * ```def findFrag[A <: Fragment](tag: String): A```
 
 They come in two flavors, for ```Activities``` and ```Fragments``` respectively: ```trait ActivityViewSearch``` and ```trait FragmentViewSearch```.
 
-### Concurrency
+#### Concurrency
 
 *Macroid* provides a bunch of great ways to run things on UI thread.
 

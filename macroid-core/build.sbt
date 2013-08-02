@@ -45,7 +45,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-	"com.typesafe.akka" %% "akka-dataflow" % "2.2.0-RC1",
-	"com.scalarx" %% "scalarx" % "0.1",
-	"me.lessis" %% "retry-core" % "0.1.0"
+	"com.typesafe.akka" %% "akka-dataflow" % "2.2.0-RC1"//,
+	//"com.scalarx" %% "scalarx" % "0.1",
+	//"me.lessis" %% "retry-core" % "0.1.0"
 )

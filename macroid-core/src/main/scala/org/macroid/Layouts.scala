@@ -11,3 +11,5 @@ trait Layouts {
     setOrientation(LinearLayout.HORIZONTAL)
   }
 }
+
+object Layouts extends Layouts

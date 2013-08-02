@@ -7,7 +7,7 @@ import ViewGroup.LayoutParams._
 import android.widget.{ LinearLayout, TextView, FrameLayout }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 
-object Transforms {
+trait Transforms {
   import LayoutDsl._
   import TransformMacros._
 
@@ -24,6 +24,9 @@ object Transforms {
 
   def layoutParams[A <: View](params: Any*): ViewMutator[A] = macro layoutParamsImpl[A]
   def lp[A <: View](params: Any*): ViewMutator[A] = macro layoutParamsImpl[A]
+  // TODO: move to a child project to allow separate type application
+  def layoutParamsOf[A <: View, B <: ViewGroup](params: Any*): ViewMutator[A] = macro layoutParamsOfImpl[A, B]
+  def lpOf[A <: View, B <: ViewGroup](params: Any*): ViewMutator[A] = macro layoutParamsOfImpl[A, B]
 
   def text[A <: TextView](text: CharSequence): ViewMutator[A] = x ⇒ x.setText(text)
   def text[A <: TextView](text: Int): ViewMutator[A] = x ⇒ x.setText(text)
@@ -39,6 +42,8 @@ object Transforms {
     def applyDynamic[A <: View](event: String)(f: Any) = macro onImpl[A]
   }
 }
+
+object Transforms extends Transforms
 
 object TransformMacros {
   import LayoutDsl._
@@ -89,6 +94,24 @@ object TransformMacros {
     c.Expr[ViewMutator[A]](wire)
   }
 
+  def findLayoutParams[A <: View: c.WeakTypeTag](c: MacroContext)(helper: Helper[c.type], layoutType: c.Type, params: Seq[c.Expr[Any]]): c.Expr[ViewMutator[A]] = {
+    import c.universe._
+    var tp = layoutType
+
+    // go up the inheritance chain until we find a suitable LayoutParams class in the companion
+    while (scala.util.Try {
+      c.typeCheck(helper.layoutParams(weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
+    }.isFailure && tp.baseClasses.length > 2) {
+      tp = tp.baseClasses(1).asType.toType
+    }
+    if (tp.baseClasses.length > 2) {
+      c.info(c.enclosingPosition, s"Using $tp.LayoutParams", force = true)
+      c.Expr[ViewMutator[A]](helper.layoutParams(weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
+    } else {
+      refuse[A](c)(helper, "Could not find the appropriate LayoutParams constructor")
+    }
+  }
+
   def layoutParamsImpl[A <: View: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[ViewMutator[A]] = {
     import c.universe._
     val helper = new Helper[c.type](c)
@@ -102,7 +125,7 @@ object TransformMacros {
 
     // an immediate parent layout is a parent and contains no other parents
     val parentLayoutType = c.enclosingMethod.find { x ⇒
-      isParent(x) && x.children.find(isParent(_)).isEmpty
+      isParent(x) && x.children.forall(_.find(isParent(_)).isEmpty)
     } flatMap {
       case x @ Apply(TypeApply(Ident(L), t), _) ⇒
         // avoid recursive type-checking
@@ -111,23 +134,16 @@ object TransformMacros {
       case _ ⇒ None
     }
 
-    // go up the inheritance chain until we find a suitable LayoutParams class in the companion
     parentLayoutType map { x ⇒
-      var tp = x
-      while (scala.util.Try {
-        c.typeCheck(helper.layoutParams(weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
-      }.isFailure && tp.baseClasses.length > 2) {
-        tp = tp.baseClasses(1).asType.toType
-      }
-      if (tp.baseClasses.length > 2) {
-        c.info(c.enclosingPosition, s"Using $tp.LayoutParams", force = true)
-        c.Expr[ViewMutator[A]](helper.layoutParams(weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
-      } else {
-        refuse[A](c)(helper, "Could not find the appropriate LayoutParams constructor")
-      }
+      findLayoutParams[A](c)(helper, x, params)
     } getOrElse {
       refuse[A](c)(helper, "Could not find layout type")
     }
+  }
+
+  def layoutParamsOfImpl[A <: View: c.WeakTypeTag, B <: ViewGroup: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[ViewMutator[A]] = {
+    val helper = new Helper[c.type](c)
+    findLayoutParams[A](c)(helper, c.weakTypeOf[B], params)
   }
 
   def onImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[ViewMutator[A]] = {

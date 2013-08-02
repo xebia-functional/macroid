@@ -1,15 +1,21 @@
 package org.macroid
 
-import android.widget.LinearLayout
+import android.widget.{ GridLayout, LinearLayout }
 import android.content.Context
 
-trait Layouts {
+object Layouts {
   class VerticalLinearLayout(ctx: Context) extends LinearLayout(ctx) {
     setOrientation(LinearLayout.VERTICAL)
   }
+
   class HorizontalLinearLayout(ctx: Context) extends LinearLayout(ctx) {
     setOrientation(LinearLayout.HORIZONTAL)
   }
-}
 
-object Layouts extends Layouts
+  class GravityGridLayout(ctx: Context) extends GridLayout(ctx)
+  object GravityGridLayout {
+    class LayoutParams(gravity: Int) extends GridLayout.LayoutParams {
+      setGravity(gravity)
+    }
+  }
+}

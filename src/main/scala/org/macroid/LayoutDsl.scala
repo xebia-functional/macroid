@@ -37,23 +37,22 @@ object LayoutDslMacros {
   class Helper[CTX <: MacroContext](val c: CTX) extends QuasiquoteCompat {
     import c.universe._
 
-    def instantiateFragment(fragTpe: c.Type, args: c.Expr[Map[String, Any]]) = q"""
+    def instantiateFragment(fragTpe: Type, args: c.Expr[Map[String, Any]]) = q"""
       val frag = new $fragTpe
       val bundle = org.macroid.Util.map2bundle($args)
       frag.setArguments(bundle)
       frag
     """
 
-    // not able to use `false`
-    def wrapFragment(frag: c.Tree, id: c.Expr[Int], tag: c.Expr[String], ctx: c.Expr[Context]) = q"""
+    def wrapFragment(frag: Tree, id: c.Expr[Int], tag: c.Expr[String], ctx: c.Expr[Context]) = q"""
       fragment($frag, $id, $tag)($ctx)
     """
 
-    def instantiateWidget(widgetTpe: c.Type, args: Seq[c.Expr[Any]])(ctx: c.Expr[Context]) = q"""
+    def instantiateWidget(widgetTpe: Type, args: Seq[c.Expr[Any]])(ctx: c.Expr[Context]) = q"""
       new $widgetTpe($ctx, ..$args)
     """
 
-    def populateLayout(lay: c.Tree, children: Seq[c.Expr[Any]]) = {
+    def populateLayout(lay: Tree, children: Seq[c.Expr[Any]]) = {
       val additions = children.map(c ⇒ q"l.addView($c)")
       q"val l = $lay; ..$additions; l"
     }

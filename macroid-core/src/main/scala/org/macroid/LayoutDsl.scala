@@ -7,30 +7,33 @@ import android.widget.FrameLayout
 import android.view.{ ViewGroup, View }
 import android.content.Context
 
-trait LayoutDsl extends Fragments { self: ViewSearch ⇒
+trait LayoutDsl {
   import LayoutDslMacros._
-
-  def f[A <: Fragment](id: Int, tag: String, args: Map[String, Any])(implicit ctx: Context) = macro fragmentImpl[A]
 
   def w[A <: View](implicit ctx: Context) = macro widgetImpl[A]
   def w[A <: View](args: Any*)(implicit ctx: Context) = macro widgetArgImpl[A]
 
   def l[A <: ViewGroup](children: View*)(implicit ctx: Context) = macro layoutImpl[A]
 
+  type ViewTransformer[A, B] = PartialFunction[A, B]
+  type ViewMutator[-A] = Function[A, Unit]
+
   implicit class RichView[A <: View](v: A) {
-    import LayoutDsl._
     def ~~>[B >: A <: View](t: ViewTransformer[A, B]) = t.lift(v).getOrElse(v)
     def ~>(t: ViewMutator[A]) = { t(v); v }
   }
-}
-
-object LayoutDsl {
-  type ViewTransformer[A, B] = PartialFunction[A, B]
-  type ViewMutator[-A] = Function[A, Unit]
 
   implicit class RichViewMutator[A](m: ViewMutator[A]) {
     def +(other: ViewMutator[A]): ViewMutator[A] = { x ⇒ m(x); other(x) }
   }
+}
+
+object LayoutDsl extends LayoutDsl
+
+trait FragmentDsl extends FragmentApi { self: ViewSearch ⇒
+  import LayoutDslMacros._
+
+  def f[A <: Fragment](id: Int, tag: String, args: Map[String, Any])(implicit ctx: Context) = macro fragmentImpl[A]
 }
 
 object LayoutDslMacros {

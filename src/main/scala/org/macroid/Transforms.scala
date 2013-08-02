@@ -138,23 +138,29 @@ object TransformMacros {
     val setter = weakTypeOf[A].member(newTermName(s"setOn${eventName.capitalize}Listener")).asMethod
     if (setter == NoSymbol) {
       refuse[A](c)(helper, s"Could not find method setOn${eventName.capitalize}Listener in ${weakTypeOf[A]}")
-    } else scala.util.Try {
+    } else {
       // find the method to override
       val listener = setter.paramss(0)(0).typeSignature
-      val on = listener.member(newTermName(s"on${eventName.capitalize}")).asMethod
-      assert(on != NoSymbol)
+      val on = scala.util.Try {
+        val x = listener.member(newTermName(s"on${eventName.capitalize}")).asMethod
+        assert(x != NoSymbol); x
+      } getOrElse {
+        c.error(c.enclosingPosition, s"Unsupported event listener class in $setter")
+        NoSymbol.asMethod
+      }
+
       scala.util.Try {
         // try to use `f` as a function
+        if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType.member(newTermName("apply")).asMethod.returnType <:< on.returnType)
         c.Expr[ViewMutator[A]](c.typeCheck(helper.getListener(weakTypeOf[A], setter, listener, on, f, func = true)))
       } orElse scala.util.Try {
         // try to use `f` as a lazy block
+        if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType <:< on.returnType)
         c.info(c.enclosingPosition, "Using lazy block as event listener", force = true)
         c.Expr[ViewMutator[A]](c.typeCheck(helper.getListener(weakTypeOf[A], setter, listener, on, f, func = false)))
       } getOrElse {
-        refuse[A](c)(helper, s"$f should be either a function or a lazy block")
+        refuse[A](c)(helper, s"Event handler should be either a function of type ${on.typeSignature} or a lazy block. The return type should be ${on.returnType}")
       }
-    } getOrElse {
-      refuse[A](c)(helper, s"Unsupported event listener class in $setter")
     }
   }
 }

@@ -73,7 +73,7 @@ def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
       w[Button] ~>
         text("Don’t click me") ~>
         FuncOn.click { v: View ⇒ toast(v.getText) } ~> // use function of the same type as OnClickListener.onClick
-        BynameOn.longClick(ByName { toast("Balderdash!"); true }) // use ByName, same as () ⇒ { toast(...); true }
+        ByNameOn.longClick(ByName { toast("Balderdash!"); true }) // use ByName, same as () ⇒ { toast(...); true }
   ) ~> vertical
   ```
   Why 3 flavors? Suppose we had a single `On.foo` method working with both functions and by-name arguments (like in *scaloid*).

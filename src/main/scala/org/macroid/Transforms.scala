@@ -51,12 +51,12 @@ trait Transforms {
   }
 
   object FuncOn extends Dynamic {
-    /** Set `useFunction` to `true` to override the listener with `f`; set to `false` to use Lazy or Function0 listener */
+    /** override the listener with `f` */
     def applyDynamic[A <: View](event: String)(f: Any) = macro onFuncImpl[A]
   }
 
   object LazyOn extends Dynamic {
-    /** Set `useFunction` to `true` to override the listener with `f`; set to `false` to use Lazy or Function0 listener */
+    /** override the listener with `f()` */
     def applyDynamic[A <: View](event: String)(f: Lazy[Any]) = macro onLazyImpl[A]
   }
 }

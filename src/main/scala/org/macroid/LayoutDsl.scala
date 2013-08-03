@@ -33,19 +33,28 @@ object LayoutDsl extends LayoutDsl
 trait FragmentDsl extends FragmentApi { self: ViewSearch ⇒
   import LayoutDslMacros._
 
-  def f[A <: Fragment](id: Int, tag: String, args: Map[String, Any])(implicit ctx: Context) = macro fragmentImpl[A]
+  def f[A <: Fragment](id: Int, tag: String, args: Any*)(implicit ctx: Context) = macro fragmentImpl[A]
+
+  def fragmentFactory[A <: Fragment](args: Any*) = macro fragmentFactoryImpl[A]
+  def ff[A <: Fragment](args: Any*) = macro fragmentFactoryImpl[A]
 }
 
 object LayoutDslMacros {
   class Helper[CTX <: MacroContext](val c: CTX) extends QuasiquoteCompat {
     import c.universe._
 
-    def instantiateFragment(fragTpe: Type, args: c.Expr[Map[String, Any]]) = q"""
+    def instantiateFragment(fragTpe: Type, args: Seq[c.Expr[Any]]) = q"""
       val frag = new $fragTpe
-      val bundle = org.macroid.Util.map2bundle($args)
+      val bundle = org.macroid.Util.map2bundle(Map(..$args))
       frag.setArguments(bundle)
       frag
     """
+
+    def instantiateFragmentNewInstance(fragTpe: Type, args: Seq[c.Expr[Any]]) = q"""
+      ${fragTpe.typeSymbol.companionSymbol}.newInstance(..$args)
+    """
+
+    def makeFactory(tree: Tree) = q"() ⇒ { $tree }"
 
     def wrapFragment(frag: Tree, id: c.Expr[Int], tag: c.Expr[String], ctx: c.Expr[Context]) = q"""
       fragment($frag, $id, $tag)($ctx)
@@ -61,11 +70,26 @@ object LayoutDslMacros {
     }
   }
 
-  def fragmentImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(id: c.Expr[Int], tag: c.Expr[String], args: c.Expr[Map[String, Any]])(ctx: c.Expr[Context]): c.Expr[FrameLayout] = {
+  def instFrag[A <: Fragment: c.WeakTypeTag](c: MacroContext)(helper: Helper[c.type], args: Seq[c.Expr[Any]]) = scala.util.Try {
+    c.typeCheck(helper.instantiateFragmentNewInstance(c.weakTypeOf[A], args))
+  } orElse scala.util.Try {
+    assert(args.forall(_.actualType <:< c.typeOf[(String, Any)]))
+    c.typeCheck(helper.instantiateFragment(c.weakTypeOf[A], args))
+  } getOrElse {
+    c.abort(c.enclosingPosition, s"Args should either be supported by ${c.weakTypeOf[A]}.newInstance() or be a sequence of (String, Any)")
+  }
+
+  def fragmentImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(id: c.Expr[Int], tag: c.Expr[String], args: c.Expr[Any]*)(ctx: c.Expr[Context]): c.Expr[FrameLayout] = {
     val helper = new Helper[c.type](c)
-    val frag = helper.instantiateFragment(c.weakTypeOf[A], args)
+    val frag = instFrag[A](c)(helper, args)
     val wrap = helper.wrapFragment(frag, id, tag, ctx)
     c.Expr[FrameLayout](wrap)
+  }
+
+  def fragmentFactoryImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(args: c.Expr[Any]*): c.Expr[A] = {
+    val helper = new Helper[c.type](c)
+    val frag = instFrag[A](c)(helper, args)
+    c.Expr[A](frag)
   }
 
   def widgetImpl[A <: View: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[Context]): c.Expr[A] = {

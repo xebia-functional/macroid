@@ -6,7 +6,7 @@ import android.view.{ ViewGroup, Gravity, View }
 import ViewGroup.LayoutParams._
 import android.widget.{ LinearLayout, TextView, FrameLayout }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
-import org.macroid.Util.Lazy
+import org.macroid.Util.ByName
 
 trait Transforms {
   import LayoutDsl._
@@ -55,9 +55,9 @@ trait Transforms {
     def applyDynamic[A <: View](event: String)(f: Any) = macro onFuncImpl[A]
   }
 
-  object LazyOn extends Dynamic {
+  object ByNameOn extends Dynamic {
     /** override the listener with `f()` */
-    def applyDynamic[A <: View](event: String)(f: Lazy[Any]) = macro onLazyImpl[A]
+    def applyDynamic[A <: View](event: String)(f: ByName[Any]) = macro onByNameImpl[A]
   }
 }
 
@@ -89,14 +89,14 @@ object TransformMacros {
           })}
         """
       } else if (mode == 1) {
-        // lazy block
+        // by-name block
         q"""
           { x: $tpe ⇒ x.$setter(new $listener {
             override def ${on.name}(..$params) = { ${f.tree} }
           })}
         """
       } else {
-        // Lazy
+        // ByName
         q"""
           { x: $tpe ⇒ x.$setter(new $listener {
             override def ${on.name}(..$params) = $f()
@@ -210,7 +210,7 @@ object TransformMacros {
     }
   }
 
-  def onLazyImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Lazy[Any]]): c.Expr[ViewMutator[A]] = {
+  def onByNameImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[ByName[Any]]): c.Expr[ViewMutator[A]] = {
     import c.universe._
     val helper = new Helper[c.type](c)
 
@@ -219,7 +219,7 @@ object TransformMacros {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType.member(newTermName("apply")).asMethod.returnType <:< on.returnType)
       c.Expr[ViewMutator[A]](helper.getListener(weakTypeOf[A], setter, listener, on, f, 2))
     } getOrElse {
-      c.abort(c.enclosingPosition, s"f should be of type Lazy or Function0 and return ${on.returnType}")
+      c.abort(c.enclosingPosition, s"f should be of type ByName or Function0 and return ${on.returnType}")
     }
   }
 }

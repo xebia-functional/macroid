@@ -73,14 +73,14 @@ def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
       w[Button] ~>
         text("Don’t click me") ~>
         FuncOn.click { v: View ⇒ toast(v.getText) } ~> // use function of the same type as OnClickListener.onClick
-        LazyOn.longClick(Lazy { toast("Balderdash!"); true }) // use Lazy functor
+        BynameOn.longClick(ByName { toast("Balderdash!"); true }) // use ByName, same as () ⇒ { toast(...); true }
   ) ~> vertical
   ```
   Why 3 flavors? Suppose we had a single `On.foo` method working with both functions and by-name arguments (like in *scaloid*).
   If you accidentaly pass in a function with the wrong type signature, the by-name overload overtakes, and you end up with a
   function that is not called and no warning. Here, `On.foo` *always* uses by-name arguments and `FuncOn.foo` *always* uses
-  functions and issues an error if its argument does not match the listener type signature. Additionally, `LazyOn.foo`
-  allows you to use `Lazy` blocks, which is handy if you want to pass the listeners around before assigning.
+  functions and issues an error if its argument does not match the listener type signature. Additionally, `ByNameOn.foo`
+  allows you to use `ByName` blocks, which is handy if you want to pass the listeners around before assigning.
 
 #### Searching for views and fragments
 

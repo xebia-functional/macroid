@@ -24,14 +24,17 @@ val view = l[LinearLayout](
     id(Id.progress) ~>
     center() ~>
     wire(bar),
-  f[MyAwesomeFragment](Id.stuff, Tag.stuff, Map("number" → 4))
+  f[MyAwesomeFragment](Id.stuff, Tag.stuff, "number" → 4, "title" → "buzz")
 )
 ```
 
 The three main components are:
 * ```l[...]``` — a macro to create layouts. Supports arbitrary ```ViewGroup```s
 * ```w[...]``` — a macro to create widgets. Supports arbitrary ```View```s, even with parameters (as in ```ProgressBar``` example). The only requirement is that ```Context``` parameter is the first one in ```View```’s constructor.
-* ```f[...]``` — a macro to create fragments. It creates the fragment if not already created, wraps in a ```FrameLayout``` and returns it. The map is converted to a ```Bundle``` and passed to ```setArguments```.
+* ```f[...]``` — a macro to create fragments. It creates the fragment if not already created, wraps in a ```FrameLayout``` and returns it.
+  The macro tries to create the fragment using `newInstance()` from its companion and passing the arguments through.
+  If there is no suitable overload of `newInstance()`, it treats the args as a sequence of 2-tuples, converts them to a ```Bundle```,
+  creates the fragment with the primary constructor and passes the bundle to ```setArguments```.
 
 Notice these little things:
 * ```Id.foo``` automatically generates and id for you. The id will be the same upon consequent calls. **Note that ids are not checked.** They are generated starting from 1000. You can override the default id generator.

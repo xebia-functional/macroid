@@ -14,10 +14,10 @@ object Util {
     bundle
   }
 
-  class Lazy[+A](v: ⇒ A) extends Function0[A] {
+  class ByName[+A](v: ⇒ A) extends Function0[A] {
     def apply() = v
   }
-  object Lazy {
-    def apply[A](v: ⇒ A) = new Lazy(v)
+  object ByName {
+    def apply[A](v: ⇒ A) = new ByName(v)
   }
 }

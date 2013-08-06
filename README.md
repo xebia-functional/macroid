@@ -66,7 +66,7 @@ def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
   ```scala
   import org.scaloid.common._ // to get toast
   import org.macroid.Transforms._ // to get most of the stuff
-  import org.macroid.util.Lazy
+  import org.macroid.Util.ByName
 
   l[LinearLayout](
       w[Button] ~>

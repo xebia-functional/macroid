@@ -6,7 +6,9 @@ version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.10.2"
 
-compileOrder := CompileOrder.JavaThenScala
+resolvers ++= Seq(
+    Resolver.sonatypeRepo("snapshots")
+)
 
 autoCompilerPlugins := true
 
@@ -21,10 +23,6 @@ unmanagedClasspath in Compile += new File(System.getenv("ANDROID_SDK_HOME")) / "
 unmanagedClasspath in Compile += new File(System.getenv("ANDROID_SDK_HOME")) / "extras/android/support/v13/android-support-v13.jar"
 
 scalacOptions += "-P:continuations:enable"
-
-resolvers ++= Seq(
-    Resolver.sonatypeRepo("snapshots")
-)
 
 libraryDependencies ++= Seq(
     "org.effectful" %% "effectful" % "0.1-SNAPSHOT",

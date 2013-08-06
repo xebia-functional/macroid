@@ -1,38 +1,20 @@
-import scalariform.formatter.preferences._
-
-scalariformSettings
-
-ScalariformKeys.preferences := FormattingPreferences()
-.setPreference(RewriteArrowSymbols, true)
-.setPreference(PreserveDanglingCloseParenthesis, true)
-
-seq(githubRepoSettings: _*)
-
-localRepo := Path.userHome / "macroid-staging"
-
-githubRepo := "https://github.com/stanch/macroid.git"
-
 name := "macroid"
 
 organization := "org.macroid"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.10.3-SNAPSHOT"
-
-scalaOrganization := "org.scala-lang.macro-paradise"
+scalaVersion := "2.10.2"
 
 compileOrder := CompileOrder.JavaThenScala
 
 autoCompilerPlugins := true
 
-libraryDependencies <+= (scalaVersion) {
-    v => compilerPlugin("org.scala-lang.plugins" % "continuations" % v)
-}
-
-libraryDependencies <+= (scalaVersion) {
-	v => "org.scala-lang.macro-paradise" % "scala-reflect" % v
-}
+libraryDependencies ++= Seq(
+    compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.10.2"),
+    compilerPlugin("org.scala-lang.plugins" % "macro-paradise_2.10.2" % "2.0.0-SNAPSHOT"),
+    "org.scala-lang" % "scala-reflect" % "2.10.2"
+)
 
 unmanagedClasspath in Compile += new File(System.getenv("ANDROID_SDK_HOME")) / "platforms/android-17/android.jar"
 
@@ -41,11 +23,10 @@ unmanagedClasspath in Compile += new File(System.getenv("ANDROID_SDK_HOME")) / "
 scalacOptions += "-P:continuations:enable"
 
 resolvers ++= Seq(
-	Resolver.sonatypeRepo("snapshots")
+    Resolver.sonatypeRepo("snapshots")
 )
 
 libraryDependencies ++= Seq(
-	"com.typesafe.akka" %% "akka-dataflow" % "2.2.0-RC1"//,
-	//"com.scalarx" %% "scalarx" % "0.1",
-	//"me.lessis" %% "retry-core" % "0.1.0"
+    "org.effectful" %% "effectful" % "0.1-SNAPSHOT",
+	"com.typesafe.akka" %% "akka-dataflow" % "2.2.0"
 )

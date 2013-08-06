@@ -40,7 +40,7 @@ trait FragmentDsl extends FragmentApi { self: ViewSearch ⇒
 }
 
 object LayoutDslMacros {
-  class Helper[CTX <: MacroContext](val c: CTX) extends QuasiquoteCompat {
+  class Helper[CTX <: MacroContext](val c: CTX) {
     import c.universe._
 
     def instantiateFragment(fragTpe: Type, args: Seq[c.Expr[Any]]) = q"""

@@ -66,7 +66,7 @@ object Transforms extends Transforms
 object TransformMacros {
   import LayoutDsl._
 
-  class Helper[CTX <: MacroContext](val c: CTX) extends QuasiquoteCompat {
+  class Helper[CTX <: MacroContext](val c: CTX) {
     import c.universe._
 
     def createWire(tpe: Type, v: Tree) = q"""

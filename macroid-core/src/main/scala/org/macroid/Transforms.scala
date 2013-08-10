@@ -29,9 +29,11 @@ trait Transforms {
   /** Automatically find the appropriate `LayoutParams` class from the parent layout. */
   def lp[A <: View](params: Any*): ViewMutator[A] = macro layoutParamsImpl[A]
 
-  // TODO: move to a child project to allow separate type application
-  def layoutParamsOf[A <: View, B <: ViewGroup](params: Any*): ViewMutator[A] = macro layoutParamsOfImpl[A, B]
-  def lpOf[A <: View, B <: ViewGroup](params: Any*): ViewMutator[A] = macro layoutParamsOfImpl[A, B]
+  class LPOF[A <: View] {
+    def of[B <: ViewGroup](params: Any*): ViewMutator[A] = macro layoutParamsOfImpl[A, B]
+  }
+  def layoutParams[A <: View] = new LPOF[A]
+  def lp[A <: View] = new LPOF[A]
 
   def text[A <: TextView](text: CharSequence): ViewMutator[A] = x ⇒ x.setText(text)
   def text[A <: TextView](text: Int): ViewMutator[A] = x ⇒ x.setText(text)

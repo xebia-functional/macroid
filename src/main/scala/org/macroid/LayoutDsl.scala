@@ -6,6 +6,7 @@ import scala.reflect.macros.{ Context ⇒ MacroContext }
 import android.widget.FrameLayout
 import android.view.{ ViewGroup, View }
 import android.content.Context
+import scalaz.Monoid
 
 trait LayoutDsl {
   import LayoutDslMacros._
@@ -15,11 +16,13 @@ trait LayoutDsl {
 
   def l[A <: ViewGroup](children: View*)(implicit ctx: Context) = macro layoutImpl[A]
 
-  type ViewTransformer[A, B] = PartialFunction[A, B]
   type ViewMutator[-A] = Function[A, Unit]
+  implicit def viewMutatorMonoid[A] = new Monoid[ViewMutator[A]] {
+    def zero = { x ⇒ () }
+    def append(m1: ViewMutator[A], m2: ⇒ ViewMutator[A]) = m1 + m2
+  }
 
   implicit class RichView[A <: View](v: A) {
-    def ~~>[B >: A <: View](t: ViewTransformer[A, B]) = t.lift(v).getOrElse(v)
     def ~>(t: ViewMutator[A]) = { t(v); v }
   }
 

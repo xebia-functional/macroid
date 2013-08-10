@@ -201,4 +201,7 @@ class MyFragment extends Fragment with FragmentViewSearch with LayoutDsl with Fr
 }
 ```
 
-Finally, ```Transforms``` come both in a trait and in an object.
+```Transforms``` come both in a trait and in an object.
+
+`MediaQueries` come in a trait `MediaQueries`, as well as in
+objects `MediaQueries` and `MQ` (the latter being a useful shortcut to allow `MQ.minWidth(...)`).

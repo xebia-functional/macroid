@@ -48,6 +48,9 @@ def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
 
 #### Noteworthy predefined transforms
 
+Note that you can add transforms together with `+`. If you like `scalaz`, there is a `Monoid` instance available, so
+you can use `~` and `|+|` as well.
+
 * ```wire``` assigns the view to the ```var``` you provide (see example above).
 * ```hide```, ```show```.
 * ```layoutParams``` or ```lp```:
@@ -93,6 +96,23 @@ def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
 * ```def findFrag[A <: Fragment](tag: String): A```
 
 They come in two flavors, for ```Activities``` and ```Fragments``` respectively: ```trait ActivityViewSearch``` and ```trait FragmentViewSearch```.
+
+#### Media queries (inspired by the eponymous CSS feature)
+
+Media queries allow to use different contols, layouts, transforms or other types of things, depending on display
+metrics and orientation. Here are some examples:
+```scala
+l[LinearLayout](...) ~> (minWidth(1000) ? horizontal | vertical)
+
+(minWidth(1000) ? w[BigTextView] | minWidth(600) ? w[MediumTextView] | w[TextView]) ~> text("Hi there")
+
+w[TextView] ~> text("Balderdash!") ~> (minWidth(500) ?! largeAppearance)
+```
+
+Currently supported are
+* minWidth, maxWidth
+* minHeight, maxHeight
+* ldpi, mdpi, hdpi, xhdpi
 
 #### Concurrency
 

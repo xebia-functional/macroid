@@ -60,7 +60,7 @@ def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
       w[Button] ~> layoutParams(WRAP_CONTENT, MATCH_PARENT) ~> text("Click me")
   )
   ```
-  To use `layoutParams` ouside the layout, take a look at `layoutParamsOf[A, B](...): ViewMutator[A]`,
+  To use `layoutParams` ouside the layout, take a look at `layoutParams.of[B](...)`,
   for which you can supply the layout type in `B`.
 * You can setup almost any ```View``` event listener with the following syntax:
   ```scala

@@ -150,7 +150,6 @@ resolvers ++= Seq(
 
 libraryDependencies += "org.macroid" %% "macroid" % "1.0-SNAPSHOT"
 ```
-For explanation of the weirdness see https://github.com/scalamacros/sbt-example-paradise210/issues/1#issuecomment-21445002.
 
 ### Imports and traits
 

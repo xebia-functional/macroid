@@ -15,17 +15,26 @@ Let’s see what we have.
 #### The DSL
 
 ```scala
+var status: TextView = _
 var bar: ProgressBar = _
+...
 val view = l[LinearLayout](
-  w[TextView] ~> text("Loading...") ~> { x ⇒
-    // extra initialization
-  },
-  w[ProgressBar](null, android.R.attr.progressBarStyleLarge) ~>
+  w[TextView] ~>
+    text("Loading...") ~>
+    wire(status),
+  w[ProgressBar] ~>
     id(Id.progress) ~>
     center() ~>
     wire(bar),
-  f[MyAwesomeFragment](Id.stuff, Tag.stuff, "number" → 4, "title" → "buzz")
+  w[Button] ~>
+    On.click { 
+      bar ~> hide
+      status ~> text("Finished!")
+    } ~>
+    text("Click me!"),
+  f[MyAwesomeFragment](Id.stuff, Tag.stuff, "items" → 4, "title" → "buzz")
 )
+setContentView(view)
 ```
 
 The three main components are:

@@ -10,7 +10,7 @@ object Util {
       case (k, v: Int) ⇒ bundle.putInt(k, v)
       case (k, v: String) ⇒ bundle.putString(k, v)
       case (k, v: Boolean) ⇒ bundle.putBoolean(k, v)
-      case _ ⇒ ???
+      case _ ⇒ ??? // TODO: support more things here!
     }
     bundle
   }

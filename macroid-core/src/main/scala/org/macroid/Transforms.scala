@@ -12,9 +12,12 @@ trait Transforms {
   import LayoutDsl._
   import TransformMacros._
 
+  /** Set this view’s id */
   def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
 
+  /** Hide this view (uses View.GONE) */
   def hide[A <: View]: ViewMutator[A] = x ⇒ x.setVisibility(View.GONE)
+  /** Show this view (uses View.VISIBLE) */
   def show[A <: View]: ViewMutator[A] = x ⇒ x.setVisibility(View.VISIBLE)
 
   /** Center view in a `FrameLayout` */
@@ -30,15 +33,20 @@ trait Transforms {
   def lp[A <: View](params: Any*): ViewMutator[A] = macro layoutParamsImpl[A]
 
   class LPOF[A <: View] {
+    /** Use `LayoutParams` of the specified layout class */
     def of[B <: ViewGroup](params: Any*): ViewMutator[A] = macro layoutParamsOfImpl[A, B]
   }
   def layoutParams[A <: View] = new LPOF[A]
   def lp[A <: View] = new LPOF[A]
 
+  /** Set text */
   def text[A <: TextView](text: CharSequence): ViewMutator[A] = x ⇒ x.setText(text)
+  /** Set text */
   def text[A <: TextView](text: Int): ViewMutator[A] = x ⇒ x.setText(text)
 
+  /** Make this layout vertical */
   def vertical[A <: LinearLayout]: ViewMutator[A] = x ⇒ x.setOrientation(LinearLayout.VERTICAL)
+  /** Make this layout horizontal */
   def horizontal[A <: LinearLayout]: ViewMutator[A] = x ⇒ x.setOrientation(LinearLayout.HORIZONTAL)
 
   /** Assign the view to the provided `var` */
@@ -53,12 +61,12 @@ trait Transforms {
   }
 
   object FuncOn extends Dynamic {
-    /** override the listener with `f` */
+    /** Override the listener with `f` */
     def applyDynamic[A <: View](event: String)(f: Any) = macro onFuncImpl[A]
   }
 
   object ByNameOn extends Dynamic {
-    /** override the listener with `f()` */
+    /** Override the listener with `f()` */
     def applyDynamic[A <: View](event: String)(f: ByName[Any]) = macro onByNameImpl[A]
   }
 }

@@ -8,6 +8,7 @@ import android.content.Context
 import android.app.ActionBar.Tab
 
 trait FragmentApi { self: ViewSearch ⇒
+  /** Create a fragment and wrap it in a FrameLayout */
   def fragment(frag: ⇒ Fragment, id: Int, tag: String)(implicit ctx: Context): FrameLayout = {
     Option(findFrag[Fragment](tag)) getOrElse {
       fragmentManager.beginTransaction().add(id, frag, tag).commit()

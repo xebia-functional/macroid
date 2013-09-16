@@ -6,7 +6,9 @@ import android.view.WindowManager
 import scalaz.Monoid
 
 case class MediaQuery(b: Boolean) {
+  /** Return Some(v) if the queried condition holds, otherwise None */
   def ?[A](v: A) = if (b) Some(v) else None
+  /** Return v if the queried condition holds, otherwise zero */
   def ?![A: Monoid](v: A) = if (b) v else implicitly[Monoid[A]].zero
   def &(q: MediaQuery) = MediaQuery(b && q.b)
   def |(q: MediaQuery) = MediaQuery(b || q.b)
@@ -33,11 +35,32 @@ trait MediaQueries {
   def hdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_HIGH)
   def xhdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_XHIGH)
 
-  def minWidth(v: Int)(implicit ctx: Context) = MediaQuery(displayMetrics.widthPixels >= v)
-  def maxWidth(v: Int)(implicit ctx: Context) = MediaQuery(displayMetrics.widthPixels <= v)
+  implicit class RichDouble(v: Double)(implicit ctx: Context) extends AnyVal {
+    /** Using pixels is strictly discouraged! */
+    def px = v.toInt
+    /** Density-independent points */
+    def dp = (v * displayMetrics.density).toInt
+    /** Scale-independent points */
+    def sp = (v * displayMetrics.scaledDensity).toInt
+  }
 
+  /** Width is at least v */
+  def minWidth(v: Int)(implicit ctx: Context) = MediaQuery(displayMetrics.widthPixels >= v)
+  /** Same as minWidth(v) */
+  def widerThan(v: Int)(implicit ctx: Context) = minWidth(v)
+  /** Width is at most v */
+  def maxWidth(v: Int)(implicit ctx: Context) = MediaQuery(displayMetrics.widthPixels <= v)
+  /** Same as maxWidth(v) */
+  def narrowerThan(v: Int)(implicit ctx: Context) = maxWidth(v)
+
+  /** Height is at least v */
   def minHeight(v: Int)(implicit ctx: Context) = MediaQuery(displayMetrics.heightPixels >= v)
+  /** Same as minHeight(v) */
+  def higherThan(v: Int)(implicit ctx: Context) = minHeight(v)
+  /** Height is at most v */
   def maxHeight(v: Int)(implicit ctx: Context) = MediaQuery(displayMetrics.heightPixels <= v)
+  /** Same as maxHeight(v) */
+  def lowerThan(v: Int)(implicit ctx: Context) = maxHeight(v)
 }
 
 object MediaQueries extends MediaQueries

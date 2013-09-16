@@ -35,7 +35,7 @@ trait MediaQueries {
   def hdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_HIGH)
   def xhdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_XHIGH)
 
-  implicit class RichDouble(v: Double)(implicit ctx: Context) extends AnyVal {
+  implicit class Units(v: Double)(implicit ctx: Context) {
     /** Using pixels is strictly discouraged! */
     def px = v.toInt
     /** Density-independent points */

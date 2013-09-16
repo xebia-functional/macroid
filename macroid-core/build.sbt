@@ -4,7 +4,7 @@ description := "A Scala layout DSL for Android"
 
 organization := "org.macroid"
 
-version := "1.0.0-20130916"
+version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.10.3-RC1"
 

@@ -8,8 +8,8 @@ import scalaz.Monoid
 case class MediaQuery(b: Boolean) {
   def ?[A](v: A) = if (b) Some(v) else None
   def ?![A: Monoid](v: A) = if (b) v else implicitly[Monoid[A]].zero
-  def &(q: MediaQuery) = b && q.b
-  def |(q: MediaQuery) = b || q.b
+  def &(q: MediaQuery) = MediaQuery(b && q.b)
+  def |(q: MediaQuery) = MediaQuery(b || q.b)
 }
 object MediaQuery {
   implicit def toBoolean(q: MediaQuery) = q.b

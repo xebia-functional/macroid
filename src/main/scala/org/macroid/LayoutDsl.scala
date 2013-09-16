@@ -11,9 +11,12 @@ import scalaz.Monoid
 trait LayoutDsl {
   import LayoutDslMacros._
 
+  /** Define a widget */
   def w[A <: View](implicit ctx: Context) = macro widgetImpl[A]
+  /** Define a widget, supplying additional arguments */
   def w[A <: View](args: Any*)(implicit ctx: Context) = macro widgetArgImpl[A]
 
+  /** Define a layout */
   def l[A <: ViewGroup](children: View*)(implicit ctx: Context) = macro layoutImpl[A]
 
   type ViewMutator[-A] = Function[A, Unit]
@@ -23,10 +26,14 @@ trait LayoutDsl {
   }
 
   implicit class RichView[A <: View](v: A) {
+    /** Mutate this view */
     def ~>(t: ViewMutator[A]) = { t(v); v }
+    /** unicode alias for ~> */
+    def ⇝(t: ViewMutator[A]) = { t(v); v }
   }
 
   implicit class RichViewMutator[A](m: ViewMutator[A]) {
+    /** Combine (sequence) with another mutator */
     def +(other: ViewMutator[A]): ViewMutator[A] = { x ⇒ m(x); other(x) }
   }
 }
@@ -36,9 +43,12 @@ object LayoutDsl extends LayoutDsl
 trait FragmentDsl extends FragmentApi { self: ViewSearch ⇒
   import LayoutDslMacros._
 
+  /** Define a fragment, which is wrapped in FrameLayout to be added to the layout */
   def f[A <: Fragment](id: Int, tag: String, args: Any*)(implicit ctx: Context) = macro fragmentImpl[A]
 
+  /** Returns a fragment factory ( () ⇒ A ) */
   def fragmentFactory[A <: Fragment](args: Any*) = macro fragmentFactoryImpl[A]
+  /** Same as fragmentFactory */
   def ff[A <: Fragment](args: Any*) = macro fragmentFactoryImpl[A]
 }
 

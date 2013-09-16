@@ -68,65 +68,30 @@ object Transforms extends Transforms
 object TransformMacros {
   import LayoutDsl._
 
-  class Helper[CTX <: MacroContext](val c: CTX) {
-    import c.universe._
-
-    def createWire(tpe: Type, v: Tree) = q"""
-      { x: $tpe ⇒ $v = x }
-    """
-
-    def layoutParams(tpe: Type, l: Symbol, params: Seq[c.Expr[Any]]) = q"""
-      { x: $tpe ⇒ x.setLayoutParams(new $l.LayoutParams(..$params)) }
-    """
-
-    def getListener(tpe: Type, setter: MethodSymbol, listener: Type, on: MethodSymbol, f: c.Expr[Any], mode: Int) = {
-      val args = on.paramss(0).indices.map(i ⇒ newTermName(s"arg$i"))
-      val params = args zip on.paramss(0) map { case (a, p) ⇒ q"val $a: ${p.typeSignature}" }
-      if (mode == 0) {
-        // function
-        val appl = args.map(a ⇒ Ident(a))
-        q"""
-          { x: $tpe ⇒ x.$setter(new $listener {
-            override def ${on.name}(..$params) = $f(..$appl)
-          })}
-        """
-      } else if (mode == 1) {
-        // by-name block
-        q"""
-          { x: $tpe ⇒ x.$setter(new $listener {
-            override def ${on.name}(..$params) = { ${f.tree} }
-          })}
-        """
-      } else {
-        // ByName
-        q"""
-          { x: $tpe ⇒ x.$setter(new $listener {
-            override def ${on.name}(..$params) = $f()
-          })}
-        """
-      }
-    }
-  }
-
   def wireImpl[A <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[A]): c.Expr[ViewMutator[A]] = {
-    val helper = new Helper[c.type](c)
-    val wire = helper.createWire(c.weakTypeOf[A], v.tree)
+    import c.universe._
+    val wire = q"{ x: ${weakTypeOf[A]} ⇒ ${v.tree} = x }"
     c.Expr[ViewMutator[A]](wire)
   }
 
-  def findLayoutParams[A <: View: c.WeakTypeTag](c: MacroContext)(helper: Helper[c.type], layoutType: c.Type, params: Seq[c.Expr[Any]]): c.Expr[ViewMutator[A]] = {
+  def layoutParams(c: MacroContext)(tpe: c.Type, l: c.Type, params: Seq[c.Expr[Any]]) = {
+    import c.universe._
+    q"{ x: $tpe ⇒ x.setLayoutParams(new ${l.typeSymbol.companionSymbol}.LayoutParams(..$params)) }"
+  }
+
+  def findLayoutParams[A <: View: c.WeakTypeTag](c: MacroContext)(layoutType: c.Type, params: Seq[c.Expr[Any]]): c.Expr[ViewMutator[A]] = {
     import c.universe._
     var tp = layoutType
 
     // go up the inheritance chain until we find a suitable LayoutParams class in the companion
     while (scala.util.Try {
-      c.typeCheck(helper.layoutParams(weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
+      c.typeCheck(layoutParams(c)(weakTypeOf[A], tp, params))
     }.isFailure && tp.baseClasses.length > 2) {
       tp = tp.baseClasses(1).asType.toType
     }
     if (tp.baseClasses.length > 2) {
       c.info(c.enclosingPosition, s"Using $tp.LayoutParams", force = true)
-      c.Expr[ViewMutator[A]](helper.layoutParams(weakTypeOf[A], tp.typeSymbol.companionSymbol, params))
+      c.Expr[ViewMutator[A]](layoutParams(c)(weakTypeOf[A], tp, params))
     } else {
       c.abort(c.enclosingPosition, "Could not find the appropriate LayoutParams constructor")
     }
@@ -134,7 +99,6 @@ object TransformMacros {
 
   def layoutParamsImpl[A <: View: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[ViewMutator[A]] = {
     import c.universe._
-    val helper = new Helper[c.type](c)
 
     // this isDefined at l[SomeLayout] macro applications
     val L = newTermName("l")
@@ -153,18 +117,17 @@ object TransformMacros {
         Some(c.typeCheck(empty).tpe)
       case _ ⇒ None
     } map { x ⇒
-      findLayoutParams[A](c)(helper, x, params)
+      findLayoutParams[A](c)(x, params)
     } getOrElse {
       c.abort(c.enclosingPosition, "Could not find layout type")
     }
   }
 
   def layoutParamsOfImpl[A <: View: c.WeakTypeTag, B <: ViewGroup: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[ViewMutator[A]] = {
-    val helper = new Helper[c.type](c)
-    findLayoutParams[A](c)(helper, c.weakTypeOf[B], params)
+    findLayoutParams[A](c)(c.weakTypeOf[B], params)
   }
 
-  def onBase[A <: View: c.WeakTypeTag](c: MacroContext)(helper: Helper[c.type], event: c.Expr[String]) = {
+  def onBase[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String]) = {
     import c.universe._
 
     // find the setter
@@ -186,14 +149,42 @@ object TransformMacros {
     (setter, listener, on)
   }
 
+  def getListener(c: MacroContext)(tpe: c.Type, setter: c.universe.MethodSymbol, listener: c.Type, on: c.universe.MethodSymbol, f: c.Expr[Any], mode: Int) = {
+    import c.universe._
+    val args = on.paramss(0).indices.map(i ⇒ newTermName(s"arg$i"))
+    val params = args zip on.paramss(0) map { case (a, p) ⇒ q"val $a: ${p.typeSignature}" }
+    if (mode == 0) {
+      // function
+      val appl = args.map(a ⇒ Ident(a))
+      q"""
+        { x: $tpe ⇒ x.$setter(new $listener {
+          override def ${on.name}(..$params) = $f(..$appl)
+        })}
+      """
+    } else if (mode == 1) {
+      // by-name block
+      q"""
+        { x: $tpe ⇒ x.$setter(new $listener {
+          override def ${on.name}(..$params) = { ${f.tree} }
+        })}
+      """
+    } else {
+      // ByName
+      q"""
+        { x: $tpe ⇒ x.$setter(new $listener {
+          override def ${on.name}(..$params) = $f()
+        })}
+      """
+    }
+  }
+
   def onBlockImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[ViewMutator[A]] = {
     import c.universe._
-    val helper = new Helper[c.type](c)
 
-    val (setter, listener, on) = onBase[A](c)(helper, event)
+    val (setter, listener, on) = onBase[A](c)(event)
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType <:< on.returnType)
-      c.Expr[ViewMutator[A]](helper.getListener(c.weakTypeOf[A], setter, listener, on, f, 1))
+      c.Expr[ViewMutator[A]](getListener(c)(c.weakTypeOf[A], setter, listener, on, f, 1))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should be of type ${on.returnType}")
     }
@@ -201,12 +192,11 @@ object TransformMacros {
 
   def onFuncImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[ViewMutator[A]] = {
     import c.universe._
-    val helper = new Helper[c.type](c)
 
-    val (setter, listener, on) = onBase[A](c)(helper, event)
+    val (setter, listener, on) = onBase[A](c)(event)
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType.member(newTermName("apply")).asMethod.returnType <:< on.returnType)
-      c.Expr[ViewMutator[A]](c.typeCheck(helper.getListener(weakTypeOf[A], setter, listener, on, f, 0)))
+      c.Expr[ViewMutator[A]](c.typeCheck(getListener(c)(weakTypeOf[A], setter, listener, on, f, 0)))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should have type signature ${on.typeSignature}")
     }
@@ -214,12 +204,11 @@ object TransformMacros {
 
   def onByNameImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[ByName[Any]]): c.Expr[ViewMutator[A]] = {
     import c.universe._
-    val helper = new Helper[c.type](c)
 
-    val (setter, listener, on) = onBase[A](c)(helper, event)
+    val (setter, listener, on) = onBase[A](c)(event)
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType.member(newTermName("apply")).asMethod.returnType <:< on.returnType)
-      c.Expr[ViewMutator[A]](helper.getListener(weakTypeOf[A], setter, listener, on, f, 2))
+      c.Expr[ViewMutator[A]](getListener(c)(weakTypeOf[A], setter, listener, on, f, 2))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should be of type ByName or Function0 and return ${on.returnType}")
     }

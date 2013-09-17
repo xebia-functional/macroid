@@ -10,6 +10,8 @@ case class MediaQuery(b: Boolean) {
   def ?[A](v: A) = if (b) Some(v) else None
   /** Return v if the queried condition holds, otherwise zero */
   def ?![A: Monoid](v: A) = if (b) v else implicitly[Monoid[A]].zero
+  // boolean ops
+  def unary_! = MediaQuery(!b)
   def &(q: MediaQuery) = MediaQuery(b && q.b)
   def |(q: MediaQuery) = MediaQuery(b || q.b)
 }

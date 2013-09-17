@@ -19,22 +19,22 @@ trait LayoutDsl {
   /** Define a layout */
   def l[A <: ViewGroup](children: View*)(implicit ctx: Context) = macro layoutImpl[A]
 
-  type ViewMutator[-A] = Function[A, Unit]
-  implicit def viewMutatorMonoid[A] = new Monoid[ViewMutator[A]] {
+  type Tweak[-A] = Function[A, Unit]
+  implicit def tweakMonoid[A] = new Monoid[Tweak[A]] {
     def zero = { x ⇒ () }
-    def append(m1: ViewMutator[A], m2: ⇒ ViewMutator[A]) = m1 + m2
+    def append(t1: Tweak[A], t2: ⇒ Tweak[A]) = t1 + t2
   }
 
   implicit class RichView[A <: View](v: A) {
-    /** Mutate this view */
-    def ~>(t: ViewMutator[A]) = { t(v); v }
-    /** unicode alias for ~> */
-    def ⇝(t: ViewMutator[A]) = { t(v); v }
+    /** Tweak this view */
+    def ~>(t: Tweak[A]) = { t(v); v }
+    /** Unicode alias for ~> */
+    def ⇝(t: Tweak[A]) = { t(v); v }
   }
 
-  implicit class RichViewMutator[A](m: ViewMutator[A]) {
-    /** Combine (sequence) with another mutator */
-    def +(other: ViewMutator[A]): ViewMutator[A] = { x ⇒ m(x); other(x) }
+  implicit class RichViewMutator[A](t: Tweak[A]) {
+    /** Combine (sequence) with another tweak */
+    def +(other: Tweak[A]): Tweak[A] = { x ⇒ t(x); other(x) }
   }
 }
 

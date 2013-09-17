@@ -8,52 +8,45 @@ import android.widget.{ LinearLayout, TextView, FrameLayout }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import org.macroid.Util.ByName
 
-trait Transforms {
+trait Tweaks {
   import LayoutDsl._
-  import TransformMacros._
+  import TweakMacros._
 
   /** Set this view’s id */
-  def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
+  def id[A <: View](id: Int): Tweak[A] = x ⇒ x.setId(id)
 
   /** Hide this view (uses View.GONE) */
-  def hide[A <: View]: ViewMutator[A] = x ⇒ x.setVisibility(View.GONE)
+  def hide[A <: View]: Tweak[A] = x ⇒ x.setVisibility(View.GONE)
   /** Show this view (uses View.VISIBLE) */
-  def show[A <: View]: ViewMutator[A] = x ⇒ x.setVisibility(View.VISIBLE)
-
-  /** Center view in a `FrameLayout` */
-  def center[A <: View](h: Boolean = true, v: Boolean = true): ViewMutator[A] = { x ⇒
-    val ch = if (h) Gravity.CENTER_HORIZONTAL else 0
-    val cv = if (v) Gravity.CENTER_VERTICAL else 0
-    x.setLayoutParams(new FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, ch | cv))
-  }
+  def show[A <: View]: Tweak[A] = x ⇒ x.setVisibility(View.VISIBLE)
 
   /** Automatically find the appropriate `LayoutParams` class from the parent layout. */
-  def layoutParams[A <: View](params: Any*): ViewMutator[A] = macro layoutParamsImpl[A]
+  def layoutParams[A <: View](params: Any*): Tweak[A] = macro layoutParamsImpl[A]
   /** Automatically find the appropriate `LayoutParams` class from the parent layout. */
-  def lp[A <: View](params: Any*): ViewMutator[A] = macro layoutParamsImpl[A]
+  def lp[A <: View](params: Any*): Tweak[A] = macro layoutParamsImpl[A]
 
   class LPOF[A <: View] {
     /** Use `LayoutParams` of the specified layout class */
-    def of[B <: ViewGroup](params: Any*): ViewMutator[A] = macro layoutParamsOfImpl[A, B]
+    def of[B <: ViewGroup](params: Any*): Tweak[A] = macro layoutParamsOfImpl[A, B]
   }
   def layoutParams[A <: View] = new LPOF[A]
   def lp[A <: View] = new LPOF[A]
 
   /** Set text */
-  def text[A <: TextView](text: CharSequence): ViewMutator[A] = x ⇒ x.setText(text)
+  def text[A <: TextView](text: CharSequence): Tweak[A] = x ⇒ x.setText(text)
   /** Set text */
-  def text[A <: TextView](text: Int): ViewMutator[A] = x ⇒ x.setText(text)
+  def text[A <: TextView](text: Int): Tweak[A] = x ⇒ x.setText(text)
 
   /** Make this layout vertical */
-  def vertical[A <: LinearLayout]: ViewMutator[A] = x ⇒ x.setOrientation(LinearLayout.VERTICAL)
+  def vertical[A <: LinearLayout]: Tweak[A] = x ⇒ x.setOrientation(LinearLayout.VERTICAL)
   /** Make this layout horizontal */
-  def horizontal[A <: LinearLayout]: ViewMutator[A] = x ⇒ x.setOrientation(LinearLayout.HORIZONTAL)
+  def horizontal[A <: LinearLayout]: Tweak[A] = x ⇒ x.setOrientation(LinearLayout.HORIZONTAL)
 
   /** Assign the view to the provided `var` */
-  def wire[A <: View](v: A): ViewMutator[A] = macro wireImpl[A]
+  def wire[A <: View](v: A): Tweak[A] = macro wireImpl[A]
 
   /** Add views to the layout */
-  def addViews[A <: ViewGroup](children: Seq[View]): ViewMutator[A] = x ⇒ children.foreach(c ⇒ x.addView(c))
+  def addViews[A <: ViewGroup](children: Seq[View]): Tweak[A] = x ⇒ children.foreach(c ⇒ x.addView(c))
 
   object On extends Dynamic {
     /** Override the listener treating `f` as a by-name argument. */
@@ -71,15 +64,15 @@ trait Transforms {
   }
 }
 
-object Transforms extends Transforms
+object Tweaks extends Tweaks
 
-object TransformMacros {
+object TweakMacros {
   import LayoutDsl._
 
-  def wireImpl[A <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[A]): c.Expr[ViewMutator[A]] = {
+  def wireImpl[A <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[A]): c.Expr[Tweak[A]] = {
     import c.universe._
     val wire = q"{ x: ${weakTypeOf[A]} ⇒ ${v.tree} = x }"
-    c.Expr[ViewMutator[A]](wire)
+    c.Expr[Tweak[A]](wire)
   }
 
   def layoutParams(c: MacroContext)(tpe: c.Type, l: c.Type, params: Seq[c.Expr[Any]]) = {
@@ -87,7 +80,7 @@ object TransformMacros {
     q"{ x: $tpe ⇒ x.setLayoutParams(new ${l.typeSymbol.companionSymbol}.LayoutParams(..$params)) }"
   }
 
-  def findLayoutParams[A <: View: c.WeakTypeTag](c: MacroContext)(layoutType: c.Type, params: Seq[c.Expr[Any]]): c.Expr[ViewMutator[A]] = {
+  def findLayoutParams[A <: View: c.WeakTypeTag](c: MacroContext)(layoutType: c.Type, params: Seq[c.Expr[Any]]): c.Expr[Tweak[A]] = {
     import c.universe._
     var tp = layoutType
 
@@ -99,13 +92,13 @@ object TransformMacros {
     }
     if (tp.baseClasses.length > 2) {
       c.info(c.enclosingPosition, s"Using $tp.LayoutParams", force = true)
-      c.Expr[ViewMutator[A]](layoutParams(c)(weakTypeOf[A], tp, params))
+      c.Expr[Tweak[A]](layoutParams(c)(weakTypeOf[A], tp, params))
     } else {
       c.abort(c.enclosingPosition, "Could not find the appropriate LayoutParams constructor")
     }
   }
 
-  def layoutParamsImpl[A <: View: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[ViewMutator[A]] = {
+  def layoutParamsImpl[A <: View: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[Tweak[A]] = {
     import c.universe._
 
     // this isDefined at l[SomeLayout] macro applications
@@ -131,7 +124,7 @@ object TransformMacros {
     }
   }
 
-  def layoutParamsOfImpl[A <: View: c.WeakTypeTag, B <: ViewGroup: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[ViewMutator[A]] = {
+  def layoutParamsOfImpl[A <: View: c.WeakTypeTag, B <: ViewGroup: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[Tweak[A]] = {
     findLayoutParams[A](c)(c.weakTypeOf[B], params)
   }
 
@@ -186,37 +179,37 @@ object TransformMacros {
     }
   }
 
-  def onBlockImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[ViewMutator[A]] = {
+  def onBlockImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[Tweak[A]] = {
     import c.universe._
 
     val (setter, listener, on) = onBase[A](c)(event)
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType <:< on.returnType)
-      c.Expr[ViewMutator[A]](getListener(c)(c.weakTypeOf[A], setter, listener, on, f, 1))
+      c.Expr[Tweak[A]](getListener(c)(c.weakTypeOf[A], setter, listener, on, f, 1))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should be of type ${on.returnType}")
     }
   }
 
-  def onFuncImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[ViewMutator[A]] = {
+  def onFuncImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[Tweak[A]] = {
     import c.universe._
 
     val (setter, listener, on) = onBase[A](c)(event)
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType.member(newTermName("apply")).asMethod.returnType <:< on.returnType)
-      c.Expr[ViewMutator[A]](c.typeCheck(getListener(c)(weakTypeOf[A], setter, listener, on, f, 0)))
+      c.Expr[Tweak[A]](c.typeCheck(getListener(c)(weakTypeOf[A], setter, listener, on, f, 0)))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should have type signature ${on.typeSignature}")
     }
   }
 
-  def onByNameImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[ByName[Any]]): c.Expr[ViewMutator[A]] = {
+  def onByNameImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[ByName[Any]]): c.Expr[Tweak[A]] = {
     import c.universe._
 
     val (setter, listener, on) = onBase[A](c)(event)
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType.member(newTermName("apply")).asMethod.returnType <:< on.returnType)
-      c.Expr[ViewMutator[A]](getListener(c)(weakTypeOf[A], setter, listener, on, f, 2))
+      c.Expr[Tweak[A]](getListener(c)(weakTypeOf[A], setter, listener, on, f, 2))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should be of type ByName or Function0 and return ${on.returnType}")
     }

@@ -56,7 +56,9 @@ val view = l[LinearLayout](
       status ~> text("Finished!")
     } ~>
     // button’s caption
-    text("Click me!"),
+    text("Click me!") ~>
+    // stretch horizontally
+    layoutParams(WRAP_CONTENT, MATCH_PARENT),
     
   // create a fragment with freshly generated id and tag
   // convert the rest of the arguments to a Bundle and pass to the fragment

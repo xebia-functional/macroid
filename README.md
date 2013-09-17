@@ -2,8 +2,8 @@
 
 ### Requirements
 
-* Scala ```2.10+```
-* Android ```API 11+``` (uses ```Fragment```s from the support library and the stock ```ActionBar```)
+* Scala `2.10+`
+* Android `API 11+` (uses `Fragment`s from the support library and the stock `ActionBar`)
 
 ### What’s the buzz
 
@@ -15,41 +15,70 @@ Let’s see what we have.
 #### The DSL
 
 ```scala
+// in the activity/fragment class, prepare two member variables
+// to hold references to our `View`s
 var status: TextView = _
 var bar: ProgressBar = _
 ...
+// create a LinearLayout
 val view = l[LinearLayout](
+
+  // a TextView
+  // note how we use `~>` to tweak each View
+  // adventurous unicode lovers can of course stick with `⇝`
   w[TextView] ~>
-    text("Loading...") ~>
+    // if screen width is more than 400 dp, set long text, otherwise — the short one
+    text(minWidth(400 dp) ? "Loooooooading..." | "Loading...")) ~>
+    // assign to `var status` above
     wire(status),
+    
+  // a ProgressBar
   w[ProgressBar] ~>
+    // set id to a freshly generated id
     id(Id.progress) ~>
-    center() ~>
+    // assign to `var bar` above
     wire(bar),
+    
+  // an Easter Egg for people with high-density screens
+  w[ImageView] ~> (xhdpi ? show | hide) ~> { x ⇒
+    // we can use closures for extra initialization
+    x.setImageResource(R.drawable.enjoyingXhdpiHuh)
+  },
+    
+    
+  // finally, a button
   w[Button] ~>
-    On.click { 
+    // a shortcut to setOnClickListener
+    On.click {
+      // hide the progress bar
       bar ~> hide
+      // set status text
       status ~> text("Finished!")
     } ~>
+    // button’s caption
     text("Click me!"),
+    
+  // create a fragment with freshly generated id and tag
+  // convert the rest of the arguments to a Bundle and pass to the fragment
+  // put the fragment inside a FrameLayout and insert into our layout
   f[MyAwesomeFragment](Id.stuff, Tag.stuff, "items" → 4, "title" → "buzz")
 )
 setContentView(view)
 ```
 
 The three main components are:
-* ```l[...]``` — a macro to create layouts. Supports arbitrary ```ViewGroup```s
-* ```w[...]``` — a macro to create widgets. Supports arbitrary ```View```s, even with parameters (as in ```ProgressBar``` example). The only requirement is that ```Context``` parameter is the first one in ```View```’s constructor.
-* ```f[...]``` — a macro to create fragments. It creates the fragment if not already created, wraps in a ```FrameLayout``` and returns it.
+* `l[...]` — a macro to create layouts. Supports arbitrary `ViewGroup`s
+* `w[...]` — a macro to create widgets. Supports arbitrary `View`s, even with parameters. The only requirement is that `Context` parameter is the first one in `View`’s constructor.
+* `f[...]` — a macro to create fragments. It creates the fragment if not already created, wraps in a `FrameLayout` and returns it.
   The macro tries to create the fragment using `newInstance()` from its companion and passing the arguments through.
-  If there is no suitable overload of `newInstance()`, it treats the args as a sequence of 2-tuples, converts them to a ```Bundle```,
-  creates the fragment with the primary constructor and passes the bundle to ```setArguments```.
+  If there is no suitable overload of `newInstance()`, it treats the args as a sequence of 2-tuples, converts them to a `Bundle`,
+  creates the fragment with the primary constructor and passes the bundle to `setArguments`.
 
 Notice these little things:
-* ```Id.foo``` automatically generates and id for you. The id will be the same upon consequent calls. **Note that ids are not checked.** They are generated starting from 1000. You can override the default id generator.
-* ```Tag.bar``` is a fancy way of saying ```"bar"```, added for symmetry.
+* `Id.foo` automatically generates and id for you. The id will be the same upon consequent calls. **Note that ids are not checked.** They are generated starting from 1000. You can override the default id generator.
+* `Tag.bar` is a fancy way of saying `"bar"`, added for symmetry.
 
-Configuration of views is done with ```~>```. The idea is to provide as many convenient and common transforms as possible.
+Configuration of views is done with `~>`. The idea is to provide as many convenient and common transforms as possible.
 It is easy to make one yourself:
 ```scala
 def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
@@ -60,10 +89,10 @@ def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
 Note that you can add transforms together with `+`. If you like `scalaz`, there is a `Monoid` instance available, so
 you can use `~` and `|+|` as well.
 
-* ```wire``` assigns the view to the ```var``` you provide (see example above).
-* ```hide```, ```show```.
-* ```layoutParams``` or ```lp```:
-  Automatically uses ```LayoutParams``` constructor from the parent layout or its superclass.
+* `wire` assigns the view to the `var` you provide (see example above).
+* `hide`, `show`.
+* `layoutParams` or `lp`:
+  Automatically uses `LayoutParams` constructor from the parent layout or its superclass.
   ```scala
   import ViewGroup.LayoutParams._ // to get WRAP_CONTENT and MATCH_PARENT
   import org.macroid.Transforms._ // to get layoutParams or lp
@@ -74,7 +103,7 @@ you can use `~` and `|+|` as well.
   ```
   To use `layoutParams` ouside the layout, take a look at `layoutParams.of[B](...)`,
   for which you can supply the layout type in `B`.
-* You can setup almost any ```View``` event listener with the following syntax:
+* You can setup almost any `View` event listener with the following syntax:
   ```scala
   import org.scaloid.common._ // to get toast
   import org.macroid.Transforms._ // to get most of the stuff
@@ -100,11 +129,11 @@ you can use `~` and `|+|` as well.
 #### Searching for views and fragments
 
 *Macroid* offers three utils:
-* ```def findView[A <: View](id: Int): A```
-* ```def findView[A <: View](root: View, id: Int): A```
-* ```def findFrag[A <: Fragment](tag: String): A```
+* `def findView[A <: View](id: Int): A`
+* `def findView[A <: View](root: View, id: Int): A`
+* `def findFrag[A <: Fragment](tag: String): A`
 
-They come in two flavors, for ```Activities``` and ```Fragments``` respectively: ```trait ActivityViewSearch``` and ```trait FragmentViewSearch```.
+They come in two flavors, for `Activities` and `Fragments` respectively: `trait ActivityViewSearch` and `trait FragmentViewSearch`.
 
 #### Media queries (inspired by the eponymous CSS feature)
 
@@ -127,7 +156,7 @@ Currently supported are
 
 *Macroid* provides a bunch of great ways to run things on UI thread.
 
-Using scala ```Future```s:
+Using scala `Future`s:
 ```scala
 import org.macroid.Concurrency._
 future {
@@ -154,8 +183,8 @@ flow {
 }
 ```
 
-The usual ```runOnUiThread``` has been pimped, so that now it returns a ```Future``` as well. Everything you put inside
-is wrapped in a ```Try```, so you don’t have to worry about your layout being destroyed.
+The usual `runOnUiThread` has been pimped, so that now it returns a `Future` as well. Everything you put inside
+is wrapped in a `Try`, so you don’t have to worry about your layout being destroyed.
 
 ### Installation
 
@@ -173,11 +202,11 @@ scalacOptions += "-P:continuations:enable"
 To include macroid itself:
 ```scala
 resolvers ++= Seq(
-  "Macroid snapshots" at "http://stanch.github.com/macroid/snapshots/",
+  "JCenter" at "http://jcenter.bintray.com",
   Resolver.sonatypeRepo("snapshots")
 )
 
-libraryDependencies += "org.macroid" %% "macroid" % "1.0-SNAPSHOT"
+libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130916"
 ```
 
 ### Imports and traits

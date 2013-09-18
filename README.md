@@ -255,7 +255,7 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots")
 )
 
-libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130916"
+libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130918"
 ```
 
 ### Imports and traits
@@ -276,6 +276,7 @@ class MyActivity extends Activity {
 ```
 
 Likewise, to use `~>`, `l`, and `w` inherit from `LayoutDsl` or import from it.
+
 The `f`, however, requires `FragmentDsl` *trait*, which in its turn depends on either `ActivityViewSearch` or `FragmentViewSearch`.
 Thus, the usage is
 ```scala
@@ -299,4 +300,4 @@ objects `MediaQueries` and `MQ` (the latter being a useful shortcut to allow `MQ
 * @xeno_by for macros in Scala
 * see Issues for future ideas and related scientific papers
 
-Nick 2013
+Nick (stanch), 2013

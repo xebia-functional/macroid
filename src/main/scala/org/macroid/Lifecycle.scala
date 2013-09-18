@@ -3,18 +3,18 @@ package org.macroid
 import scala.language.experimental.macros
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import scala.annotation.StaticAnnotation
-import org.macroid.Util.ByName
+import org.macroid.Util.Thunk
 
 trait LifecycleManager {
   def doOnPauseResume(p: ⇒ Any, r: ⇒ Any)
 }
 
 trait Lifecycle extends LifecycleManager { self ⇒
-  private var toPause = List[ByName[Any]]()
-  private var toResume = List[ByName[Any]]()
+  private var toPause = List[Thunk[Any]]()
+  private var toResume = List[Thunk[Any]]()
 
-  def doOnPause(f: ⇒ Any) { toPause ::= ByName(f) }
-  def doOnResume(f: ⇒ Any) { toResume ::= ByName(f) }
+  def doOnPause(f: ⇒ Any) { toPause ::= Thunk(f) }
+  def doOnResume(f: ⇒ Any) { toResume ::= Thunk(f) }
   def doOnPauseResume(p: ⇒ Any, r: ⇒ Any) {
     doOnPause(p)
     doOnResume(r)

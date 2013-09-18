@@ -6,7 +6,7 @@ import android.view.{ ViewGroup, Gravity, View }
 import ViewGroup.LayoutParams._
 import android.widget.{ LinearLayout, TextView, FrameLayout }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
-import org.macroid.Util.ByName
+import org.macroid.Util.Thunk
 
 trait Tweaks {
   import LayoutDsl._
@@ -58,9 +58,9 @@ trait Tweaks {
     def applyDynamic[A <: View](event: String)(f: Any) = macro onFuncImpl[A]
   }
 
-  object ByNameOn extends Dynamic {
+  object ThunkOn extends Dynamic {
     /** Override the listener with `f()` */
-    def applyDynamic[A <: View](event: String)(f: ByName[Any]) = macro onByNameImpl[A]
+    def applyDynamic[A <: View](event: String)(f: Thunk[Any]) = macro onThunkImpl[A]
   }
 }
 
@@ -163,14 +163,14 @@ object TweakMacros {
         })}
       """
     } else if (mode == 1) {
-      // by-name block
+      // by-name argument
       q"""
         { x: $tpe ⇒ x.$setter(new $listener {
           override def ${on.name}(..$params) = { ${f.tree} }
         })}
       """
     } else {
-      // ByName
+      // thunk
       q"""
         { x: $tpe ⇒ x.$setter(new $listener {
           override def ${on.name}(..$params) = $f()
@@ -203,7 +203,7 @@ object TweakMacros {
     }
   }
 
-  def onByNameImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[ByName[Any]]): c.Expr[Tweak[A]] = {
+  def onThunkImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Thunk[Any]]): c.Expr[Tweak[A]] = {
     import c.universe._
 
     val (setter, listener, on) = onBase[A](c)(event)
@@ -211,7 +211,7 @@ object TweakMacros {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType.member(newTermName("apply")).asMethod.returnType <:< on.returnType)
       c.Expr[Tweak[A]](getListener(c)(weakTypeOf[A], setter, listener, on, f, 2))
     } getOrElse {
-      c.abort(c.enclosingPosition, s"f should be of type ByName or Function0 and return ${on.returnType}")
+      c.abort(c.enclosingPosition, s"f should be of type Thunk and return ${on.returnType}")
     }
   }
 }

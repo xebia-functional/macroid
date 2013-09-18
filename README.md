@@ -160,7 +160,7 @@ Just kidding, it simply returns `"something"`, but isn’t that fancy? Use this 
   Automatically uses `LayoutParams` constructor from the parent layout or its superclass.
   ```scala
   import ViewGroup.LayoutParams._ // to get WRAP_CONTENT and MATCH_PARENT
-  import org.macroid.Transforms._ // to get layoutParams or lp
+  import org.macroid.Tweaks._ // to get layoutParams or lp
   
   l[MyShinyLayout](
       w[Button] ~> layoutParams(WRAP_CONTENT, MATCH_PARENT) ~> text("Click me")

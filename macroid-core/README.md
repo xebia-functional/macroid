@@ -1,4 +1,4 @@
-# *Macroid* — a Scala layout DSL for Android
+# *Macroid* — a Scala GUI DSL for Android
 
 ### Requirements
 
@@ -6,13 +6,6 @@
 * Android `API 11+` (uses `Fragment`s from the support library and the stock `ActionBar`)
 
 ### What’s the buzz
-
-*Macroid* is intended to complement the excellent [scaloid](https://github.com/pocorall/scaloid) project. It’s by no means
-a replacement, but rather a collection of some useful things under a slightly different sauce :)
-
-Let’s see what we have.
-
-#### The DSL
 
 ```scala
 // in the activity/fragment class, prepare two member variables
@@ -45,7 +38,6 @@ val view = l[LinearLayout](
     x.setImageResource(R.drawable.enjoyingXhdpiHuh)
   },
     
-    
   // finally, a button
   w[Button] ~>
     // a shortcut to setOnClickListener
@@ -68,31 +60,102 @@ val view = l[LinearLayout](
 setContentView(view)
 ```
 
-The three main components are:
-* `l[...]` — a macro to create layouts. Supports arbitrary `ViewGroup`s
-* `w[...]` — a macro to create widgets. Supports arbitrary `View`s, even with parameters. The only requirement is that `Context` parameter is the first one in `View`’s constructor.
-* `f[...]` — a macro to create fragments. It creates the fragment if not already created, wraps in a `FrameLayout` and returns it.
+#### Layouts, Widgets, Fragments
+
+* `l[LayoutClass](child1, child2, ..., childn)` creates a layout. `LayoutClass` should inherit from `ViewGroup`.
+* `w[WidgetClass]` or `w[WidgetClass](arg1, arg2, ..., argn)` creates widgets.
+  Supports arbitrary `View`s; the only requirement is that `Context` parameter is the first one in `WidgetClass`’s constructor.
+  Oh, and you don’t have to ever mention `Context`, since it’s taken from the `implicit` scope.
+* `f[FragmentClass](id, tag, arg1, arg2, ... argn)` deals with fragments. It creates the fragment if not already created, wraps in a `FrameLayout` and returns it.
   The macro tries to create the fragment using `newInstance()` from its companion and passing the arguments through.
   If there is no suitable overload of `newInstance()`, it treats the args as a sequence of 2-tuples, converts them to a `Bundle`,
   creates the fragment with the primary constructor and passes the bundle to `setArguments`.
 
-Notice these little things:
-* `Id.foo` automatically generates and id for you. The id will be the same upon consequent calls. **Note that ids are not checked.** They are generated starting from 1000. You can override the default id generator.
-* `Tag.bar` is a fancy way of saying `"bar"`, added for symmetry.
+#### Tweaks
 
-Configuration of views is done with `~>`. The idea is to provide as many convenient and common transforms as possible.
-It is easy to make one yourself:
+The central concept of *Macroid* is that of `Tweak`s. These are little things that are chained and applied to widgets
+with `~>` (or fancier `⇝`). Every `Tweak` is mutating the widget, doing something useful. Tweaks are better than member methods, because they can be easily combined:
 ```scala
-def id[A <: View](id: Int): ViewMutator[A] = x ⇒ x.setId(id)
+def idAndText[A <: TextView](i: Int, t: String) = id(i) + text(t)
 ```
 
-#### Noteworthy predefined transforms
+For functional junkies out there it will come as no surprise that `Tweak`s form a `Monoid`:
+```scala
+implicit def tweakMonoid[A] = new Monoid[Tweak[A]] {
+  def zero = { x ⇒ () }
+  def append(t1: Tweak[A], t2: ⇒ Tweak[A]) = t1 + t2
+}
+```
+which we will see helpful later.
 
-Note that you can add transforms together with `+`. If you like `scalaz`, there is a `Monoid` instance available, so
-you can use `~` and `|+|` as well.
+Here’s how to make a `Tweak`:
+```scala
+def id[A <: View](id: Int): Tweak[A] = x ⇒ x.setId(id)
+```
 
-* `wire` assigns the view to the `var` you provide (see example above).
-* `hide`, `show`.
+Finally, note that `Tweaks` can be applied to any `View` type they are defined at. You can use `~>` in your code freely,
+even if you don’t use layout creation DSL.
+
+#### Media Queries
+
+Media queries are inspired by the eponymous CSS feature. Here are some examples:
+```scala
+// if screen width > 1000 dip, make layout horizontal, else make it vertical
+l[LinearLayout](...) ~> (minWidth(1000 dp) ? horizontal | vertical)
+
+// use different widget depending on screen width
+(widerThan(1000 dp) ? w[BigTextView] | widerThan(600 dp) ? w[MediumTextView] | w[TextView]) ~> text("Hi there")
+
+// remember Tweaks form a Monoid? so we don’t have to supply the alternative here, tweakMonoid.zero will be used
+w[TextView] ~> text("Balderdash!") ~> (minWidth(500) ?! largeAppearance)
+```
+
+Queries act like `Boolean`s and can be converted to them implicitly.
+`query ? x` returns `Some(x)` if the query condition holds, otherwise — `None`.
+We extend `Option`s with a `|` operator to provide a more streamlined API.
+`query ?! x` is a special form to be used with `Monoid`s, where `zero` element is used if the query condition does not hold.
+
+Currently supported queries:
+* `minWidth`/`widerThan`, `maxWidth`/`narrowerThan`
+* `minHeight`/`higherThan`, `maxHeight`/`lowerThan`
+* `ldpi`, `mdpi`, `hdpi`, `xhdpi`
+
+Units:
+* `dp` density-independend points (use for everything except text)
+* `sp` scale-independent points (use for text)
+* `px` (seriously though, don’t use it)
+
+#### Searching for widgets and fragments
+
+The preferred way of referencing the widgets is the following:
+```scala
+// set up a member variable
+var myButton: Button = _
+...
+def onCreate(...) {
+  ...
+  // wire the widget to the variable
+  w[Button] ~> wire(myButton) ~> ...
+  ...
+}
+```
+* It’s typesafe
+* It’s easy to read and write
+* If the activity/fragment’s layout has been created, the `var` is guaranteed to be initialized.
+  Before that, you shouldn’t touch your UI anyway!
+
+That being said, you can use `Id.something` to generate ids ( *by default ids are generated in range [1000..]* ).
+`Id.foo` will always return the same number inside a particular activity or fragment. To find widgets by id,
+use one of the following:
+* `def findView[A <: View](id: Int): A` — search in the root `View`
+* `def findView[A <: View](root: View, id: Int): A` — search in `root`
+
+Similarly, for fragments `Tag.something` generates a new tag.
+Just kidding, it simply returns `"something"`, but isn’t that fancy? Use this to search for fragments:
+* `def findFrag[A <: Fragment](tag: String): A`
+
+#### Smashing some boilerplate
+
 * `layoutParams` or `lp`:
   Automatically uses `LayoutParams` constructor from the parent layout or its superclass.
   ```scala
@@ -108,19 +171,31 @@ you can use `~` and `|+|` as well.
 * You can setup almost any `View` event listener with the following syntax:
   ```scala
   import org.scaloid.common._ // to get toast
-  import org.macroid.Transforms._ // to get most of the stuff
+  import org.macroid.Tweaks._ // to get tweaks
   import org.macroid.Util.ByName
+
+  // ByName is a convenient way to store blocks of code without evaluating them
+  // practically ByName(a) is the same as () ⇒ a
+  val balderdash = ByName {
+    toast("Balderdash!")
+    true
+  }
 
   l[LinearLayout](
       w[Button] ~>
         text("Click me") ~>
-        On.click(toast("Howdy?")) ~> // use by-name argument
-        On.longClick { toast("Splash!"); true }, // use by-name argument, returning a value
+        // use by-name argument
+        On.click(toast("Howdy?")) ~>
+        // use by-name argument, returning a value
+        On.longClick { toast("Splash!"); true },
+        
       w[Button] ~>
         text("Don’t click me") ~>
-        FuncOn.click { v: View ⇒ toast(v.getText) } ~> // use function of the same type as OnClickListener.onClick
-        ByNameOn.longClick(ByName { toast("Balderdash!"); true }) // use ByName, same as () ⇒ { toast(...); true }
-  ) ~> vertical
+        // use function of the same type as OnClickListener.onClick
+        FuncOn.click { v: View ⇒ toast(v.getText) } ~>
+        // use ByName
+        ByNameOn.longClick(balderdash)
+  )
   ```
   Why 3 flavors? Suppose we had a single `On.foo` method working with both functions and by-name arguments (like in *scaloid*).
   If you accidentaly pass in a function with the wrong type signature, the by-name overload overtakes, and you end up with a
@@ -128,69 +203,46 @@ you can use `~` and `|+|` as well.
   functions and issues an error if its argument does not match the listener type signature. Additionally, `ByNameOn.foo`
   allows you to use `ByName` blocks, which is handy if you want to pass the listeners around before assigning.
 
-#### Searching for views and fragments
-
-*Macroid* offers three utils:
-* `def findView[A <: View](id: Int): A`
-* `def findView[A <: View](root: View, id: Int): A`
-* `def findFrag[A <: Fragment](tag: String): A`
-
-They come in two flavors, for `Activities` and `Fragments` respectively: `trait ActivityViewSearch` and `trait FragmentViewSearch`.
-
-#### Media queries (inspired by the eponymous CSS feature)
-
-Media queries allow to use different contols, layouts, transforms or other types of things, depending on display
-metrics and orientation. Here are some examples:
-```scala
-l[LinearLayout](...) ~> (minWidth(1000) ? horizontal | vertical)
-
-(minWidth(1000) ? w[BigTextView] | minWidth(600) ? w[MediumTextView] | w[TextView]) ~> text("Hi there")
-
-w[TextView] ~> text("Balderdash!") ~> (minWidth(500) ?! largeAppearance)
-```
-
-Currently supported are
-* minWidth, maxWidth
-* minHeight, maxHeight
-* ldpi, mdpi, hdpi, xhdpi
-
-#### Concurrency
+#### Staying in the UI thread
 
 *Macroid* provides a bunch of great ways to run things on UI thread.
 
-Using scala `Future`s:
+Using [Scala `Future`s](http://docs.scala-lang.org/sips/pending/futures-promises.html):
 ```scala
 import org.macroid.Concurrency._
 future {
-  ...
+  // some asynchronous calculation
 } onSuccessUi { case x ⇒
-  ...
+  // manipulate the result on UI thread
 } onFailureUi { case t ⇒
-  ...
+  // handle the failure on UI thread
 }
 ```
 
-Using akka dataflow:
+Using [Akka Dataflow](http://doc.akka.io/docs/akka/snapshot/scala/dataflow.html):
 ```scala
 import akka.dataflow._
 import org.macroid.Concurrency._
 flow {
+  // asynchronously wait for completion of some calculations
   val a = await(someFuture)
   val b = await(otherFuture)
+  // execute the rest of the flow block on UI thread
   switchToUiThread()
   findView[Button](Id.myButton) ~> text(a + b)
 } onFailureUi { case t ⇒
+  // handle the failure on UI thread
   t.printStackTrace()
   findView[TextView](Id.error) ~> text("Oops...")
 }
 ```
 
-The usual `runOnUiThread` has been pimped, so that now it returns a `Future` as well. Everything you put inside
-is wrapped in a `Try`, so you don’t have to worry about your layout being destroyed.
+Finally, there is a `runOnUiThread` method, that returns a `Future`,
+so that you can monitor when the UI code finishes executing.
 
 ### Installation
 
-If you plan to use dataflow:
+To use dataflow (example for SBT < 0.13):
 ```scala
 autoCompilerPlugins := true
 
@@ -228,8 +280,8 @@ class MyActivity extends Activity {
 }
 ```
 
-Likewise, to use ```LayoutDsl```, inherit from it or import from it.
-The ```f[...]``` macro, however, requires ```FragmentDsl``` *trait*, which in its turn depends on either ```ActivityViewSearch``` or ```FragmentViewSearch```.
+Likewise, to use `~>`, `l`, and `w` inherit from `LayoutDsl` or import from it.
+The `f`, however, requires `FragmentDsl` *trait*, which in its turn depends on either `ActivityViewSearch` or `FragmentViewSearch`.
 Thus, the usage is
 ```scala
 import org.macroid._
@@ -241,7 +293,15 @@ class MyFragment extends Fragment with FragmentViewSearch with LayoutDsl with Fr
 }
 ```
 
-```Transforms``` come both in a trait and in an object.
+`Tweaks` come both in a trait and in an object.
 
 `MediaQueries` come in a trait `MediaQueries`, as well as in
 objects `MediaQueries` and `MQ` (the latter being a useful shortcut to allow `MQ.minWidth(...)`).
+
+### Credits
+
+* https://github.com/pocorall/scaloid for inspiration
+* @xeno_by for macros in Scala
+* see Issues for future ideas and related scientific papers
+
+Nick 2013

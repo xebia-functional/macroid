@@ -176,9 +176,9 @@ Just kidding, it simply returns `"something"`, but isn’t that fancy? Use this 
 
   // Thunks are a convenient way to store blocks of code without evaluating them
   // Practically Thunk(a) is the same as () ⇒ a
-  val balderdash = ByName {
-    toast("Balderdash!")
-    true
+  val balderdash = Thunk {
+      toast("Balderdash!")
+      true
   }
 
   l[LinearLayout](

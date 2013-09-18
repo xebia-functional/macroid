@@ -172,10 +172,10 @@ Just kidding, it simply returns `"something"`, but isn’t that fancy? Use this 
   ```scala
   import org.scaloid.common._ // to get toast
   import org.macroid.Tweaks._ // to get tweaks
-  import org.macroid.Util.ByName
+  import org.macroid.Util.Thunk
 
-  // ByName is a convenient way to store blocks of code without evaluating them
-  // practically ByName(a) is the same as () ⇒ a
+  // Thunks are a convenient way to store blocks of code without evaluating them
+  // Practically Thunk(a) is the same as () ⇒ a
   val balderdash = ByName {
     toast("Balderdash!")
     true
@@ -191,17 +191,12 @@ Just kidding, it simply returns `"something"`, but isn’t that fancy? Use this 
         
       w[Button] ~>
         text("Don’t click me") ~>
-        // use function of the same type as OnClickListener.onClick
+        // use function of the same type signature as OnClickListener.onClick
         FuncOn.click { v: View ⇒ toast(v.getText) } ~>
-        // use ByName
-        ByNameOn.longClick(balderdash)
+        // use a thunk
+        ThunkOn.longClick(balderdash)
   )
   ```
-  Why 3 flavors? Suppose we had a single `On.foo` method working with both functions and by-name arguments (like in *scaloid*).
-  If you accidentaly pass in a function with the wrong type signature, the by-name overload overtakes, and you end up with a
-  function that is not called and no warning. Here, `On.foo` *always* uses by-name arguments and `FuncOn.foo` *always* uses
-  functions and issues an error if its argument does not match the listener type signature. Additionally, `ByNameOn.foo`
-  allows you to use `ByName` blocks, which is handy if you want to pass the listeners around before assigning.
 
 #### Staying in the UI thread
 

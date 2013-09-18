@@ -15,10 +15,10 @@ object Util {
     bundle
   }
 
-  class ByName[+A](v: ⇒ A) extends Function0[A] {
+  class Thunk[+A](v: ⇒ A) extends Function0[A] {
     def apply() = v
   }
-  object ByName {
-    def apply[A](v: ⇒ A) = new ByName(v)
+  object Thunk {
+    def apply[A](v: ⇒ A) = new Thunk(v)
   }
 }

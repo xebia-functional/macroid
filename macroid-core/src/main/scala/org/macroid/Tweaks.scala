@@ -25,14 +25,9 @@ trait Tweaks {
   /** Automatically find the appropriate `LayoutParams` class from the parent layout. */
   def lp(params: Any*): Tweak[View] = macro layoutParamsImpl
 
-  object layoutParams {
-    /** Use `LayoutParams` of the specified layout class */
-    def of[B <: ViewGroup](params: Any*): Tweak[View] = macro layoutParamsOfImpl[B]
-  }
-  object lp {
-    /** Use `LayoutParams` of the specified layout class */
-    def of[B <: ViewGroup](params: Any*): Tweak[View] = macro layoutParamsOfImpl[B]
-  }
+  /** Use `LayoutParams` of the specified layout class */
+  def layoutParamsOf[B <: ViewGroup](params: Any*): Tweak[View] = macro layoutParamsOfImpl[B]
+  def lpOf[B <: ViewGroup](params: Any*): Tweak[View] = macro layoutParamsOfImpl[B]
 
   /** Set text */
   def text(text: CharSequence): Tweak[TextView] = x ⇒ x.setText(text)

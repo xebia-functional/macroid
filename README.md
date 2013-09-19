@@ -255,7 +255,7 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots")
 )
 
-libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130918"
+libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130919"
 ```
 
 ### Imports and traits
@@ -293,6 +293,11 @@ class MyFragment extends Fragment with FragmentViewSearch with LayoutDsl with Fr
 
 `MediaQueries` come in a trait `MediaQueries`, as well as in
 objects `MediaQueries` and `MQ` (the latter being a useful shortcut to allow `MQ.minWidth(...)`).
+
+Note that most of the features rely on `implicit` `Context`. For `Activiti`es, either mix in *Scaloid*’s `SActivity`
+or *Macroid*’s `ActivityContext`. For `Fragment`s, mix in `FragmentContext`.
+
+Finally, if you are all or nothing kind of guy, mix in one of these: https://github.com/stanch/macroid/blob/master/src/main/scala/org/macroid/FullDsl.scala
 
 ### Credits
 

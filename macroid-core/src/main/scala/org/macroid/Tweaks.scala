@@ -68,7 +68,7 @@ object TweakMacros {
 
   def wireImpl[A <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[A]): c.Expr[Tweak[A]] = {
     import c.universe._
-    c.Expr[Tweak[A]](q"{ x: ${weakTypeOf[A]} ⇒ ${v.tree} = x }")
+    c.Expr[Tweak[A]](q"{ x: ${weakTypeOf[A]} ⇒ $v = x }")
   }
 
   def layoutParams(c: MacroContext)(l: c.Type, params: Seq[c.Expr[Any]]) = {
@@ -178,7 +178,7 @@ object TweakMacros {
 
   def getListener(c: MacroContext)(tpe: c.Type, setter: c.universe.MethodSymbol, listener: c.Type, on: c.universe.MethodSymbol, f: c.Expr[Any], mode: Int) = {
     import c.universe._
-    val args = on.paramss(0).indices.map(i ⇒ newTermName(s"arg$i"))
+    val args = on.paramss(0).map(_ ⇒ newTermName(c.fresh("arg")))
     val params = args zip on.paramss(0) map { case (a, p) ⇒ q"val $a: ${p.typeSignature}" }
     if (mode == 0) {
       // function
@@ -192,7 +192,7 @@ object TweakMacros {
       // by-name argument
       q"""
         { x: $tpe ⇒ x.$setter(new $listener {
-          override def ${on.name}(..$params) = { ${f.tree} }
+          override def ${on.name}(..$params) = { $f }
         })}
       """
     } else {
@@ -211,7 +211,7 @@ object TweakMacros {
     val (setter, listener, on, tp) = onBase[A](c)(event)
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType <:< on.returnType)
-      c.Expr[Tweak[A]](getListener(c)(tp, setter, listener, on, f, 1))
+      c.Expr[Tweak[A]](getListener(c)(tp, setter, listener, on, c.Expr(c.resetAllAttrs(f.tree)), 1))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should be of type ${on.returnType}")
     }

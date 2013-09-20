@@ -87,7 +87,7 @@ object TweakMacros {
 
   def layoutParams(c: MacroContext)(l: c.Type, params: Seq[c.Expr[Any]]) = {
     import c.universe._
-    q"{ x: View ⇒ x.setLayoutParams(new ${l.typeSymbol.companionSymbol}.LayoutParams(..$params)) }"
+    q"{ x: android.view.View ⇒ x.setLayoutParams(new ${l.typeSymbol.companionSymbol}.LayoutParams(..$params)) }"
   }
 
   def findLayoutParams(c: MacroContext)(layoutType: c.Type, params: Seq[c.Expr[Any]]): c.Expr[Tweak[View]] = {

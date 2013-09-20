@@ -6,7 +6,7 @@ homepage := Some(url("http://github.com/stanch/macroid"))
 
 organization := "org.macroid"
 
-version := "1.0.0-20130919"
+version := "1.0.0-20130920"
 
 scalaVersion := "2.10.3-RC1"
 

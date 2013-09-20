@@ -160,13 +160,12 @@ object TweakMacros {
     val tweaking: PartialFunction[Tree, Boolean] = { case Apply(Select(_, TildeArrow | UnicodeArrow), _) ⇒ true }
 
     // find `widget ~> On....` application and get widget’s exact type
-    val tp = findImmediateParentTree(c)(tweaking) flatMap {
-      case Apply(Select(victim, _), _) ⇒ Some(c.typeCheck(victim).tpe)
+    var tp = findImmediateParentTree(c)(tweaking) flatMap {
+      case Apply(Select(victim, _), _) ⇒ Some(c.typeCheck(victim).tpe.widen)
       case _ ⇒ None
     } getOrElse {
       weakTypeOf[A]
     }
-    fixTypeInference(c)(tp)
 
     // find the setter
     val Expr(Literal(Constant(eventName: String))) = event
@@ -176,6 +175,17 @@ object TweakMacros {
     } getOrElse {
       c.abort(c.enclosingPosition, s"Could not find method setOn${eventName.capitalize}Listener in $tp. You may need to provide the type argument explicitly")
     }
+
+    // settle on widget’s type less eagerly
+    var oldtp = tp
+    while (scala.util.Try {
+      assert(tp.member(newTermName(s"setOn${eventName.capitalize}Listener")).asMethod != NoSymbol)
+    }.isSuccess && tp.baseClasses.length > 1) {
+      oldtp = tp
+      tp = tp.baseClasses(1).asType.toType
+    }
+    tp = oldtp
+    fixTypeInference(c)(tp)
 
     // find the method to override
     val listener = setter.paramss(0)(0).typeSignature

@@ -33,6 +33,18 @@ trait Tweaks {
   def text(text: CharSequence): Tweak[TextView] = x ⇒ x.setText(text)
   /** Set text */
   def text(text: Int): Tweak[TextView] = x ⇒ x.setText(text)
+  /** Set text */
+  def text(text: Either[Int, CharSequence]): Tweak[TextView] = text match {
+    case Right(t) ⇒ { x ⇒ x.setText(t) }
+    case Left(t) ⇒ { x ⇒ x.setText(t) }
+  }
+
+  /** Set padding */
+  def padding(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0, all: Int = -1): Tweak[View] = if (all >= 0) {
+    x: View ⇒ x.setPadding(all, all, all, all)
+  } else {
+    x: View ⇒ x.setPadding(left, top, right, bottom)
+  }
 
   /** Make this layout vertical */
   def vertical: Tweak[LinearLayout] = x ⇒ x.setOrientation(LinearLayout.VERTICAL)
@@ -44,6 +56,8 @@ trait Tweaks {
 
   /** Add views to the layout */
   def addViews(children: Seq[View]): Tweak[ViewGroup] = x ⇒ children.foreach(c ⇒ x.addView(c))
+  /** Add view to the layout in reversed order (uses addView(child, 0)) */
+  def addViewsReverse(children: Seq[View]): Tweak[ViewGroup] = x ⇒ children.foreach(c ⇒ x.addView(c, 0))
 
   object On extends Dynamic {
     /** Override the listener treating `f` as a by-name argument. */
@@ -81,17 +95,16 @@ object TweakMacros {
     var tp = layoutType
 
     // go up the inheritance chain until we find a suitable LayoutParams class in the companion
-    while (scala.util.Try {
-      c.typeCheck(layoutParams(c)(tp, params))
-    }.isFailure && tp.baseClasses.length > 2) {
-      tp = tp.baseClasses(1).asType.toType
+    while (scala.util.Try(c.typeCheck(layoutParams(c)(tp, params))).isFailure) {
+      if (tp.baseClasses.length > 2) {
+        tp = tp.baseClasses(1).asType.toType
+      } else {
+        c.abort(c.enclosingPosition, "Could not find the appropriate LayoutParams constructor")
+      }
     }
-    if (tp.baseClasses.length > 2) {
-      c.info(c.enclosingPosition, s"Using $tp.LayoutParams", force = false)
-      c.Expr[Tweak[View]](layoutParams(c)(tp, params))
-    } else {
-      c.abort(c.enclosingPosition, "Could not find the appropriate LayoutParams constructor")
-    }
+
+    //c.info(c.enclosingPosition, s"Using $tp.LayoutParams", force = false)
+    c.Expr[Tweak[View]](layoutParams(c)(tp, params))
   }
 
   /* @xeno_by was quite impressed with this hack... */

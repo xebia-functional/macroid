@@ -20,13 +20,17 @@ class TagGen extends Dynamic {
   def selectDynamic(tag: String) = tag
 }
 
-sealed trait ViewSearch {
-  def fragmentManager: FragmentManager
-  implicit val Id = new IdGen(1000)
-  implicit val Tag = new TagGen
+trait BasicViewSearch {
+  val Id = new IdGen(1000)
+  val Tag = new TagGen
 
   /** Find a view with a given id in `root` */
   def findView[A <: View](root: View, id: Int): A = root.findViewById(id).asInstanceOf[A]
+}
+
+sealed trait ViewSearch extends BasicViewSearch {
+  def fragmentManager: FragmentManager
+
   /** Find a view with a given id in root view */
   def findView[A <: View](id: Int): A
   /** Find a fragment with a given tag */

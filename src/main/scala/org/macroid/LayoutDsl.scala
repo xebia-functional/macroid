@@ -104,7 +104,7 @@ object LayoutDslMacros {
 
   def layoutImpl[A <: View: c.WeakTypeTag](c: MacroContext)(children: c.Expr[View]*)(ctx: c.Expr[Context]): c.Expr[A] = {
     import c.universe._
-    val additions = children.map(c ⇒ q"this.addView($c)")
+    val additions = children.map(ch ⇒ c.resetAllAttrs(q"this.addView($ch)"))
     c.Expr[A](q"new ${weakTypeOf[A]}($ctx) { ..$additions }")
   }
 }

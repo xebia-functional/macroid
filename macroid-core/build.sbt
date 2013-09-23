@@ -6,7 +6,7 @@ homepage := Some(url("http://github.com/stanch/macroid"))
 
 organization := "org.macroid"
 
-version := "1.0.0-20130920"
+version := "1.0.0-20130923"
 
 scalaVersion := "2.10.3-RC1"
 
@@ -32,9 +32,10 @@ unmanagedClasspath in Compile ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.pelotom" %% "effectful" % "1.0.0",
+  "org.scalaz" %% "scalaz-core" % "7.0.3",
   "com.typesafe.akka" %% "akka-dataflow" % "2.2.0",
-  "io.dylemma" %% "scala-frp" % "1.0"
+  "io.dylemma" %% "scala-frp" % "1.0" % "provided",
+  "com.scalarx" %% "scalarx" % "0.1" % "provided"
 )
 
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))

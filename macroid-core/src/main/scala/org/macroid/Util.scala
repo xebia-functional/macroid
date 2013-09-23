@@ -1,7 +1,10 @@
 package org.macroid
 
+import _root_.rx.Rx
 import android.os.Bundle
-import scalaz.Monoid
+import scalaz.{ Functor, Monoid }
+import scala.concurrent.{ ExecutionContext, Future }
+import io.dylemma.frp.{ Observer, EventStream }
 
 object Util {
   def map2bundle(m: Map[String, Any]): Bundle = {
@@ -20,5 +23,29 @@ object Util {
   }
   object Thunk {
     def apply[A](v: ⇒ A) = new Thunk(v)
+  }
+
+  trait SyncFunctor[F[_]] {
+    val async: Boolean
+  }
+  trait Functors {
+    implicit val listF = scalaz.std.list.listInstance
+    implicit val optionF = scalaz.std.option.optionInstance
+    implicit def futureF(implicit ec: ExecutionContext) = new Functor[Future] {
+      def map[A, B](fa: Future[A])(f: A ⇒ B) = fa.map(f)
+    }
+    implicit def eventStreamF(implicit ob: Observer) = new Functor[EventStream] {
+      def map[A, B](fa: EventStream[A])(f: A ⇒ B) = fa.map(f)
+    }
+    implicit object rxF extends Functor[Rx] {
+      def map[A, B](fa: Rx[A])(f: A ⇒ B) = fa.map(f)
+    }
+  }
+  object SyncFunctors extends Functors {
+    implicit object listSF extends SyncFunctor[List] { val async = false }
+    implicit object optionSF extends SyncFunctor[Option] { val async = false }
+    implicit object futureSF extends SyncFunctor[Future] { val async = true }
+    implicit object eventStreamSF extends SyncFunctor[EventStream] { val async = true }
+    implicit object rxSF extends SyncFunctor[Rx] { val async = true }
   }
 }

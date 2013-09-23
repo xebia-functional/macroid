@@ -74,9 +74,18 @@ setContentView(view)
 #### Tweaks
 
 The central concept of *Macroid* is that of `Tweak`s. These are little things that are chained and applied to widgets
-with `~>` (or fancier `⇝`). Every `Tweak` is mutating the widget, doing something useful. Tweaks are better than member methods, because they can be easily combined:
+with `~>` (or fancier `⇝`). Every `Tweak` is mutating the widget, doing something useful. 
+Here’s how to make one yourself:
 ```scala
-def idAndText[A <: TextView](i: Int, t: String) = id(i) + text(t)
+def bg(resourceId: Int): Tweak[View] = _.setBackgroundResource(resourceId)
+
+// this one is already in org.macroid.contrib.ExtraTweaks
+def medium(implicit ctx: Context): Tweak[TextView] =
+  _.setTextAppearance(ctx, android.R.style.TextAppearance_Medium)
+```
+Tweaks are better than member methods, because they can be easily combined:
+```scala
+def idAndText(i: Int, t: String) = id(i) + text(t)
 ```
 
 For functional junkies out there it will come as no surprise that `Tweak`s form a `Monoid`:
@@ -86,12 +95,13 @@ implicit def tweakMonoid[A] = new Monoid[Tweak[A]] {
   def append(t1: Tweak[A], t2: ⇒ Tweak[A]) = t1 + t2
 }
 ```
-which we will see helpful later.
-
-Here’s how to make a `Tweak`:
+Moreover, `~>` accepts `F[Tweak[_]]` if `F` is a `Functor`:
 ```scala
-def id[A <: View](id: Int): Tweak[A] = x ⇒ x.setId(id)
+// this contains SyncFunctor instances that help differentiate between synchronous and asynchronous functors
+import org.macroid.Util.SyncFunctors._
+w[TextView] ~> Future { Thread.sleep(1000); text("asd") }
 ```
+Feel free to use this feature with either [Scala.Rx](https://github.com/lihaoyi/scala.rx) or [Scala.FRP](https://github.com/dylemma/scala.frp)!
 
 Finally, note that `Tweaks` can be applied to any `View` type they are defined at. You can use `~>` in your code freely,
 even if you don’t use layout creation DSL.
@@ -255,7 +265,7 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots")
 )
 
-libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130919"
+libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130923"
 ```
 
 ### Imports and traits

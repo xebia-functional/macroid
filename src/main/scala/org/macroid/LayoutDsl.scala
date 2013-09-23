@@ -6,9 +6,9 @@ import scala.reflect.macros.{ Context ⇒ MacroContext }
 import android.widget.FrameLayout
 import android.view.{ ViewGroup, View }
 import android.content.Context
-import scalaz.Monoid
+import scalaz.{ Functor, Monoid }
 import io.dylemma.frp.{ Observer, EventStream }
-import org.macroid.Util.Thunk
+import org.macroid.Util.{ SyncFunctor, Thunk }
 
 trait LayoutDsl {
   import LayoutDslMacros._
@@ -30,18 +30,20 @@ trait LayoutDsl {
   implicit class RichView[A <: View](v: A) {
     /** Tweak this view */
     def ~>(t: Tweak[A]) = { t(v); v }
-    /** React to tweaking events */
-    def ~>(s: EventStream[Tweak[A]])(implicit observer: Observer) = {
-      s.foreach(t ⇒ Concurrency.runOnUiThread(t(v)))
-      v
+    /** Functor tweak */
+    def ~>[F[_]](f: F[Tweak[A]])(implicit e1: Functor[F], e2: SyncFunctor[F]) = if (e2.async) {
+      e1.map(f)(t ⇒ Concurrency.runOnUiThread(t(v))); v
+    } else {
+      e1.map(f)(t ⇒ t(v)); v
     }
 
-    /** Unicode alias for ~> */
+    /** Tweak this view */
     def ⇝(t: Tweak[A]) = { t(v); v }
-    /** Unicode alias for ~> */
-    def ⇝(s: EventStream[Tweak[A]])(implicit observer: Observer) = {
-      s.foreach(t ⇒ Concurrency.runOnUiThread(t(v)))
-      v
+    /** Functor tweak */
+    def ⇝[F[_]](f: F[Tweak[A]])(implicit e1: Functor[F], e2: SyncFunctor[F]) = if (e2.async) {
+      e1.map(f)(t ⇒ Concurrency.runOnUiThread(t(v))); v
+    } else {
+      e1.map(f)(t ⇒ t(v)); v
     }
   }
 

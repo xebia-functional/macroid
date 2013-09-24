@@ -3,7 +3,6 @@ package org.macroid
 import scala.language.dynamics
 import scala.language.experimental.macros
 import android.view.{ ViewGroup, Gravity, View }
-import ViewGroup.LayoutParams._
 import android.widget.{ LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import org.macroid.util.Thunk
@@ -102,8 +101,6 @@ object TweakMacros {
         c.abort(c.enclosingPosition, "Could not find the appropriate LayoutParams constructor")
       }
     }
-
-    //c.info(c.enclosingPosition, s"Using $tp.LayoutParams", force = false)
     c.Expr[Tweak[View]](layoutParams(c)(tp, params))
   }
 
@@ -234,7 +231,7 @@ object TweakMacros {
     val (setter, listener, on, tp) = onBase[A](c)(event)
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType <:< on.returnType)
-      c.Expr[Tweak[A]](getListener(c)(tp, setter, listener, on, c.Expr(c.resetAllAttrs(f.tree)), 1))
+      c.Expr[Tweak[A]](getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(f.tree)), 1))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should be of type ${on.returnType}")
     }

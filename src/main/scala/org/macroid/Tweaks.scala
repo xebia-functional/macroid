@@ -4,9 +4,9 @@ import scala.language.dynamics
 import scala.language.experimental.macros
 import android.view.{ ViewGroup, Gravity, View }
 import ViewGroup.LayoutParams._
-import android.widget.{ LinearLayout, TextView, FrameLayout }
+import android.widget.{ LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
-import org.macroid.Util.Thunk
+import org.macroid.util.Thunk
 
 trait Tweaks {
   import LayoutDsl._

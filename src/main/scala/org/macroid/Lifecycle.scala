@@ -3,7 +3,7 @@ package org.macroid
 import scala.language.experimental.macros
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import scala.annotation.StaticAnnotation
-import org.macroid.Util.Thunk
+import org.macroid.util.Thunk
 
 trait LifecycleManager {
   def doOnPauseResume(p: ⇒ Any, r: ⇒ Any)

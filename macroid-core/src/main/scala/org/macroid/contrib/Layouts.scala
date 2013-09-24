@@ -1,4 +1,4 @@
-package org.macroid
+package org.macroid.contrib
 
 import android.widget.{ GridLayout, LinearLayout }
 import android.content.Context

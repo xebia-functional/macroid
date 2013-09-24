@@ -7,8 +7,7 @@ import android.widget.FrameLayout
 import android.view.{ ViewGroup, View }
 import android.content.Context
 import scalaz.{ Functor, Monoid }
-import io.dylemma.frp.{ Observer, EventStream }
-import org.macroid.Util.{ SyncFunctor, Thunk }
+import org.macroid.util.{ SyncFunctor, Thunk }
 
 trait LayoutDsl {
   import LayoutDslMacros._
@@ -100,7 +99,7 @@ object LayoutDslMacros {
     } orElse scala.util.Try {
       // try to put args in a map, convert to a Bundle and use setArguments
       assert(args.forall(_.actualType <:< typeOf[(String, Any)]))
-      c.typeCheck(q"new ${weakTypeOf[A]} { setArguments(org.macroid.Util.map2bundle(Map(..$args))) }")
+      c.typeCheck(q"new ${weakTypeOf[A]} { setArguments(org.macroid.util.map2bundle(Map(..$args))) }")
     } getOrElse {
       c.abort(c.enclosingPosition, s"Args should either be supported by ${weakTypeOf[A]}.newInstance() or be a sequence of (String, Any)")
     }
@@ -115,7 +114,7 @@ object LayoutDslMacros {
   def fragmentFactoryImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(args: c.Expr[Any]*): c.Expr[Thunk[A]] = {
     import c.universe._
     val frag = instFrag[A](c)(args)
-    c.Expr[Thunk[A]](q"org.macroid.Util.Thunk($frag)")
+    c.Expr[Thunk[A]](q"org.macroid.util.Thunk($frag)")
   }
 
   def widgetImpl[A <: View: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[Context]): c.Expr[A] = {

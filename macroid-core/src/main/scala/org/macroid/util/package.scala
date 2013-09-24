@@ -1,9 +1,9 @@
 package org.macroid
 
 import android.os.Bundle
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.{ Future, ExecutionContext }
 import scalaz.Functor
-import io.dylemma.frp.{EventStream, Observer}
+import io.dylemma.frp.{ EventStream, Observer }
 import rx.Rx
 
 package object util {

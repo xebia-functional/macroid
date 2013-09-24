@@ -7,7 +7,7 @@ import android.widget.FrameLayout
 import android.view.{ ViewGroup, View }
 import android.content.Context
 import scalaz.{ Functor, Monoid }
-import org.macroid.util.{ SyncFunctor, Thunk }
+import org.macroid.util.Thunk
 
 trait LayoutDsl {
   import LayoutDslMacros._
@@ -38,20 +38,12 @@ trait LayoutDsl {
     /** Tweak this view */
     def ~>(t: Tweak[A]) = { t(v); v }
     /** Functor tweak */
-    def ~>[F[_]](f: F[Tweak[A]])(implicit e1: Functor[F], e2: SyncFunctor[F]) = if (e2.async) {
-      e1.map(f)(t ⇒ Concurrency.runOnUiThread(t(v))); v
-    } else {
-      e1.map(f)(t ⇒ t(v)); v
-    }
+    def ~>[F[_]: Functor](f: F[Tweak[A]]) = { implicitly[Functor[F]].map(f)(t ⇒ Concurrency.runOnUiThread(t(v))); v }
 
     /** Tweak this view */
     def ⇝(t: Tweak[A]) = { t(v); v }
     /** Functor tweak */
-    def ⇝[F[_]](f: F[Tweak[A]])(implicit e1: Functor[F], e2: SyncFunctor[F]) = if (e2.async) {
-      e1.map(f)(t ⇒ Concurrency.runOnUiThread(t(v))); v
-    } else {
-      e1.map(f)(t ⇒ t(v)); v
-    }
+    def ⇝[F[_]: Functor](f: F[Tweak[A]]) = { implicitly[Functor[F]].map(f)(t ⇒ Concurrency.runOnUiThread(t(v))); v }
   }
 
   implicit class RichViewGroup[A <: ViewGroup](v: A) {
@@ -99,7 +91,7 @@ object LayoutDslMacros {
     } orElse scala.util.Try {
       // try to put args in a map, convert to a Bundle and use setArguments
       assert(args.forall(_.actualType <:< typeOf[(String, Any)]))
-      c.typeCheck(q"new ${weakTypeOf[A]} { setArguments(org.macroid.util.map2bundle(Map(..$args))) }")
+      c.typeCheck(q"new ${weakTypeOf[A]} { setArguments(org.macroid.util.Map2Bundle(Map(..$args))) }")
     } getOrElse {
       c.abort(c.enclosingPosition, s"Args should either be supported by ${weakTypeOf[A]}.newInstance() or be a sequence of (String, Any)")
     }

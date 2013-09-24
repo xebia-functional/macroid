@@ -21,11 +21,19 @@ trait LayoutDsl {
   /** Define a layout */
   def l[A <: ViewGroup](children: View*)(implicit ctx: Context) = macro layoutImpl[A]
 
+  // Tweaks
   type Tweak[-A <: View] = Function[A, Unit]
   implicit def tweakMonoid[A <: View] = new Monoid[Tweak[A]] {
     def zero = { x ⇒ () }
     def append(t1: Tweak[A], t2: ⇒ Tweak[A]) = t1 + t2
   }
+  implicit class RichTweak[A <: View](t: Tweak[A]) {
+    /** Combine (sequence) with another tweak */
+    def +[B <: A](other: Tweak[B]): Tweak[B] = { x ⇒ t(x); other(x) }
+  }
+
+  // Transformers
+  type Transformer = PartialFunction[View, Unit]
 
   implicit class RichView[A <: View](v: A) {
     /** Tweak this view */
@@ -47,9 +55,25 @@ trait LayoutDsl {
     }
   }
 
-  implicit class RichTweak[A <: View](t: Tweak[A]) {
-    /** Combine (sequence) with another tweak */
-    def +[B <: A](other: Tweak[B]): Tweak[B] = { x ⇒ t(x); other(x) }
+  implicit class RichViewGroup[A <: ViewGroup](v: A) {
+    /** Apply transformer */
+    def ~~>(t: Transformer) = {
+      def applyTo(v: View) {
+        if (t.isDefinedAt(v)) t(v)
+        v match {
+          case Layout(children @ _*) ⇒ children.foreach(applyTo)
+          case _ ⇒ ()
+        }
+      }
+      applyTo(v)
+      v
+    }
+  }
+  object Layout {
+    def unapplySeq(v: View): Option[Seq[View]] = v match {
+      case g: ViewGroup ⇒ Some((0 until g.getChildCount).map(i ⇒ g.getChildAt(i)))
+      case _ ⇒ None
+    }
   }
 }
 

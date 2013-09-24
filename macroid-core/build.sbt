@@ -6,9 +6,9 @@ homepage := Some(url("http://github.com/stanch/macroid"))
 
 organization := "org.macroid"
 
-version := "1.0.0-20130924"
+version := "1.0.0-20130924-1"
 
-scalaVersion := "2.10.3-RC1"
+scalaVersion := "2.10.3-RC2"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
@@ -30,7 +30,7 @@ libraryDependencies ++= Seq(
   "com.android.support" % "support-v13" % "13.0.0",
   "org.scalaz" %% "scalaz-core" % "7.0.3",
   "com.typesafe.akka" %% "akka-dataflow" % "2.2.0",
-  "io.dylemma" %% "scala-frp" % "1.0" % "provided",
+  "io.dylemma" %% "scala-frp" % "1.0",
   "com.scalarx" %% "scalarx" % "0.1" % "provided"
 )
 

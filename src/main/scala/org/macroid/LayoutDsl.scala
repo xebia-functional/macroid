@@ -35,19 +35,19 @@ trait LayoutDsl {
   type Transformer = PartialFunction[View, Unit]
 
   implicit class RichView[A <: View](v: A) {
-    /** Tweak this view */
-    def ~>(t: Tweak[A]) = { t(v); v }
-    /** Functor tweak */
+    /** Tweak this view. Always runs on UI thread */
+    def ~>(t: Tweak[A]) = { Concurrency.runOnUiThread(t(v)); v }
+    /** Functor tweak. Always runs on UI thread */
     def ~>[F[_]: Functor](f: F[Tweak[A]]) = { implicitly[Functor[F]].map(f)(t ⇒ Concurrency.runOnUiThread(t(v))); v }
 
-    /** Tweak this view */
-    def ⇝(t: Tweak[A]) = { t(v); v }
-    /** Functor tweak */
+    /** Tweak this view. Always runs on UI thread */
+    def ⇝(t: Tweak[A]): A = { Concurrency.runOnUiThread(t(v)); v }
+    /** Functor tweak. Always runs on UI thread */
     def ⇝[F[_]: Functor](f: F[Tweak[A]]) = { implicitly[Functor[F]].map(f)(t ⇒ Concurrency.runOnUiThread(t(v))); v }
   }
 
   implicit class RichViewGroup[A <: ViewGroup](v: A) {
-    /** Apply transformer */
+    /** Apply transformer. Always runs on UI thread */
     def ~~>(t: Transformer) = {
       def applyTo(v: View) {
         if (t.isDefinedAt(v)) t(v)
@@ -56,7 +56,7 @@ trait LayoutDsl {
           case _ ⇒ ()
         }
       }
-      applyTo(v)
+      Concurrency.runOnUiThread(applyTo(v))
       v
     }
   }

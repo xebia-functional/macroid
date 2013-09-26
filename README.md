@@ -177,7 +177,7 @@ Just kidding, it simply returns `"something"`, but isn’t that fancy? Use this 
   )
   ```
   To use `layoutParams` ouside the layout, take a look at `layoutParamsOf[A](...)`,
-  for which you can supply the layout type in `B`.
+  for which you can supply the layout type in `A`.
 * You can setup almost any `View` event listener with the following syntax:
   ```scala
   import org.scaloid.common._ // to get toast

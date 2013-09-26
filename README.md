@@ -232,10 +232,7 @@ For complex scenarios, use https://github.com/scala/async!
 ### Installation
 
 ```scala
-resolvers ++= Seq(
-  "JCenter" at "http://jcenter.bintray.com",
-  Resolver.sonatypeRepo("snapshots")
-)
+resolvers += "JCenter" at "http://jcenter.bintray.com"
 
 libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130926"
 ```

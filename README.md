@@ -50,7 +50,7 @@ val view = l[LinearLayout](
     // button’s caption
     text("Click me!") ~>
     // stretch horizontally
-    layoutParams(WRAP_CONTENT, MATCH_PARENT),
+    layoutParams(MATCH_PARENT, WRAP_CONTENT),
     
   // create a fragment with freshly generated id and tag
   // convert the rest of the arguments to a Bundle and pass to the fragment
@@ -116,14 +116,14 @@ l[LinearLayout](...) ~> (minWidth(1000 dp) ? horizontal | vertical)
 // use different widget depending on screen width
 (widerThan(1000 dp) ? w[BigTextView] | widerThan(600 dp) ? w[MediumTextView] | w[TextView]) ~> text("Hi there")
 
-// remember Tweaks form a Monoid? so we don’t have to supply the alternative here, tweakMonoid.zero will be used
-w[TextView] ~> text("Balderdash!") ~> (minWidth(500) ?! largeAppearance)
+// (minWidth(500) ? largeAppearance) produces an Option[Tweak[TextView]], and Option[_] is a Functor:
+import org.macroid.util.Functors._
+w[TextView] ~> text("Balderdash!") ~> (minWidth(500) ? largeAppearance)
 ```
 
 Queries act like `Boolean`s and can be converted to them implicitly.
 `query ? x` returns `Some(x)` if the query condition holds, otherwise — `None`.
 We extend `Option`s with a `|` operator to provide a more streamlined API.
-`query ?! x` is a special form to be used with `Monoid`s, where `zero` element is used if the query condition does not hold.
 
 Currently supported queries:
 * `minWidth`/`widerThan`, `maxWidth`/`narrowerThan`
@@ -176,7 +176,7 @@ Just kidding, it simply returns `"something"`, but isn’t that fancy? Use this 
       w[Button] ~> layoutParams(WRAP_CONTENT, MATCH_PARENT) ~> text("Click me")
   )
   ```
-  To use `layoutParams` ouside the layout, take a look at `layoutParams.of[B](...)`,
+  To use `layoutParams` ouside the layout, take a look at `layoutParamsOf[A](...)`,
   for which you can supply the layout type in `B`.
 * You can setup almost any `View` event listener with the following syntax:
   ```scala

@@ -229,6 +229,10 @@ so that you can monitor when the UI code finishes executing.
 
 For complex scenarios, use https://github.com/scala/async!
 
+### Sample project
+
+https://github.com/stanch/macroid-starter
+
 ### Installation
 
 ```scala

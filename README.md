@@ -97,9 +97,9 @@ implicit def tweakMonoid[A] = new Monoid[Tweak[A]] {
 ```
 Moreover, `~>` accepts `F[Tweak[_]]` if `F` is a `Functor`:
 ```scala
-// this contains SyncFunctor instances that help differentiate between synchronous and asynchronous functors
-import org.macroid.Util.SyncFunctors._
-w[TextView] ~> Future { Thread.sleep(1000); text("asd") }
+// import Functor instances for Future, List, Option and EventSource
+import org.macroid.util.Functors._
+w[TextView] ~> future { Thread.sleep(1000); text("asd") }
 ```
 Feel free to use this feature with either [Scala.Rx](https://github.com/lihaoyi/scala.rx) or [Scala.FRP](https://github.com/dylemma/scala.frp)!
 

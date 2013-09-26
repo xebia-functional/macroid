@@ -6,6 +6,8 @@ import android.view.{ ViewGroup, Gravity, View }
 import android.widget.{ LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import org.macroid.util.Thunk
+import android.view.animation.Animation
+import android.view.animation.Animation.AnimationListener
 
 trait Tweaks {
   import LayoutDsl._
@@ -15,9 +17,9 @@ trait Tweaks {
   def id(id: Int): Tweak[View] = x ⇒ x.setId(id)
 
   /** Hide this view (uses View.GONE) */
-  def hide: Tweak[View] = x ⇒ x.setVisibility(View.GONE)
+  val hide: Tweak[View] = x ⇒ x.setVisibility(View.GONE)
   /** Show this view (uses View.VISIBLE) */
-  def show: Tweak[View] = x ⇒ x.setVisibility(View.VISIBLE)
+  val show: Tweak[View] = x ⇒ x.setVisibility(View.VISIBLE)
 
   /** Automatically find the appropriate `LayoutParams` class from the parent layout. */
   def layoutParams(params: Any*): Tweak[View] = macro layoutParamsImpl
@@ -38,6 +40,16 @@ trait Tweaks {
     case Left(t) ⇒ { x ⇒ x.setText(t) }
   }
 
+  def anim[A <: View](animation: Animation, duration: Long = -1L, after: Tweak[A] = tweakMonoid.zero): Tweak[A] = { x ⇒
+    animation.setAnimationListener(new AnimationListener {
+      override def onAnimationStart(a: Animation) {}
+      override def onAnimationRepeat(a: Animation) {}
+      override def onAnimationEnd(a: Animation) { x ~> after }
+    })
+    if (duration >= 0) animation.setDuration(duration)
+    x.startAnimation(animation)
+  }
+
   /** Set padding */
   def padding(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0, all: Int = -1): Tweak[View] = if (all >= 0) {
     x: View ⇒ x.setPadding(all, all, all, all)
@@ -46,17 +58,23 @@ trait Tweaks {
   }
 
   /** Make this layout vertical */
-  def vertical: Tweak[LinearLayout] = x ⇒ x.setOrientation(LinearLayout.VERTICAL)
+  val vertical: Tweak[LinearLayout] = x ⇒ x.setOrientation(LinearLayout.VERTICAL)
   /** Make this layout horizontal */
-  def horizontal: Tweak[LinearLayout] = x ⇒ x.setOrientation(LinearLayout.HORIZONTAL)
+  val horizontal: Tweak[LinearLayout] = x ⇒ x.setOrientation(LinearLayout.HORIZONTAL)
 
   /** Assign the view to the provided `var` */
   def wire[A <: View](v: A): Tweak[A] = macro wireImpl[A]
 
   /** Add views to the layout */
-  def addViews(children: Seq[View]): Tweak[ViewGroup] = x ⇒ children.foreach(c ⇒ x.addView(c))
+  def addViews(children: Seq[View], removeOld: Boolean = false): Tweak[ViewGroup] = { x ⇒
+    if (removeOld) x.removeAllViews()
+    children.foreach(c ⇒ x.addView(c))
+  }
   /** Add view to the layout in reversed order (uses addView(child, 0)) */
-  def addViewsReverse(children: Seq[View]): Tweak[ViewGroup] = x ⇒ children.foreach(c ⇒ x.addView(c, 0))
+  def addViewsReverse(children: Seq[View], removeOld: Boolean = false): Tweak[ViewGroup] = { x ⇒
+    if (removeOld) x.removeAllViews()
+    children.foreach(c ⇒ x.addView(c, 0))
+  }
 
   object On extends Dynamic {
     /** Override the listener treating `f` as a by-name argument. */

@@ -104,7 +104,7 @@ w[TextView] ~> Future { Thread.sleep(1000); text("asd") }
 Feel free to use this feature with either [Scala.Rx](https://github.com/lihaoyi/scala.rx) or [Scala.FRP](https://github.com/dylemma/scala.frp)!
 
 Finally, note that `Tweaks` can be applied to any `View` type they are defined at. You can use `~>` in your code freely,
-even if you don’t use layout creation DSL.
+even if you don’t use layout creation DSL. **`~>` always applies tweaks on UI thread.**
 
 #### Media Queries
 
@@ -182,7 +182,7 @@ Just kidding, it simply returns `"something"`, but isn’t that fancy? Use this 
   ```scala
   import org.scaloid.common._ // to get toast
   import org.macroid.Tweaks._ // to get tweaks
-  import org.macroid.Util.Thunk
+  import org.macroid.util.Thunk
 
   // Thunks are a convenient way to store blocks of code without evaluating them
   // Practically Thunk(a) is the same as () ⇒ a
@@ -210,9 +210,9 @@ Just kidding, it simply returns `"something"`, but isn’t that fancy? Use this 
 
 #### Staying in the UI thread
 
-*Macroid* provides a bunch of great ways to run things on UI thread.
+`~>` always applies tweaks on UI thread.
 
-Using [Scala `Future`s](http://docs.scala-lang.org/sips/pending/futures-promises.html):
+There are helpers for [Scala `Future`s](http://docs.scala-lang.org/sips/pending/futures-promises.html):
 ```scala
 import org.macroid.Concurrency._
 future {
@@ -224,48 +224,20 @@ future {
 }
 ```
 
-Using [Akka Dataflow](http://doc.akka.io/docs/akka/snapshot/scala/dataflow.html):
-```scala
-import akka.dataflow._
-import org.macroid.Concurrency._
-flow {
-  // asynchronously wait for completion of some calculations
-  val a = await(someFuture)
-  val b = await(otherFuture)
-  // execute the rest of the flow block on UI thread
-  switchToUiThread()
-  findView[Button](Id.myButton) ~> text(a + b)
-} onFailureUi { case t ⇒
-  // handle the failure on UI thread
-  t.printStackTrace()
-  findView[TextView](Id.error) ~> text("Oops...")
-}
-```
-
-Finally, there is a `runOnUiThread` method, that returns a `Future`,
+Finally, there is a `runOnUiThread` (or `Ui`) method, that returns a `Future`,
 so that you can monitor when the UI code finishes executing.
+
+For complex scenarios, use https://github.com/scala/async!
 
 ### Installation
 
-To use dataflow (example for SBT < 0.13):
-```scala
-autoCompilerPlugins := true
-
-libraryDependencies <+= scalaVersion {
-  v => compilerPlugin("org.scala-lang.plugins" % "continuations" % v)
-}
-
-scalacOptions += "-P:continuations:enable"
-```
-
-To include macroid itself:
 ```scala
 resolvers ++= Seq(
   "JCenter" at "http://jcenter.bintray.com",
   Resolver.sonatypeRepo("snapshots")
 )
 
-libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130923"
+libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130926"
 ```
 
 ### Imports and traits
@@ -312,7 +284,7 @@ Finally, if you are all or nothing kind of guy, mix in one of these: https://git
 ### Credits
 
 * https://github.com/pocorall/scaloid for inspiration
-* @xeno_by for macros in Scala
+* @xeno-by for macros in Scala
 * see Issues for future ideas and related scientific papers
 
 Nick (stanch), 2013

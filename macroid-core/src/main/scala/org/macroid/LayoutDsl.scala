@@ -8,6 +8,7 @@ import android.view.{ ViewGroup, View }
 import android.content.Context
 import scalaz.{ Functor, Monoid }
 import org.macroid.util.Thunk
+import rx.Var
 
 trait LayoutDsl {
   import LayoutDslMacros._
@@ -19,6 +20,11 @@ trait LayoutDsl {
 
   /** Define a layout */
   def l[A <: ViewGroup](children: View*)(implicit ctx: Context) = macro layoutImpl[A]
+
+  // View slots
+  type Slot[A <: View] = Var[Option[A]]
+  /** Define a slot */
+  def slot[A <: View]: Slot[A] = Var(None)
 
   // Tweaks
   type Tweak[-A <: View] = Function[A, Unit]
@@ -39,11 +45,13 @@ trait LayoutDsl {
     def ~>(t: Tweak[A]) = { Concurrency.runOnUiThread(t(v)); v }
     /** Functor tweak. Always runs on UI thread */
     def ~>[F[_]: Functor](f: F[Tweak[A]]) = { implicitly[Functor[F]].map(f)(t ⇒ Concurrency.runOnUiThread(t(v))); v }
+  }
 
-    /** Tweak this view. Always runs on UI thread */
-    def ⇝(t: Tweak[A]): A = { Concurrency.runOnUiThread(t(v)); v }
+  implicit class RichSlot[A <: View](v: Slot[A]) {
+    /** Tweak this slot. Always runs on UI thread */
+    def ~>(t: Tweak[A]) = { v.now.foreach(_ ~> t); v }
     /** Functor tweak. Always runs on UI thread */
-    def ⇝[F[_]: Functor](f: F[Tweak[A]]) = { implicitly[Functor[F]].map(f)(t ⇒ Concurrency.runOnUiThread(t(v))); v }
+    def ~>[F[_]: Functor](f: F[Tweak[A]]) = { v.now.foreach(_ ~> f); v }
   }
 
   implicit class RichViewGroup[A <: ViewGroup](v: A) {
@@ -65,6 +73,11 @@ trait LayoutDsl {
       case g: ViewGroup ⇒ Some((0 until g.getChildCount).map(i ⇒ g.getChildAt(i)))
       case _ ⇒ None
     }
+  }
+
+  implicit class RichViewGroupSlot[A <: ViewGroup](v: Slot[A]) {
+    /** Apply transformer. Always runs on UI thread */
+    def ~~>(t: Transformer) = { v.now.foreach(_ ~~> t); v }
   }
 }
 

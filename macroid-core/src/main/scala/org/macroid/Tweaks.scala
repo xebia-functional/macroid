@@ -2,15 +2,15 @@ package org.macroid
 
 import scala.language.dynamics
 import scala.language.experimental.macros
-import android.view.{ ViewGroup, Gravity, View }
+import android.view.{ ViewGroup, View }
 import android.widget.{ LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import org.macroid.util.Thunk
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 
-trait Tweaks {
-  import LayoutDsl._
+/** This trait provides the most useful tweaks. For an expanded set, see `contrib.ExtraTweaks` */
+trait Tweaks extends Tweaking {
   import TweakMacros._
 
   /** Set this view’s id */
@@ -40,6 +40,7 @@ trait Tweaks {
     case Left(t) ⇒ { x ⇒ x.setText(t) }
   }
 
+  /** Run animation, optionally apply some tweaks after it finishes */
   def anim[A <: View](animation: Animation, duration: Long = -1L, after: Tweak[A] = tweakMonoid.zero): Tweak[A] = { x ⇒
     animation.setAnimationListener(new AnimationListener {
       override def onAnimationStart(a: Animation) {}
@@ -65,7 +66,7 @@ trait Tweaks {
   /** Assign the view to the provided `var` */
   def wire[A <: View](v: A): Tweak[A] = macro wireImpl[A]
   /** Assign the view to the provided slot */
-  def wire[A <: View](s: Slot[A]): Tweak[A] = x ⇒ s.update(Some(x))
+  def wire[A <: View](v: Option[A]): Tweak[A] = macro wireOptionImpl[A]
 
   /** Add views to the layout */
   def addViews(children: Seq[View], removeOld: Boolean = false): Tweak[ViewGroup] = { x ⇒
@@ -93,15 +94,17 @@ trait Tweaks {
     def applyDynamic[A <: View](event: String)(f: Thunk[Any]): Tweak[A] = macro onThunkImpl[A]
   }
 }
-
 object Tweaks extends Tweaks
 
-object TweakMacros {
-  import LayoutDsl._
-
+object TweakMacros extends Tweaking {
   def wireImpl[A <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[A]): c.Expr[Tweak[A]] = {
     import c.universe._
     c.Expr[Tweak[A]](q"{ x: ${weakTypeOf[A]} ⇒ $v = x }")
+  }
+
+  def wireOptionImpl[A <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[Option[A]]): c.Expr[Tweak[A]] = {
+    import c.universe._
+    c.Expr[Tweak[A]](q"{ x: ${weakTypeOf[A]} ⇒ $v = Some(x) }")
   }
 
   def layoutParams(c: MacroContext)(l: c.Type, params: Seq[c.Expr[Any]]) = {
@@ -133,7 +136,7 @@ object TweakMacros {
 
     // an immediate parent is a parent and contains no other parents
     c.enclosingMethod.find { x ⇒
-      isParent(x) && x.children.forall(_.find(isParent(_)).isEmpty)
+      isParent(x) && x.children.forall(_.find(isParent).isEmpty)
     }
   }
 
@@ -178,6 +181,7 @@ object TweakMacros {
 
     // find `widget ~> On....` application and get widget’s exact type
     var tp = findImmediateParentTree(c)(tweaking) flatMap {
+      // TODO: support Functor[View] ~> On.... !!!
       case Apply(Select(victim, _), _) ⇒ Some(c.typeCheck(victim).tpe.widen)
       case _ ⇒ None
     } getOrElse {
@@ -216,33 +220,22 @@ object TweakMacros {
     (setter, listener, on, tp)
   }
 
-  def getListener(c: MacroContext)(tpe: c.Type, setter: c.universe.MethodSymbol, listener: c.Type, on: c.universe.MethodSymbol, f: c.Expr[Any], mode: Int) = {
+  sealed trait ListenerType
+  object BlockListener extends ListenerType
+  object FuncListener extends ListenerType
+  object ThunkListener extends ListenerType
+
+  def getListener(c: MacroContext)(tpe: c.Type, setter: c.universe.MethodSymbol, listener: c.Type, on: c.universe.MethodSymbol, f: c.Expr[Any], mode: ListenerType) = {
     import c.universe._
     val args = on.paramss(0).map(_ ⇒ newTermName(c.fresh("arg")))
     val params = args zip on.paramss(0) map { case (a, p) ⇒ q"val $a: ${p.typeSignature}" }
-    if (mode == 0) {
-      // function
-      val appl = args.map(a ⇒ Ident(a))
-      q"""
-        { x: $tpe ⇒ x.$setter(new $listener {
-          override def ${on.name}(..$params) = $f(..$appl)
-        })}
-      """
-    } else if (mode == 1) {
-      // by-name argument
-      q"""
-        { x: $tpe ⇒ x.$setter(new $listener {
-          override def ${on.name}(..$params) = { $f }
-        })}
-      """
-    } else {
-      // thunk
-      q"""
-        { x: $tpe ⇒ x.$setter(new $listener {
-          override def ${on.name}(..$params) = $f()
-        })}
-      """
+    lazy val argIdents = args.map(a ⇒ Ident(a))
+    val impl = mode match {
+      case BlockListener ⇒ q"$f"
+      case FuncListener ⇒ q"$f(..$argIdents)"
+      case ThunkListener ⇒ q"$f()"
     }
+    q"{ x: $tpe ⇒ x.$setter(new $listener { override def ${on.name}(..$params) = $impl })}"
   }
 
   def onBlockImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[Tweak[A]] = {
@@ -251,7 +244,7 @@ object TweakMacros {
     val (setter, listener, on, tp) = onBase[A](c)(event)
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType <:< on.returnType)
-      c.Expr[Tweak[A]](getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(f.tree)), 1))
+      c.Expr[Tweak[A]](getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(f.tree)), BlockListener))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should be of type ${on.returnType}")
     }
@@ -262,7 +255,7 @@ object TweakMacros {
 
     val (setter, listener, on, tp) = onBase[A](c)(event)
     scala.util.Try {
-      c.Expr[Tweak[A]](c.typeCheck(getListener(c)(tp, setter, listener, on, f, 0)))
+      c.Expr[Tweak[A]](c.typeCheck(getListener(c)(tp, setter, listener, on, f, FuncListener)))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should have type signature ${on.typeSignature}")
     }
@@ -274,7 +267,7 @@ object TweakMacros {
     val (setter, listener, on, tp) = onBase[A](c)(event)
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType.member(newTermName("apply")).asMethod.returnType <:< on.returnType)
-      c.Expr[Tweak[A]](getListener(c)(tp, setter, listener, on, f, 2))
+      c.Expr[Tweak[A]](getListener(c)(tp, setter, listener, on, f, ThunkListener))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should be of type Thunk[${on.returnType}]")
     }

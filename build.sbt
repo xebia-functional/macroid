@@ -6,7 +6,7 @@ homepage := Some(url("http://github.com/stanch/macroid"))
 
 organization := "org.macroid"
 
-version := "1.0.0-20130926"
+version := "1.0.0-20130927"
 
 scalaVersion := "2.10.3-RC2"
 
@@ -27,7 +27,7 @@ libraryDependencies ++= Seq(
   "com.android.support" % "support-v13" % "13.0.0",
   "org.scalaz" %% "scalaz-core" % "7.0.3",
   "io.dylemma" %% "scala-frp" % "1.0",
-  "com.scalarx" %% "scalarx" % "0.1" % "provided"
+  "com.scalarx" %% "scalarx" % "0.1"
 )
 
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))

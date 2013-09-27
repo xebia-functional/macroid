@@ -64,6 +64,8 @@ trait Tweaks {
 
   /** Assign the view to the provided `var` */
   def wire[A <: View](v: A): Tweak[A] = macro wireImpl[A]
+  /** Assign the view to the provided slot */
+  def wire[A <: View](s: Slot[A]): Tweak[A] = x ⇒ s.update(Some(x))
 
   /** Add views to the layout */
   def addViews(children: Seq[View], removeOld: Boolean = false): Tweak[ViewGroup] = { x ⇒

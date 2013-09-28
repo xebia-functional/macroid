@@ -7,6 +7,7 @@ trait FullDslActivity extends ActivityContext
   with LayoutDsl
   with FragmentDsl
   with Tweaks
+  with Snails
   with MediaQueries
   with Concurrency { self: FragmentActivity ⇒ }
 
@@ -15,5 +16,6 @@ trait FullDslFragment extends FragmentContext
   with LayoutDsl
   with FragmentDsl
   with Tweaks
+  with Snails
   with MediaQueries
   with Concurrency { self: Fragment ⇒ }

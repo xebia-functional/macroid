@@ -10,6 +10,8 @@ version := "1.0.0-20130927"
 
 scalaVersion := "2.10.3-RC2"
 
+scalacOptions ++= Seq("-feature", "-deprecation")
+
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   "Google Repository" at (new File(System.getenv("ANDROID_SDK_HOME")) / "extras" / "google" / "m2repository").getAbsolutePath

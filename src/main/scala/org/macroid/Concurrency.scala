@@ -22,6 +22,15 @@ trait Concurrency {
   /** Run supplied block of code on UI thread (shortcut for runOnUiThread) */
   @inline def Ui[A](f: ⇒ A): Future[A] = runOnUiThread(f)
 
+  /** Run supplied block of code on UI thread without tracking its progress */
+  @inline def fireForget[A](f: ⇒ A) {
+    if (uiThread == Thread.currentThread) {
+      Try(f)
+    } else uiHandler.post(new Runnable {
+      def run() { Try(f) }
+    })
+  }
+
   implicit class RichFuture[A](val value: Future[A]) {
     /** Same as onSuccess, but performed on UI thread */
     def onSuccessUi(f: PartialFunction[A, Any])(implicit c: ExecutionContext): Future[A] = {

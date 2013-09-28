@@ -1,9 +1,9 @@
 package org.macroid
 
+import scala.language.implicitConversions
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
-import scalaz.Monoid
 
 case class MediaQuery(b: Boolean) {
   /** Return Some(v) if the queried condition holds, otherwise None */

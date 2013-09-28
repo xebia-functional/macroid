@@ -8,6 +8,8 @@ import scala.reflect.macros.{ Context ⇒ MacroContext }
 import org.macroid.util.Thunk
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
+import scala.concurrent.{ ExecutionContext, Future, Promise, future }
+import scala.util.Success
 
 /** This trait provides the most useful tweaks. For an expanded set, see `contrib.ExtraTweaks` */
 trait Tweaks extends Tweaking {
@@ -20,6 +22,15 @@ trait Tweaks extends Tweaking {
   val hide: Tweak[View] = x ⇒ x.setVisibility(View.GONE)
   /** Show this view (uses View.VISIBLE) */
   val show: Tweak[View] = x ⇒ x.setVisibility(View.VISIBLE)
+  /** Conditionally show/hide this view */
+  def show(c: Boolean): Tweak[View] = if (c) show else hide
+
+  /** Disable this view */
+  val disable: Tweak[View] = x ⇒ x.setEnabled(false)
+  /** Enable this view */
+  val enable: Tweak[View] = x ⇒ x.setEnabled(true)
+  /** Conditionally enable/disable this view */
+  def enable(c: Boolean): Tweak[View] = if (c) enable else disable
 
   /** Automatically find the appropriate `LayoutParams` class from the parent layout. */
   def layoutParams(params: Any*): Tweak[View] = macro layoutParamsImpl
@@ -40,16 +51,20 @@ trait Tweaks extends Tweaking {
     case Left(t) ⇒ { x ⇒ x.setText(t) }
   }
 
-  /** Run animation, optionally apply some tweaks after it finishes */
-  def anim[A <: View](animation: Animation, duration: Long = -1L, after: Tweak[A] = tweakMonoid.zero): Tweak[A] = { x ⇒
+  /** Run animation, indicating when it’s finished */
+  def anim(animation: Animation, duration: Long = -1L): SlowTweak[View] = { x ⇒
+    val animPromise = Promise[Unit]()
     animation.setAnimationListener(new AnimationListener {
       override def onAnimationStart(a: Animation) {}
       override def onAnimationRepeat(a: Animation) {}
-      override def onAnimationEnd(a: Animation) { x ~> after }
+      override def onAnimationEnd(a: Animation) { animPromise.complete(Success(())) }
     })
     if (duration >= 0) animation.setDuration(duration)
     x.startAnimation(animation)
+    animPromise.future
   }
+  /** A delay to be inserted somewhere between ~@>s and ~>s */
+  def delay(millis: Long)(implicit ec: ExecutionContext): SlowTweak[View] = x ⇒ future { Thread.sleep(millis) }
 
   /** Set padding */
   def padding(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0, all: Int = -1): Tweak[View] = if (all >= 0) {
@@ -127,7 +142,7 @@ object TweakMacros extends Tweaking {
     c.Expr[Tweak[View]](layoutParams(c)(tp, params))
   }
 
-  /* @xeno_by was quite impressed with this hack... */
+  /* @xeno-by was quite impressed with this hack... */
   def findImmediateParentTree(c: MacroContext)(parent: PartialFunction[c.Tree, Boolean]) = {
     import c.universe._
 
@@ -171,6 +186,15 @@ object TweakMacros extends Tweaking {
     c.macroApplication.setType(c.typeCheck(q"val x: Tweak[$tp] = ???; x").tpe)
   }
 
+  def innerType(c: MacroContext)(t: c.Type): Option[c.Type] = {
+    import c.universe._
+    t match {
+      case TypeRef(_, x, Nil) ⇒ Some(x.asType.toType)
+      case TypeRef(_, _, x :: Nil) ⇒ innerType(c)(x)
+      case _ ⇒ None
+    }
+  }
+
   def onBase[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String]) = {
     import c.universe._
 
@@ -181,10 +205,14 @@ object TweakMacros extends Tweaking {
 
     // find `widget ~> On....` application and get widget’s exact type
     var tp = findImmediateParentTree(c)(tweaking) flatMap {
-      // TODO: support Functor[View] ~> On.... !!!
+      // extract the target of ~> application
       case Apply(Select(victim, _), _) ⇒ Some(c.typeCheck(victim).tpe.widen)
       case _ ⇒ None
+    } flatMap { t ⇒
+      // in case of Option[T] or even Future[Option[T]], we need just T
+      innerType(c)(t)
     } getOrElse {
+      // resort to A
       weakTypeOf[A]
     }
 

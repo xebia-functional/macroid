@@ -1,6 +1,8 @@
 package org.macroid
 
 import scala.language.experimental.macros
+import scala.language.higherKinds
+import scala.language.implicitConversions
 import android.support.v4.app.Fragment
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import android.widget.FrameLayout
@@ -8,7 +10,7 @@ import android.view.{ ViewGroup, View }
 import android.content.Context
 import scalaz.{ Functor, Monoid }
 import org.macroid.util.{ Functors, Thunk }
-import rx.Var
+import scala.concurrent.{ ExecutionContext, Promise, Future }
 
 /** This trait contains basic building blocks used to define layouts: w, l and slot */
 trait LayoutBuilding {
@@ -49,6 +51,8 @@ object LayoutBuildingMacros {
 trait Tweaking {
   /** A tweak is a function that mutates a View */
   type Tweak[-A <: View] = Function[A, Unit]
+  /** A slow tweak mutates the view slowly (e.g. animation) */
+  type SlowTweak[-A <: View] = Function[A, Future[Unit]]
 
   // a monoid instance
   implicit def tweakMonoid[A <: View] = new Monoid[Tweak[A]] {
@@ -60,26 +64,68 @@ trait Tweaking {
   implicit class RichTweak[A <: View](t: Tweak[A]) {
     /** Combine (sequence) with another tweak */
     def +[B <: A](other: Tweak[B]): Tweak[B] = { x ⇒ t(x); other(x) }
+    def +@[B <: A](other: SlowTweak[B]): SlowTweak[B] = { x ⇒ t(x); other(x) }
+  }
+
+  // combining slow tweaks
+  implicit class RichSlowTweak[A <: View](t: SlowTweak[A]) {
+    /** Combine (sequence) with a tweak */
+    def @+[B <: A](other: Tweak[B])(implicit ec: ExecutionContext): SlowTweak[B] = { x ⇒
+      t(x).map(_ ⇒ Concurrency.Ui(other(x)))
+    }
+    def @+@[B <: A](other: SlowTweak[B])(implicit ec: ExecutionContext): SlowTweak[B] = { x ⇒
+      t(x).flatMap(_ ⇒ Concurrency.Ui(other(x)))
+    }
   }
 
   // applying tweaks to views
   implicit class RichView[A <: View](v: A) {
     /** Tweak `v`. Always runs on UI thread */
-    def ~>(t: Tweak[A]): A = { Concurrency.Ui(t(v)); v }
+    def ~>(t: Tweak[A]): A = { Concurrency.fireForget(t(v)); v }
     /** Apply tweak(s) in `f` to `v`. Always runs on UI thread */
-    def ~>[F[_]: Functor](f: F[Tweak[A]]): A = { Concurrency.Ui(implicitly[Functor[F]].map(f)(t ⇒ t(v))); v }
+    def ~>[F[_]: Functor](f: F[Tweak[A]]): A = { implicitly[Functor[F]].map(f)(t ⇒ Concurrency.fireForget(t(v))); v }
+    /** Tweak `v` slowly. Always runs on UI thread */
+    def ~@>(t: SlowTweak[A])(implicit ec: ExecutionContext): Future[A] = {
+      val slowPromise = Promise[Unit]()
+      Concurrency.fireForget(slowPromise.completeWith(t(v)))
+      slowPromise.future.map(_ ⇒ v)
+    }
   }
 
   // applying tweaks to functors
   implicit class RichFunctor[A <: View, F[_]: Functor](f: F[A]) {
     /** Tweak view(s) in `f`. Always runs on UI thread */
-    def ~>(t: Tweak[A]): F[A] = { Concurrency.Ui(implicitly[Functor[F]].map(f)(v ⇒ t(v))); f }
+    def ~>(t: Tweak[A]): F[A] = { implicitly[Functor[F]].map(f)(v ⇒ Concurrency.fireForget(t(v))); f }
     /** Apply tweak(s) in `g` to view(s) in `f`. Always runs on UI thread */
     def ~>[G[_]: Functor](g: G[Tweak[A]]): F[A] = {
       val F = implicitly[Functor[F]]
       val G = implicitly[Functor[G]]
-      Concurrency.Ui(F.map(f)(v ⇒ G.map(g)(t ⇒ t(v)))); f
+      F.map(f)(v ⇒ G.map(g)(t ⇒ Concurrency.fireForget(t(v)))); f
     }
+  }
+
+  // applying slow tweaks to options
+  implicit class RichSlowOption[A <: View](f: Option[A]) {
+    /** Tweak view inside `f` slowly. Always runs on UI thread */
+    def ~@>(t: SlowTweak[A])(implicit ec: ExecutionContext): Future[Option[A]] = f match {
+      case None ⇒ Future.successful(None)
+      case Some(v) ⇒
+        val slowPromise = Promise[Unit]()
+        Concurrency.fireForget(slowPromise.completeWith(t(v)))
+        slowPromise.future.map(_ ⇒ Some(v))
+    }
+  }
+
+  // applying slow tweaks to futures
+  implicit class RichSlowFuture[A <: View](f: Future[A]) {
+    /** Tweak view inside `f` slowly. Always runs on UI thread */
+    def ~@>(t: SlowTweak[A])(implicit ec: ExecutionContext): Future[A] = f.flatMap(v ⇒ v ~@> t)
+  }
+
+  // applying slow tweaks to futures of options
+  implicit class RichSlowFutureOption[A <: View](f: Future[Option[A]]) {
+    /** Tweak view inside `f` slowly. Always runs on UI thread */
+    def ~@>(t: SlowTweak[A])(implicit ec: ExecutionContext): Future[Option[A]] = f.flatMap(v ⇒ v ~@> t)
   }
 }
 object Tweaking extends Tweaking

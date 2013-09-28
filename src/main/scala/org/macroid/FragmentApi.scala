@@ -10,7 +10,7 @@ import android.app.ActionBar.Tab
 trait FragmentApi { self: ViewSearch ⇒
   /** Create a fragment and wrap it in a FrameLayout */
   def fragment(frag: ⇒ Fragment, id: Int, tag: String)(implicit ctx: Context): FrameLayout = {
-    Option(findFrag[Fragment](tag)) getOrElse {
+    findFrag[Fragment](tag) getOrElse {
       fragmentManager.beginTransaction().add(id, frag, tag).commit()
     }
     new FrameLayout(ctx) { setId(id) }
@@ -19,18 +19,14 @@ trait FragmentApi { self: ViewSearch ⇒
   class TabListener(frag: ⇒ Fragment, tag: String, onSelect: Option[Tab ⇒ Any] = None) extends ActionBar.TabListener {
     def onTabSelected(tab: Tab, dummy: FragmentTransaction) {
       val ft = fragmentManager.beginTransaction()
-      Option(findFrag[Fragment](tag)) map {
-        ft.attach(_)
-      } getOrElse {
-        ft.add(android.R.id.content, frag, tag)
-      }
+      findFrag[Fragment](tag).map(ft.attach).getOrElse(ft.add(android.R.id.content, frag, tag))
       ft.commit()
       onSelect.foreach(_.apply(tab))
     }
 
     def onTabUnselected(tab: Tab, dummy: FragmentTransaction) {
       val ft = fragmentManager.beginTransaction()
-      Option(findFrag[Fragment](tag)).map(ft.detach(_))
+      findFrag[Fragment](tag).map(ft.detach)
       ft.commit()
     }
 

@@ -51,8 +51,6 @@ object LayoutBuildingMacros {
 trait Tweaking {
   /** A tweak is a function that mutates a View */
   type Tweak[-A <: View] = Function[A, Unit]
-  /** A slow tweak mutates the view slowly (e.g. animation) */
-  type SlowTweak[-A <: View] = Function[A, Future[Unit]]
 
   // a monoid instance
   implicit def tweakMonoid[A <: View] = new Monoid[Tweak[A]] {
@@ -61,39 +59,21 @@ trait Tweaking {
   }
 
   // combining tweaks
-  implicit class RichTweak[A <: View](t: Tweak[A]) {
+  implicit class TweakAddition[A <: View](t: Tweak[A]) {
     /** Combine (sequence) with another tweak */
     def +[B <: A](other: Tweak[B]): Tweak[B] = { x ⇒ t(x); other(x) }
-    def +@[B <: A](other: SlowTweak[B]): SlowTweak[B] = { x ⇒ t(x); other(x) }
-  }
-
-  // combining slow tweaks
-  implicit class RichSlowTweak[A <: View](t: SlowTweak[A]) {
-    /** Combine (sequence) with a tweak */
-    def @+[B <: A](other: Tweak[B])(implicit ec: ExecutionContext): SlowTweak[B] = { x ⇒
-      t(x).map(_ ⇒ Concurrency.Ui(other(x)))
-    }
-    def @+@[B <: A](other: SlowTweak[B])(implicit ec: ExecutionContext): SlowTweak[B] = { x ⇒
-      t(x).flatMap(_ ⇒ Concurrency.Ui(other(x)))
-    }
   }
 
   // applying tweaks to views
-  implicit class RichView[A <: View](v: A) {
+  implicit class ViewTweaking[A <: View](v: A) {
     /** Tweak `v`. Always runs on UI thread */
     def ~>(t: Tweak[A]): A = { Concurrency.fireForget(t(v)); v }
     /** Apply tweak(s) in `f` to `v`. Always runs on UI thread */
     def ~>[F[_]: Functor](f: F[Tweak[A]]): A = { implicitly[Functor[F]].map(f)(t ⇒ Concurrency.fireForget(t(v))); v }
-    /** Tweak `v` slowly. Always runs on UI thread */
-    def ~@>(t: SlowTweak[A])(implicit ec: ExecutionContext): Future[A] = {
-      val slowPromise = Promise[Unit]()
-      Concurrency.fireForget(slowPromise.completeWith(t(v)))
-      slowPromise.future.map(_ ⇒ v)
-    }
   }
 
   // applying tweaks to functors
-  implicit class RichFunctor[A <: View, F[_]: Functor](f: F[A]) {
+  implicit class FunctorTweaking[A <: View, F[_]: Functor](f: F[A]) {
     /** Tweak view(s) in `f`. Always runs on UI thread */
     def ~>(t: Tweak[A]): F[A] = { implicitly[Functor[F]].map(f)(v ⇒ Concurrency.fireForget(t(v))); f }
     /** Apply tweak(s) in `g` to view(s) in `f`. Always runs on UI thread */
@@ -103,32 +83,71 @@ trait Tweaking {
       F.map(f)(v ⇒ G.map(g)(t ⇒ Concurrency.fireForget(t(v)))); f
     }
   }
+}
+object Tweaking extends Tweaking
 
-  // applying slow tweaks to options
-  implicit class RichSlowOption[A <: View](f: Option[A]) {
-    /** Tweak view inside `f` slowly. Always runs on UI thread */
-    def ~@>(t: SlowTweak[A])(implicit ec: ExecutionContext): Future[Option[A]] = f match {
+/** This trait defines snails, snailing operator (~@>) and its generalizations */
+trait Snailing extends Tweaking {
+  /** A snail mutates the view slowly (e.g. animation) */
+  type Snail[-A <: View] = Function[A, Future[Unit]]
+
+  // a monoid instance
+  implicit def snailMonoid[A <: View](implicit ec: ExecutionContext) = new Monoid[Snail[A]] {
+    def zero = { x ⇒ Future.successful(()) }
+    def append(t1: Snail[A], t2: ⇒ Snail[A]) = t1 @+@ t2
+  }
+
+  // combining tweaks with snails
+  implicit class TweakSnailAddition[A <: View](t: Tweak[A]) {
+    def +@[B <: A](other: Snail[B]): Snail[B] = { x ⇒ t(x); other(x) }
+  }
+
+  // combining snails
+  implicit class SnailAddition[A <: View](s: Snail[A]) {
+    /** Combine (sequence) with a tweak */
+    def @+[B <: A](other: Tweak[B])(implicit ec: ExecutionContext): Snail[B] = { x ⇒
+      s(x).map(_ ⇒ Concurrency.Ui(other(x)))
+    }
+    /** Combine (sequence) with another snail */
+    def @+@[B <: A](other: Snail[B])(implicit ec: ExecutionContext): Snail[B] = { x ⇒
+      s(x).flatMap(_ ⇒ Concurrency.Ui(other(x)))
+    }
+  }
+
+  implicit class ViewSnailing[A <: View](v: A) {
+    /** Apply a snail to `v`. Always runs on UI thread */
+    def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[A] = {
+      val slowPromise = Promise[Unit]()
+      Concurrency.fireForget(slowPromise.completeWith(s(v)))
+      slowPromise.future.map(_ ⇒ v)
+    }
+  }
+
+  // applying snails to options
+  implicit class OptionSnailing[A <: View](f: Option[A]) {
+    /** Apply a snail to the view inside `f`. Always runs on UI thread */
+    def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[Option[A]] = f match {
       case None ⇒ Future.successful(None)
       case Some(v) ⇒
         val slowPromise = Promise[Unit]()
-        Concurrency.fireForget(slowPromise.completeWith(t(v)))
+        Concurrency.fireForget(slowPromise.completeWith(s(v)))
         slowPromise.future.map(_ ⇒ Some(v))
     }
   }
 
-  // applying slow tweaks to futures
-  implicit class RichSlowFuture[A <: View](f: Future[A]) {
-    /** Tweak view inside `f` slowly. Always runs on UI thread */
-    def ~@>(t: SlowTweak[A])(implicit ec: ExecutionContext): Future[A] = f.flatMap(v ⇒ v ~@> t)
+  // applying snails to futures
+  implicit class FutureSnailing[A <: View](f: Future[A]) {
+    /** Apply a snail to view inside `f`. Always runs on UI thread */
+    def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[A] = f.flatMap(v ⇒ v ~@> s)
   }
 
-  // applying slow tweaks to futures of options
-  implicit class RichSlowFutureOption[A <: View](f: Future[Option[A]]) {
-    /** Tweak view inside `f` slowly. Always runs on UI thread */
-    def ~@>(t: SlowTweak[A])(implicit ec: ExecutionContext): Future[Option[A]] = f.flatMap(v ⇒ v ~@> t)
+  // applying snails to futures of options
+  implicit class FutureOptionSnailing[A <: View](f: Future[Option[A]]) {
+    /** Apply a snail view inside `f` slowly. Always runs on UI thread */
+    def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[Option[A]] = f.flatMap(v ⇒ v ~@> s)
   }
 }
-object Tweaking extends Tweaking
+object Snailing extends Snailing
 
 /** This trait defines transformers and transforming operator (~~>) */
 trait LayoutTransforming {
@@ -161,7 +180,7 @@ trait LayoutTransforming {
   }
 }
 
-trait LayoutDsl extends LayoutBuilding with Tweaking with LayoutTransforming with Functors
+trait LayoutDsl extends LayoutBuilding with Tweaking with Snailing with LayoutTransforming with Functors
 object LayoutDsl extends LayoutDsl
 
 trait FragmentBuilding extends FragmentApi { self: ViewSearch ⇒

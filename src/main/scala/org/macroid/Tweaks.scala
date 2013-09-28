@@ -51,21 +51,6 @@ trait Tweaks extends Tweaking {
     case Left(t) ⇒ { x ⇒ x.setText(t) }
   }
 
-  /** Run animation, indicating when it’s finished */
-  def anim(animation: Animation, duration: Long = -1L): SlowTweak[View] = { x ⇒
-    val animPromise = Promise[Unit]()
-    animation.setAnimationListener(new AnimationListener {
-      override def onAnimationStart(a: Animation) {}
-      override def onAnimationRepeat(a: Animation) {}
-      override def onAnimationEnd(a: Animation) { animPromise.complete(Success(())) }
-    })
-    if (duration >= 0) animation.setDuration(duration)
-    x.startAnimation(animation)
-    animPromise.future
-  }
-  /** A delay to be inserted somewhere between ~@>s and ~>s */
-  def delay(millis: Long)(implicit ec: ExecutionContext): SlowTweak[View] = x ⇒ future { Thread.sleep(millis) }
-
   /** Set padding */
   def padding(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0, all: Int = -1): Tweak[View] = if (all >= 0) {
     x: View ⇒ x.setPadding(all, all, all, all)

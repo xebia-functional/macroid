@@ -10,8 +10,8 @@
 ```scala
 // in the activity/fragment class, prepare two member variables
 // to hold references to our `View`s
-var status: TextView = _
-var bar: ProgressBar = _
+var status = slot[TextView]
+var bar = slot[ProgressBar]
 ...
 // create a LinearLayout
 val view = l[LinearLayout](
@@ -74,7 +74,7 @@ setContentView(view)
 #### Tweaks
 
 The central concept of *Macroid* is that of `Tweak`s. These are little things that are chained and applied to widgets
-with `~>` (or fancier `⇝`). Every `Tweak` is mutating the widget, doing something useful. 
+with `~>`. Every `Tweak` is mutating the widget, doing something useful. 
 Here’s how to make one yourself:
 ```scala
 def bg(resourceId: Int): Tweak[View] = _.setBackgroundResource(resourceId)
@@ -95,15 +95,21 @@ implicit def tweakMonoid[A] = new Monoid[Tweak[A]] {
   def append(t1: Tweak[A], t2: ⇒ Tweak[A]) = t1 + t2
 }
 ```
-Moreover, `~>` accepts `F[Tweak[_]]` if `F` is a `Functor`:
+
+Moreover, `~>` accepts `F[Tweak[_]]` if `F` is a `Functor` (`Functor` instances for
+`List`, `Option`, `Future`, `EventSource`, and `Rx` come with `LayoutDsl`):
 ```scala
-// import Functor instances for Future, List, Option and EventSource
-import org.macroid.util.Functors._
 w[TextView] ~> future { Thread.sleep(1000); text("asd") }
 ```
 Feel free to use this feature with either [Scala.Rx](https://github.com/lihaoyi/scala.rx) or [Scala.FRP](https://github.com/dylemma/scala.frp)!
 
-Finally, note that `Tweaks` can be applied to any `View` type they are defined at. You can use `~>` in your code freely,
+Finally, `~>` can be applied to `F[View]` if `F` is a `Functor`:
+```scala
+List(w[TextView], w[Button]) ~> text("Twins")
+```
+In fact, that’s how `~>` works with `slot`s, since they are `Option`s.
+
+Note that `Tweaks` can be applied to any `View` type they are defined at. You can use `~>` in your code freely,
 even if you don’t use layout creation DSL. **`~>` always applies tweaks on UI thread.**
 
 #### Media Queries
@@ -117,7 +123,6 @@ l[LinearLayout](...) ~> (minWidth(1000 dp) ? horizontal | vertical)
 (widerThan(1000 dp) ? w[BigTextView] | widerThan(600 dp) ? w[MediumTextView] | w[TextView]) ~> text("Hi there")
 
 // (minWidth(500) ? largeAppearance) produces an Option[Tweak[TextView]], and Option[_] is a Functor:
-import org.macroid.util.Functors._
 w[TextView] ~> text("Balderdash!") ~> (minWidth(500) ? largeAppearance)
 ```
 
@@ -140,7 +145,7 @@ Units:
 The preferred way of referencing the widgets is the following:
 ```scala
 // set up a member variable
-var myButton: Button = _
+var myButton = slot[Button]
 ...
 def onCreate(...) {
   ...
@@ -150,19 +155,18 @@ def onCreate(...) {
 }
 ```
 * It’s typesafe
+* It’s also safe from NullPointerExceptions, since `slot` returns an `Option`
 * It’s easy to read and write
-* If the activity/fragment’s layout has been created, the `var` is guaranteed to be initialized.
-  Before that, you shouldn’t touch your UI anyway!
 
 That being said, you can use `Id.something` to generate ids ( *by default ids are generated in range [1000..]* ).
 `Id.foo` will always return the same number inside a particular activity or fragment. To find widgets by id,
 use one of the following:
-* `def findView[A <: View](id: Int): A` — search in the root `View`
-* `def findView[A <: View](root: View, id: Int): A` — search in `root`
+* `def findView[A <: View](id: Int): Option[A]` — search in the root `View`
+* `def findView[A <: View](root: View, id: Int): Option[A]` — search in `root`
 
 Similarly, for fragments `Tag.something` generates a new tag.
 Just kidding, it simply returns `"something"`, but isn’t that fancy? Use this to search for fragments:
-* `def findFrag[A <: Fragment](tag: String): A`
+* `def findFrag[A <: Fragment](tag: String): Option[A]`
 
 #### Smashing some boilerplate
 
@@ -210,7 +214,7 @@ Just kidding, it simply returns `"something"`, but isn’t that fancy? Use this 
 
 #### Staying in the UI thread
 
-`~>` always applies tweaks on UI thread.
+`~>` always applies tweaks on the UI thread.
 
 There are helpers for [Scala `Future`s](http://docs.scala-lang.org/sips/pending/futures-promises.html):
 ```scala
@@ -238,7 +242,7 @@ https://github.com/stanch/macroid-starter
 ```scala
 resolvers += "JCenter" at "http://jcenter.bintray.com"
 
-libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130926"
+libraryDependencies += "org.macroid" %% "macroid" % "1.0.0-20130929"
 ```
 
 ### Imports and traits
@@ -258,7 +262,8 @@ class MyActivity extends Activity {
 }
 ```
 
-Likewise, to use `~>`, `l`, and `w` inherit from `LayoutDsl` or import from it.
+Likewise, to use `~>`, `l`, `w` and `slot`, inherit from `LayoutDsl` or import from it. *If you want to be
+even more granular, check out `LayoutBuilding` and `Tweaking` traits, which offer those features separately.*
 
 The `f`, however, requires `FragmentDsl` *trait*, which in its turn depends on either `ActivityViewSearch` or `FragmentViewSearch`.
 Thus, the usage is

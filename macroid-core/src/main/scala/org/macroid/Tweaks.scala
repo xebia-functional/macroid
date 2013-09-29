@@ -185,8 +185,7 @@ object TweakMacros extends Tweaking {
 
     // fight against variance (A may be inferred as View, since Tweak[View] <:< Tweak[A <: View])
     val TildeArrow = newTermName("~>").encodedName
-    val UnicodeArrow = newTermName("⇝").encodedName
-    val tweaking: PartialFunction[Tree, Boolean] = { case Apply(Select(_, TildeArrow | UnicodeArrow), _) ⇒ true }
+    val tweaking: PartialFunction[Tree, Boolean] = { case Apply(Select(_, TildeArrow), _) ⇒ true }
 
     // find `widget ~> On....` application and get widget’s exact type
     var tp = findImmediateParentTree(c)(tweaking) flatMap {

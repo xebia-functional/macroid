@@ -57,6 +57,7 @@ trait Tweaks extends Tweaking {
   } else {
     x: View ⇒ x.setPadding(left, top, right, bottom)
   }
+  // TODO: replace with setPaddingRelative!
 
   /** Make this layout vertical */
   val vertical: Tweak[LinearLayout] = x ⇒ x.setOrientation(LinearLayout.VERTICAL)

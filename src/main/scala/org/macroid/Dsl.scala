@@ -199,11 +199,19 @@ trait LayoutTransforming {
 trait LayoutDsl extends LayoutBuilding with Tweaking with Snailing with LayoutTransforming with Functors
 object LayoutDsl extends LayoutDsl
 
-trait FragmentBuilding extends FragmentApi { self: ViewSearch ⇒
+trait FragmentBuilding { self: ViewSearch ⇒
   import FragmentBuildingMacros._
 
   /** Define a fragment, which is wrapped in FrameLayout to be added to the layout */
   def f[A <: Fragment](id: Int, tag: String, args: Any*)(implicit ctx: Context) = macro fragmentImpl[A]
+
+  /** Create a fragment from factory, wrap in a FrameLayout and return */
+  def fragment(frag: ⇒ Fragment, id: Int, tag: String)(implicit ctx: Context): FrameLayout = {
+    findFrag[Fragment](tag) getOrElse {
+      fragmentManager.beginTransaction().add(id, frag, tag).commit()
+    }
+    new FrameLayout(ctx) { setId(id) }
+  }
 }
 
 object FragmentBuildingMacros {
@@ -232,7 +240,7 @@ object FragmentBuildingMacros {
   }
 }
 
-trait FragmentFactories extends FragmentApi { self: ViewSearch ⇒
+trait FragmentFactories { self: ViewSearch ⇒
   import FragmentFactoryMacros._
 
   /** Returns a fragment factory (Thunk[A]) */
@@ -251,4 +259,4 @@ object FragmentFactoryMacros {
   }
 }
 
-trait FragmentDsl extends FragmentApi with FragmentBuilding with FragmentFactories { self: ViewSearch ⇒ }
+trait FragmentDsl extends FragmentBuilding with FragmentFactories { self: ViewSearch ⇒ }

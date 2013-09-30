@@ -4,6 +4,7 @@ import scala.language.dynamics
 import android.view.View
 import android.support.v4.app.{ FragmentActivity, Fragment, FragmentManager }
 import java.util.concurrent.atomic.AtomicInteger
+import scala.util.Try
 
 /** A class to generate unique Ids */
 class IdGen(start: Int) extends Dynamic {
@@ -29,7 +30,8 @@ trait BasicViewSearch {
   val Tag = new TagGen
 
   /** Find a view with a given id in `root` */
-  def findView[A <: View](root: View, id: Int): Option[A] = Option(root.findViewById(id).asInstanceOf[A])
+  def findView[A <: View](root: View, id: Int): Option[A] =
+    Try(Option(root.findViewById(id)).map(_.asInstanceOf[A])).toOption.flatten
 }
 
 /** This trait provides (abstract) view and fragment searching capabilities */
@@ -39,17 +41,20 @@ sealed trait ViewSearch extends BasicViewSearch {
   /** Find a view with a given id in root view */
   def findView[A <: View](id: Int): Option[A]
   /** Find a fragment with a given tag */
-  def findFrag[A <: Fragment](tag: String) = Option(fragmentManager.findFragmentByTag(tag).asInstanceOf[A])
+  def findFrag[A <: Fragment](tag: String) =
+    Try(Option(fragmentManager.findFragmentByTag(tag)).map(_.asInstanceOf[A])).toOption.flatten
 }
 
 /** An implementation of ViewSearch to be used by Activities */
 trait ActivityViewSearch extends ViewSearch { self: FragmentActivity ⇒
   def fragmentManager = getSupportFragmentManager
-  def findView[A <: View](id: Int) = Option(findViewById(id).asInstanceOf[A])
+  def findView[A <: View](id: Int) =
+    Try(Option(findViewById(id)).map(_.asInstanceOf[A])).toOption.flatten
 }
 
 /** An implementation of ViewSearch to be used by Fragments */
 trait FragmentViewSearch extends ViewSearch { self: Fragment ⇒
   def fragmentManager = getChildFragmentManager
-  def findView[A <: View](id: Int) = Option(getView.findViewById(id).asInstanceOf[A])
+  def findView[A <: View](id: Int) =
+    Try(Option(getView.findViewById(id)).map(_.asInstanceOf[A])).toOption.flatten
 }

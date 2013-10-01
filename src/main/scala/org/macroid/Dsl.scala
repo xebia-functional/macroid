@@ -223,11 +223,7 @@ object FragmentBuildingMacros {
     } orElse scala.util.Try {
       // try to put args in a map, convert to a Bundle and use setArguments
       assert(args.forall(_.actualType <:< typeOf[(String, Any)]))
-      if (args.isEmpty) {
-        q"new ${weakTypeOf[A]}"
-      } else {
-        c.typeCheck(q"new ${weakTypeOf[A]} { setArguments(org.macroid.util.Map2Bundle(Map(..$args))) }")
-      }
+      c.typeCheck(q"val x = new ${weakTypeOf[A]}; x.setArguments(org.macroid.util.Map2Bundle(Map(..$args))); x")
     } getOrElse {
       c.abort(c.enclosingPosition, s"Args should either be supported by ${weakTypeOf[A]}.newInstance() or be a sequence of (String, Any)")
     }

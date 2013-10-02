@@ -4,8 +4,6 @@ import scala.concurrent.{ Future, ExecutionContext }
 import scalaz.Functor
 import io.dylemma.frp.{ EventStream, Observer }
 import rx.Rx
-import org.macroid.LayoutBuilding
-import android.view.View
 
 trait Functors {
   implicit val listF = scalaz.std.list.listInstance

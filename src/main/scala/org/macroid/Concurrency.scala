@@ -31,16 +31,25 @@ trait Concurrency {
     })
   }
 
-  implicit class RichFuture[A](val value: Future[A]) {
+  implicit class UiFuture[A](val value: Future[A]) {
     /** Same as onSuccess, but performed on UI thread */
-    def onSuccessUi(f: PartialFunction[A, Any])(implicit c: ExecutionContext): Future[A] = {
-      value onSuccess { case v ⇒ runOnUiThread(f.lift(v)) }
+    def onSuccessUi(pf: PartialFunction[A, Any])(implicit c: ExecutionContext): Future[A] = {
+      value onSuccess { case v ⇒ runOnUiThread(pf.lift(v)) }
       value
     }
     /** Same as onFailure, but performed on UI thread */
-    def onFailureUi(f: PartialFunction[Throwable, Any])(implicit c: ExecutionContext): Future[A] = {
-      value onFailure { case v ⇒ runOnUiThread(f.lift(v)) }
+    def onFailureUi(pf: PartialFunction[Throwable, Any])(implicit c: ExecutionContext): Future[A] = {
+      value onFailure { case v ⇒ runOnUiThread(pf.lift(v)) }
       value
+    }
+    /** Same as recover, but performed on UI thread */
+    def recoverUi[U >: A](pf: PartialFunction[Throwable, U])(implicit c: ExecutionContext): Future[U] = {
+      val uiPromise = Promise[U]()
+      value recover {
+        case t if pf.isDefinedAt(t) ⇒ uiPromise.completeWith(runOnUiThread(pf(t)))
+        case _ ⇒ uiPromise.completeWith(value)
+      }
+      uiPromise.future
     }
   }
 }

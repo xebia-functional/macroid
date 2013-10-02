@@ -1,8 +1,9 @@
 package org.macroid
 
 import scala.concurrent.{ ExecutionContext, Promise, Future }
-import scala.util.Try
+import scala.util.{ Failure, Try }
 import android.os.{ Looper, Handler }
+import java.util.NoSuchElementException
 
 trait Concurrency {
   lazy val uiHandler = new Handler(Looper.getMainLooper)
@@ -33,17 +34,28 @@ trait Concurrency {
 
   implicit class UiFuture[A](val value: Future[A]) {
     /** Same as onSuccess, but performed on UI thread */
-    def onSuccessUi(pf: PartialFunction[A, Any])(implicit c: ExecutionContext): Future[A] = {
+    def onSuccessUi(pf: PartialFunction[A, Any])(implicit ec: ExecutionContext) {
       value onSuccess { case v ⇒ runOnUiThread(pf.lift(v)) }
-      value
     }
     /** Same as onFailure, but performed on UI thread */
-    def onFailureUi(pf: PartialFunction[Throwable, Any])(implicit c: ExecutionContext): Future[A] = {
+    def onFailureUi(pf: PartialFunction[Throwable, Any])(implicit ec: ExecutionContext) {
       value onFailure { case v ⇒ runOnUiThread(pf.lift(v)) }
-      value
+    }
+    /** Same as map, but performed on UI thread */
+    def mapUi[S](f: Function[A, S])(implicit ec: ExecutionContext): Future[S] = {
+      value flatMap (x ⇒ runOnUiThread(f(x)))
+    }
+    /** Same as collect, but performed on UI thread */
+    def collectUi[S](pf: PartialFunction[A, S])(implicit ec: ExecutionContext) {
+      val uiPromise = Promise[S]()
+      value collect {
+        case x if pf.isDefinedAt(x) ⇒ uiPromise.completeWith(runOnUiThread(pf(x)))
+        case _ ⇒ uiPromise.complete(Failure(new NoSuchElementException))
+      }
+      uiPromise.future
     }
     /** Same as recover, but performed on UI thread */
-    def recoverUi[U >: A](pf: PartialFunction[Throwable, U])(implicit c: ExecutionContext): Future[U] = {
+    def recoverUi[U >: A](pf: PartialFunction[Throwable, U])(implicit ec: ExecutionContext): Future[U] = {
       val uiPromise = Promise[U]()
       value recover {
         case t if pf.isDefinedAt(t) ⇒ uiPromise.completeWith(runOnUiThread(pf(t)))

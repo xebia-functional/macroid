@@ -1,10 +1,11 @@
 package org.macroid
 
+import scala.language.experimental.macros
 import android.content.Context
 import android.support.v4.app.Fragment
 import android.widget.FrameLayout
 import org.macroid.util.Thunk
-import scala.reflect.macros.{Context ⇒ MacroContext}
+import scala.reflect.macros.{ Context ⇒ MacroContext }
 
 trait FragmentBuilding { self: ViewSearch ⇒
   import FragmentBuildingMacros._

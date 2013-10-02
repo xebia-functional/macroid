@@ -1,11 +1,13 @@
 package org.macroid
 
+import scala.language.experimental.macros
+import scala.language.higherKinds
 import android.content.Context
-import android.view.{ViewGroup, View}
+import android.view.{ ViewGroup, View }
 import org.macroid.util.Functors
-import scala.concurrent.{Promise, ExecutionContext, Future}
-import scala.reflect.macros.{Context ⇒ MacroContext}
-import scalaz.{Functor, Monoid}
+import scala.concurrent.{ Promise, ExecutionContext, Future }
+import scala.reflect.macros.{ Context ⇒ MacroContext }
+import scalaz.{ Functor, Monoid }
 
 /** This trait contains basic building blocks used to define layouts: w, l and slot */
 trait LayoutBuilding {
@@ -44,7 +46,7 @@ object LayoutBuildingMacros {
 }
 
 /** This trait defines tweaks, tweaking operator (~>) and its generalized counterparts for Functors */
-trait Tweaking {
+trait Tweaking extends Functors {
   /** A tweak is a function that mutates a View */
   type Tweak[-A <: View] = Function[A, Unit]
 
@@ -65,7 +67,7 @@ trait Tweaking {
     /** Tweak `v`. Always runs on UI thread */
     def ~>(t: Tweak[A]): A = { Concurrency.fireForget(t(v)); v }
     /** Apply tweak(s) in `f` to `v`. Always runs on UI thread */
-    def ~>[F[_]: Functor](f: F[Tweak[A]]): A = { implicitly[Functor[F]].map(f)(t ⇒ v ~> t); v }
+    def ~>[F[+_]: Functor](f: F[Tweak[A]]): A = { implicitly[Functor[F]].map(f)(t ⇒ v ~> t); v }
   }
 
   // applying tweaks to functors
@@ -73,7 +75,7 @@ trait Tweaking {
     /** Tweak view(s) in `f`. Always runs on UI thread */
     def ~>(t: Tweak[A]): F[A] = { implicitly[Functor[F]].map(f)(v ⇒ v ~> t); f }
     /** Apply tweak(s) in `g` to view(s) in `f`. Always runs on UI thread */
-    def ~>[G[_]: Functor](g: G[Tweak[A]]): F[A] = {
+    def ~>[G[+_]: Functor](g: G[Tweak[A]]): F[A] = {
       val F = implicitly[Functor[F]]
       val G = implicitly[Functor[G]]
       F.map(f)(v ⇒ G.map(g)(t ⇒ v ~> t)); f
@@ -89,7 +91,7 @@ trait Tweaking {
       case None ⇒ None
     }
     /** Apply tweak(s) in `g` to view in `f`. Always runs on UI thread */
-    def ~>[G[_]](g: G[Tweak[A]])(implicit ec: ExecutionContext, ev: Functor[G]): Future[Option[A]] = f map {
+    def ~>[G[+_]](g: G[Tweak[A]])(implicit ec: ExecutionContext, ev: Functor[G]): Future[Option[A]] = f map {
       case Some(v) ⇒
         v ~> g; Some(v)
       case None ⇒ None
@@ -194,6 +196,6 @@ trait LayoutTransforming {
   }
 }
 
-trait LayoutDsl extends LayoutBuilding with Tweaking with Snailing with LayoutTransforming with Functors
+trait LayoutDsl extends LayoutBuilding with Tweaking with Snailing with LayoutTransforming
 
 object LayoutDsl extends LayoutDsl

@@ -3,13 +3,10 @@ package org.macroid
 import scala.language.dynamics
 import scala.language.experimental.macros
 import android.view.{ ViewGroup, View }
-import android.widget.{ LinearLayout, TextView }
+import android.widget.{ ProgressBar, LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import org.macroid.util.Thunk
-import android.view.animation.Animation
-import android.view.animation.Animation.AnimationListener
-import scala.concurrent.{ ExecutionContext, Future, Promise, future }
-import scala.util.Success
+import scala.concurrent.{ ExecutionContext, Future }
 
 /** This trait provides the most useful tweaks. For an expanded set, see `contrib.ExtraTweaks` */
 trait Tweaks extends Tweaking {
@@ -80,6 +77,26 @@ trait Tweaks extends Tweaking {
     children.foreach(c ⇒ x.addView(c, 0))
   }
 
+  /** Show this progress bar with indeterminate progress and hide it once `future` is done */
+  def showProgress(future: Future[Any])(implicit ec: ExecutionContext): Tweak[ProgressBar] = { x ⇒
+    x.setIndeterminate(true)
+    x ~> show ~> future.recover { case _ ⇒ }.map(_ ⇒ hide)
+  }
+  /** Show this progress bar with determinate progress and hide it once all futures are done */
+  def showProgress(futures: Seq[Future[Any]])(implicit ec: ExecutionContext): Tweak[ProgressBar] = { x ⇒
+    val length = futures.length
+    x.setIndeterminate(false)
+    x.setProgress(0)
+    x.setMax(length)
+    x ~> show
+    futures.foreach(f ⇒ f.recover { case _ ⇒ }.foreach { _ ⇒
+      Concurrency.fireForget {
+        x.incrementProgressBy(1)
+        if (x.getProgress == x.getMax - 1) x ~> hide
+      }
+    })
+  }
+
   object On extends Dynamic {
     /** Override the listener treating `f` as a by-name argument. */
     def applyDynamic[A <: View](event: String)(f: Any): Tweak[A] = macro onBlockImpl[A]
@@ -95,6 +112,7 @@ trait Tweaks extends Tweaking {
     def applyDynamic[A <: View](event: String)(f: Thunk[Any]): Tweak[A] = macro onThunkImpl[A]
   }
 }
+
 object Tweaks extends Tweaks
 
 object TweakMacros extends Tweaking {

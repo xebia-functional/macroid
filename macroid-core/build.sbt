@@ -6,9 +6,9 @@ homepage := Some(url("http://github.com/stanch/macroid"))
 
 organization := "org.macroid"
 
-version := "1.0.0-20131001"
+version := "1.0.0-20131002"
 
-scalaVersion := "2.10.3-RC2"
+scalaVersion := "2.10.3-RC3"
 
 scalacOptions ++= Seq("-feature", "-deprecation")
 
@@ -26,7 +26,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "com.google.android" % "android" % "4.1.1.4" % "provided",
-  "com.android.support" % "support-v13" % "13.0.0",
+  "com.android.support" % "support-v13" % "18.0.0",
   "org.scalaz" %% "scalaz-core" % "7.0.3",
   "io.dylemma" %% "scala-frp" % "1.0",
   "com.scalarx" %% "scalarx" % "0.1"

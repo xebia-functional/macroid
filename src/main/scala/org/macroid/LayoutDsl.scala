@@ -129,13 +129,18 @@ trait Snailing extends Tweaking {
     }
   }
 
+  /* TODO: can this be shortened with fundeps and/or monad laws? */
+
+  // applying snails to views
   implicit class ViewSnailing[A <: View](v: A) {
     /** Apply a snail to `v`. Always runs on UI thread */
     def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[A] = {
-      val slowPromise = Promise[Unit]()
-      Concurrency.fireForget(slowPromise.completeWith(s(v)))
-      slowPromise.future.map(_ ⇒ v)
+      val snailPromise = Promise[Unit]()
+      Concurrency.fireForget(snailPromise.completeWith(s(v)))
+      snailPromise.future.map(_ ⇒ v)
     }
+    /** Apply a future snail to `v`. Always runs on UI thread */
+    def ~@>(g: Future[Snail[A]])(implicit ec: ExecutionContext): Future[A] = g.flatMap(s ⇒ v ~@> s)
   }
 
   // applying snails to options
@@ -144,22 +149,28 @@ trait Snailing extends Tweaking {
     def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[Option[A]] = f match {
       case None ⇒ Future.successful(None)
       case Some(v) ⇒
-        val slowPromise = Promise[Unit]()
-        Concurrency.fireForget(slowPromise.completeWith(s(v)))
-        slowPromise.future.map(_ ⇒ Some(v))
+        val snailPromise = Promise[Unit]()
+        Concurrency.fireForget(snailPromise.completeWith(s(v)))
+        snailPromise.future.map(_ ⇒ Some(v))
     }
+    /** Apply a future snail to view inside `f`. Always runs on UI thread */
+    def ~@>(g: Future[Snail[A]])(implicit ec: ExecutionContext): Future[Option[A]] = g.flatMap(s ⇒ f ~@> s)
   }
 
   // applying snails to futures
   implicit class FutureSnailing[A <: View](f: Future[A]) {
     /** Apply a snail to view inside `f`. Always runs on UI thread */
     def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[A] = f.flatMap(v ⇒ v ~@> s)
+    /** Apply a future snail to view inside `f`. Always runs on UI thread */
+    def ~@>(g: Future[Snail[A]])(implicit ec: ExecutionContext): Future[A] = g.flatMap(s ⇒ f ~@> s)
   }
 
   // applying snails to futures of options
   implicit class FutureOptionSnailing[A <: View](f: Future[Option[A]]) {
-    /** Apply a snail view inside `f` slowly. Always runs on UI thread */
+    /** Apply a snail to the view inside `f`. Always runs on UI thread */
     def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[Option[A]] = f.flatMap(v ⇒ v ~@> s)
+    /** Apply a future snail to the view inside `f`. Always runs on UI thread */
+    def ~@>(g: Future[Snail[A]])(implicit ec: ExecutionContext): Future[Option[A]] = g.flatMap(s ⇒ f ~@> s)
   }
 }
 

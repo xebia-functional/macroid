@@ -24,7 +24,7 @@ trait Concurrency {
   @inline def Ui[A](f: ⇒ A): Future[A] = runOnUiThread(f)
 
   /** Run supplied block of code on UI thread without tracking its progress */
-  @inline def fireForget[A](f: ⇒ A) {
+  @inline private[macroid] def fireForget[A](f: ⇒ A) {
     if (uiThread == Thread.currentThread) {
       Try(f)
     } else uiHandler.post(new Runnable {
@@ -45,9 +45,13 @@ trait Concurrency {
     def recoverUi[U >: A](pf: PartialFunction[Throwable, U])(implicit ec: ExecutionContext): Future[U] = {
       value recoverWith { case t if pf.isDefinedAt(t) ⇒ runOnUiThread(pf(t)) }
     }
+    /** Same as onSuccess, but performed on UI thread */
+    def onSuccessUi[U >: A](pf: PartialFunction[A, U])(implicit ec: ExecutionContext) {
+      value onSuccess { case v if pf.isDefinedAt(v) ⇒ runOnUiThread(pf(v)) }
+    }
     /** Same as onFailure, but performed on UI thread */
-    def onFailureUi(pf: PartialFunction[Throwable, Any])(implicit ec: ExecutionContext) {
-      value onFailure { case v ⇒ runOnUiThread(pf.lift(v)) }
+    def onFailureUi[U](pf: PartialFunction[Throwable, U])(implicit ec: ExecutionContext) {
+      value onFailure { case t if pf.isDefinedAt(t) ⇒ runOnUiThread(pf(t)) }
     }
   }
 }

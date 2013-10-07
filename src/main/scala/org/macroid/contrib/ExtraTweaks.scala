@@ -1,10 +1,11 @@
 package org.macroid.contrib
 
 import org.macroid.{ LayoutDsl, Tweaks }
-import android.widget.TextView
-import android.graphics.Typeface
+import android.widget.{ ImageView, TextView }
+import android.graphics.{ Bitmap, Typeface }
 import android.content.Context
 import android.util.TypedValue
+import android.view.View
 
 trait ExtraTweaks extends LayoutDsl with Tweaks {
   object TextStyle {
@@ -23,6 +24,17 @@ trait ExtraTweaks extends LayoutDsl with Tweaks {
     val serif: Tweak[TextView] = _.setTypeface(Typeface.SERIF)
     val sans: Tweak[TextView] = _.setTypeface(Typeface.SANS_SERIF)
     val mono: Tweak[TextView] = _.setTypeface(Typeface.MONOSPACE)
+  }
+
+  object Bg {
+    def res(id: Int)(implicit ctx: Context): Tweak[View] = _.setBackgroundResource(id)
+    def resource(id: Int)(implicit ctx: Context): Tweak[View] = _.setBackgroundResource(id)
+    def color(color: Int): Tweak[View] = _.setBackgroundColor(color)
+  }
+
+  object Image {
+    def bitmap(bitmap: Bitmap): Tweak[ImageView] = _.setImageBitmap(bitmap)
+    def adjustBounds: Tweak[ImageView] = _.setAdjustViewBounds(true)
   }
 }
 

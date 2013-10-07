@@ -25,7 +25,7 @@ trait Snails extends Snailing with Tweaks {
   /** A delay to be inserted somewhere between ~@>s and ~>s */
   def delay(millis: Long)(implicit ec: ExecutionContext): Snail[View] = x ⇒ future { Thread.sleep(millis) }
   /** A snail that waits for a given future to finish */
-  def wait(f: Future[Any])(implicit ec: ExecutionContext): Snail[View] = x ⇒ f.recover{ case _ ⇒ }.map(_ ⇒ ())
+  def wait(f: Future[Any])(implicit ec: ExecutionContext): Snail[View] = x ⇒ f.recover { case _ ⇒ }.map(_ ⇒ ())
 
   /** Fade in this view */
   def fadeIn(millis: Long)(implicit ec: ExecutionContext) = show +@ anim(new AlphaAnimation(0, 1), duration = millis)

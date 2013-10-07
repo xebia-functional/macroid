@@ -266,7 +266,7 @@ object TweakMacros extends Tweaking {
       case FuncListener ⇒ q"$f(..$argIdents)"
       case ThunkListener ⇒ q"$f()"
     }
-    q"{ x: $tpe ⇒ x.$setter(new $listener { override def ${on.name}(..$params) = $impl })}"
+    q"{ x: $tpe ⇒ x.$setter(new $listener { override def ${on.name.toTermName}(..$params) = $impl })}"
   }
 
   def onBlockImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[Tweak[A]] = {

@@ -6,9 +6,9 @@ homepage := Some(url("http://github.com/stanch/macroid"))
 
 organization := "org.macroid"
 
-version := "1.0.0-20131002"
+version := "1.0.0-20131007"
 
-scalaVersion := "2.10.3-RC3"
+scalaVersion := "2.10.3"
 
 scalacOptions ++= Seq("-feature", "-deprecation")
 

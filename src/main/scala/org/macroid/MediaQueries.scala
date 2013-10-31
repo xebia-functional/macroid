@@ -35,13 +35,14 @@ trait MediaQueries {
   def hdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_HIGH)
   def xhdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_XHIGH)
 
-  implicit class Units(v: Double)(implicit ctx: Context) {
+  implicit class Units[A](v: A)(implicit ctx: Context, numeric: Numeric[A]) {
+    import Numeric.Implicits.infixNumericOps
     /** Using pixels is strictly discouraged! */
-    def px = v.toInt
+    def px = v.toInt()
     /** Density-independent points */
-    def dp = (v * displayMetrics.density).toInt
+    def dp = (v.toFloat() * displayMetrics.density).toInt
     /** Scale-independent points */
-    def sp = (v * displayMetrics.scaledDensity).toInt
+    def sp = (v.toFloat() * displayMetrics.scaledDensity).toInt
   }
 
   /** Width is at least v */

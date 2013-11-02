@@ -6,13 +6,14 @@ homepage := Some(url("http://github.com/stanch/macroid"))
 
 organization := "org.macroid"
 
-version := "1.0.1"
+version := "1.1.0-20131102"
 
 scalaVersion := "2.10.3"
 
 scalacOptions ++= Seq("-feature", "-deprecation")
 
 resolvers ++= Seq(
+  Resolver.sonatypeRepo("releases"),
   Resolver.sonatypeRepo("snapshots"),
   "Google Repository" at (new File(System.getenv("ANDROID_SDK_HOME")) / "extras" / "google" / "m2repository").getAbsolutePath
 )

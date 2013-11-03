@@ -90,7 +90,7 @@ trait Tweaks extends Tweaking {
     x.setMax(length)
     x ~> show
     futures.foreach(f ⇒ f.recover { case _ ⇒ }.foreach { _ ⇒
-      Concurrency.fireForget {
+      Concurrency.fireUi {
         x.incrementProgressBy(1)
         if (x.getProgress == x.getMax - 1) x ~> hide
       }

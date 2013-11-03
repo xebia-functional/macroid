@@ -65,7 +65,7 @@ trait Tweaking extends Functors {
   // applying tweaks to views
   implicit class ViewTweaking[A <: View](v: A) {
     /** Tweak `v`. Always runs on UI thread */
-    def ~>(t: Tweak[A]): A = { Concurrency.fireForget(t(v)); v }
+    def ~>(t: Tweak[A]): A = { Concurrency.fireUi(t(v)); v }
     /** Apply tweak(s) in `f` to `v`. Always runs on UI thread */
     def ~>[F[+_]: Functor](f: F[Tweak[A]]): A = { implicitly[Functor[F]].map(f)(t ⇒ v ~> t); v }
   }
@@ -136,7 +136,7 @@ trait Snailing extends Tweaking {
     /** Apply a snail to `v`. Always runs on UI thread */
     def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[A] = {
       val snailPromise = Promise[Unit]()
-      Concurrency.fireForget(snailPromise.completeWith(s(v)))
+      Concurrency.fireUi(snailPromise.completeWith(s(v)))
       snailPromise.future.map(_ ⇒ v)
     }
     /** Apply a future snail to `v`. Always runs on UI thread */
@@ -150,7 +150,7 @@ trait Snailing extends Tweaking {
       case None ⇒ Future.successful(None)
       case Some(v) ⇒
         val snailPromise = Promise[Unit]()
-        Concurrency.fireForget(snailPromise.completeWith(s(v)))
+        Concurrency.fireUi(snailPromise.completeWith(s(v)))
         snailPromise.future.map(_ ⇒ Some(v))
     }
     /** Apply a future snail to view inside `f`. Always runs on UI thread */

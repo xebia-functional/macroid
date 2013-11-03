@@ -18,7 +18,7 @@ trait Bundles {
     }
   }
 
-  implicit val bundleMonoid = new Monoid[Bundle] {
+  implicit object bundleMonoid extends Monoid[Bundle] {
     def append(b1: Bundle, b2: ⇒ Bundle) = b1 + b2
     def zero = new Bundle
   }

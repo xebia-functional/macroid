@@ -42,7 +42,7 @@ trait Snails extends Snailing with Tweaks {
       x.setIndeterminate(false)
       x.setMax(futures.length)
       x.setProgress(0)
-      futures.foreach(f ⇒ f.recover { case _ ⇒ }.foreach(_ ⇒ Concurrency.fireForget(x.incrementProgressBy(1))))
+      futures.foreach(f ⇒ f.recover { case _ ⇒ }.foreach(_ ⇒ Concurrency.fireUi(x.incrementProgressBy(1))))
     } + show +@ wait(Future.sequence(futures)) @+ hide
 }
 

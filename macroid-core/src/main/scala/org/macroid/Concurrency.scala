@@ -24,7 +24,7 @@ trait Concurrency {
   @inline def Ui[A](f: ⇒ A): Future[A] = runOnUiThread(f)
 
   /** Run supplied block of code on UI thread without tracking its progress */
-  @inline private[macroid] def fireForget[A](f: ⇒ A) {
+  @inline private[macroid] def fireUi[A](f: ⇒ A) {
     if (uiThread == Thread.currentThread) {
       Try(f)
     } else uiHandler.post(new Runnable {

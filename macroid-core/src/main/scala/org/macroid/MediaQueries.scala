@@ -4,6 +4,7 @@ import scala.language.implicitConversions
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import android.content.res.Configuration
 
 case class MediaQuery(b: Boolean) {
   /** Return Some(v) if the queried condition holds, otherwise None */
@@ -34,6 +35,12 @@ trait MediaQueries {
   def mdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_MEDIUM)
   def hdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_HIGH)
   def xhdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_XHIGH)
+
+  def portrait(implicit ctx: Context) =
+    MediaQuery(ctx.getResources.getConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT)
+
+  def landscape(implicit ctx: Context) =
+    MediaQuery(ctx.getResources.getConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE)
 
   implicit class Units[A](v: A)(implicit ctx: Context, numeric: Numeric[A]) {
     import Numeric.Implicits.infixNumericOps

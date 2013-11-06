@@ -47,6 +47,7 @@ trait FragmentBuilding extends Bundles { self: ViewSearch ⇒
 object FragmentBuildingMacros {
   def instFrag[A <: Fragment: c.WeakTypeTag](c: MacroContext)(args: Seq[c.Expr[Any]], ctx: c.Expr[Context]) = {
     import c.universe._
+
     scala.util.Try {
       // try to use newInstance(args)
       c.typeCheck(q"${weakTypeOf[A].typeSymbol.companionSymbol}.newInstance(..$args)")
@@ -74,9 +75,7 @@ object FragmentBuildingMacros {
   def passImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(arguments: c.Expr[(String, Any)]*) = {
     import c.universe._
     val Apply(Apply(_, List(constructor, args)), List(ctx)) = c.prefix.tree
-    val x = c.Expr[FragmentBuilding#FragmentBuilder[A]](q"FragmentBuilder($constructor, $args + bundle(..$arguments))($ctx)")
-    println(x)
-    x
+    c.Expr[FragmentBuilding#FragmentBuilder[A]](q"FragmentBuilder($constructor, $args + bundle(..$arguments))($ctx)")
   }
 }
 

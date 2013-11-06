@@ -4,10 +4,9 @@ import scala.language.experimental.macros
 import scala.language.higherKinds
 import android.content.Context
 import android.view.{ ViewGroup, View }
-import org.macroid.util.Functors
+import org.macroid.util.{ Effectors, Effector }
 import scala.concurrent.{ Promise, ExecutionContext, Future }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
-import scalaz.{ Functor, Monoid }
 
 /** This trait contains basic building blocks used to define layouts: w, l and slot */
 trait LayoutBuilding {
@@ -46,43 +45,44 @@ object LayoutBuildingMacros {
 }
 
 /** This trait defines tweaks, tweaking operator (~>) and its generalized counterparts for Functors */
-trait Tweaking extends Functors {
+trait Tweaking extends Effectors {
   /** A tweak is a function that mutates a View */
   type Tweak[-A <: View] = Function[A, Unit]
 
-  // a monoid instance
-  implicit def tweakMonoid[A <: View] = new Monoid[Tweak[A]] {
-    def zero = { x ⇒ () }
-    def append(t1: Tweak[A], t2: ⇒ Tweak[A]) = t1 + t2
+  object Tweak {
+    /** A tweak that does nothing */
+    def blank[A <: View]: Tweak[A] = { x ⇒ () }
   }
 
-  // combining tweaks
+  /** Combining tweaks */
   implicit class TweakAddition[A <: View](t: Tweak[A]) {
     /** Combine (sequence) with another tweak */
     def +[B <: A](other: Tweak[B]): Tweak[B] = { x ⇒ t(x); other(x) }
   }
 
-  // applying tweaks to views
+  // TODO: fundeps
+
+  /** Applying tweaks to views */
   implicit class ViewTweaking[A <: View](v: A) {
     /** Tweak `v`. Always runs on UI thread */
     def ~>(t: Tweak[A]): A = { Concurrency.fireUi(t(v)); v }
     /** Apply tweak(s) in `f` to `v`. Always runs on UI thread */
-    def ~>[F[+_]: Functor](f: F[Tweak[A]]): A = { implicitly[Functor[F]].map(f)(t ⇒ v ~> t); v }
+    def ~>[F[+_]: Effector](f: F[Tweak[A]]): A = { implicitly[Effector[F]].foreach(f)(t ⇒ v ~> t); v }
   }
 
-  // applying tweaks to functors
-  implicit class FunctorTweaking[A <: View, F[_]: Functor](f: F[A]) {
+  /** Applying tweaks to effectors */
+  implicit class EffectorTweaking[A <: View, F[_]: Effector](f: F[A]) {
     /** Tweak view(s) in `f`. Always runs on UI thread */
-    def ~>(t: Tweak[A]): F[A] = { implicitly[Functor[F]].map(f)(v ⇒ v ~> t); f }
+    def ~>(t: Tweak[A]): F[A] = { implicitly[Effector[F]].foreach(f)(v ⇒ v ~> t); f }
     /** Apply tweak(s) in `g` to view(s) in `f`. Always runs on UI thread */
-    def ~>[G[+_]: Functor](g: G[Tweak[A]]): F[A] = {
-      val F = implicitly[Functor[F]]
-      val G = implicitly[Functor[G]]
-      F.map(f)(v ⇒ G.map(g)(t ⇒ v ~> t)); f
+    def ~>[G[+_]: Effector](g: G[Tweak[A]]): F[A] = {
+      val F = implicitly[Effector[F]]
+      val G = implicitly[Effector[G]]
+      F.foreach(f)(v ⇒ G.foreach(g)(t ⇒ v ~> t)); f
     }
   }
 
-  // applying tweaks to futures of options
+  /** Applying tweaks to futures of options */
   implicit class FutureOptionTweaking[A <: View](f: Future[Option[A]]) {
     /** Tweak view in `f`. Always runs on UI thread */
     def ~>(t: Tweak[A])(implicit ec: ExecutionContext): Future[Option[A]] = f map {
@@ -91,7 +91,7 @@ trait Tweaking extends Functors {
       case None ⇒ None
     }
     /** Apply tweak(s) in `g` to view in `f`. Always runs on UI thread */
-    def ~>[G[+_]](g: G[Tweak[A]])(implicit ec: ExecutionContext, ev: Functor[G]): Future[Option[A]] = f map {
+    def ~>[G[+_]](g: G[Tweak[A]])(implicit ec: ExecutionContext, ev: Effector[G]): Future[Option[A]] = f map {
       case Some(v) ⇒
         v ~> g; Some(v)
       case None ⇒ None
@@ -106,18 +106,18 @@ trait Snailing extends Tweaking {
   /** A snail mutates the view slowly (e.g. animation) */
   type Snail[-A <: View] = Function[A, Future[Unit]]
 
-  // a monoid instance
-  implicit def snailMonoid[A <: View](implicit ec: ExecutionContext) = new Monoid[Snail[A]] {
-    def zero = { x ⇒ Future.successful(()) }
-    def append(t1: Snail[A], t2: ⇒ Snail[A]) = t1 @+@ t2
+  object Snail {
+    /** A snail that does nothing */
+    def blank[A <: View]: Snail[A] = { x ⇒ Future.successful(()) }
   }
 
-  // combining tweaks with snails
+  /** Combining tweaks with snails */
   implicit class TweakSnailAddition[A <: View](t: Tweak[A]) {
+    /** Combine (sequence) with a snail */
     def +@[B <: A](other: Snail[B]): Snail[B] = { x ⇒ t(x); other(x) }
   }
 
-  // combining snails
+  /** Combining snails */
   implicit class SnailAddition[A <: View](s: Snail[A]) {
     /** Combine (sequence) with a tweak */
     def @+[B <: A](other: Tweak[B])(implicit ec: ExecutionContext): Snail[B] = { x ⇒
@@ -131,7 +131,7 @@ trait Snailing extends Tweaking {
 
   /* TODO: can this be shortened with fundeps and/or monad laws? */
 
-  // applying snails to views
+  /** Applying snails to views */
   implicit class ViewSnailing[A <: View](v: A) {
     /** Apply a snail to `v`. Always runs on UI thread */
     def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[A] = {
@@ -143,7 +143,7 @@ trait Snailing extends Tweaking {
     def ~@>(g: Future[Snail[A]])(implicit ec: ExecutionContext): Future[A] = g.flatMap(s ⇒ v ~@> s)
   }
 
-  // applying snails to options
+  /** Applying snails to options */
   implicit class OptionSnailing[A <: View](f: Option[A]) {
     /** Apply a snail to the view inside `f`. Always runs on UI thread */
     def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[Option[A]] = f match {
@@ -157,7 +157,7 @@ trait Snailing extends Tweaking {
     def ~@>(g: Future[Snail[A]])(implicit ec: ExecutionContext): Future[Option[A]] = g.flatMap(s ⇒ f ~@> s)
   }
 
-  // applying snails to futures
+  /** Applying snails to futures */
   implicit class FutureSnailing[A <: View](f: Future[A]) {
     /** Apply a snail to view inside `f`. Always runs on UI thread */
     def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[A] = f.flatMap(v ⇒ v ~@> s)
@@ -165,7 +165,7 @@ trait Snailing extends Tweaking {
     def ~@>(g: Future[Snail[A]])(implicit ec: ExecutionContext): Future[A] = g.flatMap(s ⇒ f ~@> s)
   }
 
-  // applying snails to futures of options
+  /** Applying snails to futures of options */
   implicit class FutureOptionSnailing[A <: View](f: Future[Option[A]]) {
     /** Apply a snail to the view inside `f`. Always runs on UI thread */
     def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[Option[A]] = f.flatMap(v ⇒ v ~@> s)

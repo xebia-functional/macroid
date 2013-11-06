@@ -3,7 +3,6 @@ package org.macroid
 import scala.language.experimental.macros
 import android.os.Bundle
 import scala.reflect.macros.{ Context ⇒ MacroContext }
-import scalaz.Monoid
 
 trait Bundles {
   import BundleMacros._
@@ -17,11 +16,6 @@ trait Bundles {
       c
     }
   }
-
-  implicit object bundleMonoid extends Monoid[Bundle] {
-    def append(b1: Bundle, b2: ⇒ Bundle) = b1 + b2
-    def zero = new Bundle
-  }
 }
 
 object Bundles extends Bundles
@@ -29,6 +23,7 @@ object Bundles extends Bundles
 object BundleMacros {
   def bundleImpl(c: MacroContext)(pairs: c.Expr[(String, Any)]*) = {
     import c.universe._
+
     val (singular, plural) = weakTypeOf[Bundle].members
       .filter(_.name.toString.startsWith("put"))
       .filterNot(_.name.toString == "putAll")

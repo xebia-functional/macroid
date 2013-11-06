@@ -3,6 +3,7 @@ package org.macroid
 import android.widget.Toast
 import android.content.Context
 import android.view.View
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait Toasts {
   type Bread = Toast ⇒ Unit
@@ -11,7 +12,12 @@ trait Toasts {
     def ~>(bread: Bread) = { Concurrency.fireUi(bread(toast)); toast }
   }
 
-  def toast(text: CharSequence)(implicit ctx: Context) = Toast.makeText(ctx, text, Toast.LENGTH_SHORT)
+  implicit class RichFutureToast(toast: Future[Toast]) {
+    def ~>(bread: Bread)(implicit ctx: ExecutionContext) = toast.map(t ⇒ t ~> bread)
+  }
+
+  def toast(text: CharSequence)(implicit ctx: Context) =
+    Concurrency.runOnUiThread(Toast.makeText(ctx, text, Toast.LENGTH_SHORT))
 
   def toast(view: View)(implicit ctx: Context) = new Toast(ctx) {
     setView(view)

@@ -9,7 +9,7 @@ trait Toasts {
   type Bread = Toast ⇒ Unit
 
   implicit class RichToast(toast: Toast) {
-    def ~>(bread: Bread) = { Concurrency.fireUi(bread(toast)); toast }
+    def ~>(bread: Bread) = { UiThreading.fireUi(bread(toast)); toast }
   }
 
   implicit class RichFutureToast(toast: Future[Toast]) {
@@ -17,7 +17,7 @@ trait Toasts {
   }
 
   def toast(text: CharSequence)(implicit ctx: Context) =
-    Concurrency.runOnUiThread(Toast.makeText(ctx, text, Toast.LENGTH_SHORT))
+    UiThreading.runOnUiThread(Toast.makeText(ctx, text, Toast.LENGTH_SHORT))
 
   def toast(view: View)(implicit ctx: Context) = new Toast(ctx) {
     setView(view)

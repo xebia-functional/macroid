@@ -65,7 +65,7 @@ trait Tweaking extends Effectors {
   /** Applying tweaks to views */
   implicit class ViewTweaking[A <: View](v: A) {
     /** Tweak `v`. Always runs on UI thread */
-    def ~>(t: Tweak[A]): A = { Concurrency.fireUi(t(v)); v }
+    def ~>(t: Tweak[A]): A = { UiThreading.fireUi(t(v)); v }
     /** Apply tweak(s) in `f` to `v`. Always runs on UI thread */
     def ~>[F[+_]: Effector](f: F[Tweak[A]]): A = { implicitly[Effector[F]].foreach(f)(t ⇒ v ~> t); v }
   }
@@ -121,11 +121,11 @@ trait Snailing extends Tweaking {
   implicit class SnailAddition[A <: View](s: Snail[A]) {
     /** Combine (sequence) with a tweak */
     def @+[B <: A](other: Tweak[B])(implicit ec: ExecutionContext): Snail[B] = { x ⇒
-      s(x).map(_ ⇒ Concurrency.Ui(other(x)))
+      s(x).map(_ ⇒ UiThreading.ui(other(x)))
     }
     /** Combine (sequence) with another snail */
     def @+@[B <: A](other: Snail[B])(implicit ec: ExecutionContext): Snail[B] = { x ⇒
-      s(x).flatMap(_ ⇒ Concurrency.Ui(other(x)))
+      s(x).flatMap(_ ⇒ UiThreading.ui(other(x)))
     }
   }
 
@@ -136,7 +136,7 @@ trait Snailing extends Tweaking {
     /** Apply a snail to `v`. Always runs on UI thread */
     def ~@>(s: Snail[A])(implicit ec: ExecutionContext): Future[A] = {
       val snailPromise = Promise[Unit]()
-      Concurrency.fireUi(snailPromise.completeWith(s(v)))
+      UiThreading.fireUi(snailPromise.completeWith(s(v)))
       snailPromise.future.map(_ ⇒ v)
     }
     /** Apply a future snail to `v`. Always runs on UI thread */
@@ -150,7 +150,7 @@ trait Snailing extends Tweaking {
       case None ⇒ Future.successful(None)
       case Some(v) ⇒
         val snailPromise = Promise[Unit]()
-        Concurrency.fireUi(snailPromise.completeWith(s(v)))
+        UiThreading.fireUi(snailPromise.completeWith(s(v)))
         snailPromise.future.map(_ ⇒ Some(v))
     }
     /** Apply a future snail to view inside `f`. Always runs on UI thread */
@@ -192,7 +192,7 @@ trait LayoutTransforming {
           case _ ⇒ ()
         }
       }
-      Concurrency.runOnUiThread(applyTo(v))
+      UiThreading.runOnUiThread(applyTo(v))
       v
     }
   }

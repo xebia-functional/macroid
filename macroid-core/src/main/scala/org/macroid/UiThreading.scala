@@ -1,11 +1,10 @@
 package org.macroid
 
 import scala.concurrent.{ ExecutionContext, Promise, Future }
-import scala.util.{ Failure, Try }
+import scala.util.Try
 import android.os.{ Looper, Handler }
-import java.util.NoSuchElementException
 
-trait Concurrency {
+trait UiThreading {
   lazy val uiHandler = new Handler(Looper.getMainLooper)
   lazy val uiThread = Looper.getMainLooper.getThread
 
@@ -21,7 +20,7 @@ trait Concurrency {
   }
 
   /** Run supplied block of code on UI thread (shortcut for runOnUiThread) */
-  @inline def Ui[A](f: ⇒ A): Future[A] = runOnUiThread(f)
+  @inline def ui[A](f: ⇒ A): Future[A] = runOnUiThread(f)
 
   /** Run supplied block of code on UI thread without tracking its progress */
   @inline private[macroid] def fireUi[A](f: ⇒ A) {
@@ -56,4 +55,4 @@ trait Concurrency {
   }
 }
 
-object Concurrency extends Concurrency
+object UiThreading extends UiThreading

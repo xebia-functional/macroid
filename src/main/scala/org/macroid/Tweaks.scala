@@ -13,19 +13,19 @@ trait Tweaks extends Tweaking {
   import TweakMacros._
 
   /** Set this view’s id */
-  def id(id: Int): Tweak[View] = x ⇒ x.setId(id)
+  def id(id: Int) = Tweak[View](_.setId(id))
 
   /** Hide this view (uses View.GONE) */
-  val hide: Tweak[View] = x ⇒ x.setVisibility(View.GONE)
+  val hide = Tweak[View](_.setVisibility(View.GONE))
   /** Show this view (uses View.VISIBLE) */
-  val show: Tweak[View] = x ⇒ x.setVisibility(View.VISIBLE)
+  val show = Tweak[View](_.setVisibility(View.VISIBLE))
   /** Conditionally show/hide this view */
   def show(c: Boolean): Tweak[View] = if (c) show else hide
 
   /** Disable this view */
-  val disable: Tweak[View] = x ⇒ x.setEnabled(false)
+  val disable = Tweak[View](_.setEnabled(false))
   /** Enable this view */
-  val enable: Tweak[View] = x ⇒ x.setEnabled(true)
+  val enable = Tweak[View](_.setEnabled(true))
   /** Conditionally enable/disable this view */
   def enable(c: Boolean): Tweak[View] = if (c) enable else disable
 
@@ -39,27 +39,27 @@ trait Tweaks extends Tweaking {
   def lpOf[B <: ViewGroup](params: Any*): Tweak[View] = macro layoutParamsOfImpl[B]
 
   /** Set text */
-  def text(text: CharSequence): Tweak[TextView] = x ⇒ x.setText(text)
+  def text(text: CharSequence) = Tweak[TextView](_.setText(text))
   /** Set text */
-  def text(text: Int): Tweak[TextView] = x ⇒ x.setText(text)
+  def text(text: Int) = Tweak[TextView](_.setText(text))
   /** Set text */
-  def text(text: Either[Int, CharSequence]): Tweak[TextView] = text match {
-    case Right(t) ⇒ { x ⇒ x.setText(t) }
-    case Left(t) ⇒ { x ⇒ x.setText(t) }
+  def text(text: Either[Int, CharSequence]) = text match {
+    case Right(t) ⇒ Tweak[TextView](_.setText(t))
+    case Left(t) ⇒ Tweak[TextView](_.setText(t))
   }
 
   /** Set padding */
-  def padding(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0, all: Int = -1): Tweak[View] = if (all >= 0) {
-    x: View ⇒ x.setPadding(all, all, all, all)
+  def padding(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0, all: Int = -1) = if (all >= 0) {
+    Tweak[View](_.setPadding(all, all, all, all))
   } else {
-    x: View ⇒ x.setPadding(left, top, right, bottom)
+    Tweak[View](_.setPadding(left, top, right, bottom))
   }
   // TODO: replace with setPaddingRelative!
 
   /** Make this layout vertical */
-  val vertical: Tweak[LinearLayout] = x ⇒ x.setOrientation(LinearLayout.VERTICAL)
+  val vertical = Tweak[LinearLayout](_.setOrientation(LinearLayout.VERTICAL))
   /** Make this layout horizontal */
-  val horizontal: Tweak[LinearLayout] = x ⇒ x.setOrientation(LinearLayout.HORIZONTAL)
+  val horizontal = Tweak[LinearLayout](_.setOrientation(LinearLayout.HORIZONTAL))
 
   /** Assign the view to the provided `var` */
   def wire[A <: View](v: A): Tweak[A] = macro wireImpl[A]
@@ -67,23 +67,23 @@ trait Tweaks extends Tweaking {
   def wire[A <: View](v: Option[A]): Tweak[A] = macro wireOptionImpl[A]
 
   /** Add views to the layout */
-  def addViews(children: Seq[View], removeOld: Boolean = false): Tweak[ViewGroup] = { x ⇒
+  def addViews(children: Seq[View], removeOld: Boolean = false) = Tweak[ViewGroup] { x ⇒
     if (removeOld) x.removeAllViews()
     children.foreach(c ⇒ x.addView(c))
   }
   /** Add view to the layout in reversed order (uses addView(child, 0)) */
-  def addViewsReverse(children: Seq[View], removeOld: Boolean = false): Tweak[ViewGroup] = { x ⇒
+  def addViewsReverse(children: Seq[View], removeOld: Boolean = false) = Tweak[ViewGroup] { x ⇒
     if (removeOld) x.removeAllViews()
     children.foreach(c ⇒ x.addView(c, 0))
   }
 
   /** Show this progress bar with indeterminate progress and hide it once `future` is done */
-  def showProgress(future: Future[Any])(implicit ec: ExecutionContext): Tweak[ProgressBar] = { x ⇒
+  def showProgress(future: Future[Any])(implicit ec: ExecutionContext) = Tweak[ProgressBar] { x ⇒
     x.setIndeterminate(true)
     x ~> show ~> future.recover { case _ ⇒ }.map(_ ⇒ hide)
   }
   /** Show this progress bar with determinate progress and hide it once all futures are done */
-  def showProgress(futures: Seq[Future[Any]])(implicit ec: ExecutionContext): Tweak[ProgressBar] = { x ⇒
+  def showProgress(futures: Seq[Future[Any]])(implicit ec: ExecutionContext) = Tweak[ProgressBar] { x ⇒
     val length = futures.length
     x.setIndeterminate(false)
     x.setProgress(0)
@@ -115,20 +115,20 @@ trait Tweaks extends Tweaking {
 
 object Tweaks extends Tweaks
 
-object TweakMacros extends Tweaking {
+object TweakMacros {
   def wireImpl[A <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[A]): c.Expr[Tweak[A]] = {
     import c.universe._
-    c.Expr[Tweak[A]](q"{ x: ${weakTypeOf[A]} ⇒ $v = x }")
+    c.Expr[Tweak[A]](q"org.macroid.Tweak[${weakTypeOf[A]}] { x ⇒ $v = x }")
   }
 
   def wireOptionImpl[A <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[Option[A]]): c.Expr[Tweak[A]] = {
     import c.universe._
-    c.Expr[Tweak[A]](q"{ x: ${weakTypeOf[A]} ⇒ $v = Some(x) }")
+    c.Expr[Tweak[A]](q"org.macroid.Tweak[${weakTypeOf[A]}] { x ⇒ $v = Some(x) }")
   }
 
   def layoutParams(c: MacroContext)(l: c.Type, params: Seq[c.Expr[Any]]) = {
     import c.universe._
-    q"{ x: android.view.View ⇒ x.setLayoutParams(new ${l.typeSymbol.companionSymbol}.LayoutParams(..$params)) }"
+    q"org.macroid.Tweak[android.view.View] { x ⇒ x.setLayoutParams(new ${l.typeSymbol.companionSymbol}.LayoutParams(..$params)) }"
   }
 
   def findLayoutParams(c: MacroContext)(layoutType: c.Type, params: Seq[c.Expr[Any]]): c.Expr[Tweak[View]] = {
@@ -184,40 +184,10 @@ object TweakMacros extends Tweaking {
     findLayoutParams(c)(c.weakTypeOf[B], params)
   }
 
-  /* Another great hack. Credit goes to @pelotom for using this in Effectful */
-  def fixTypeInference(c: MacroContext)(tp: c.Type) = {
-    import c.universe._
-    c.macroApplication.setType(c.typeCheck(q"val x: Tweak[$tp] = ???; x").tpe)
-  }
-
-  def innerType(c: MacroContext)(t: c.Type): Option[c.Type] = {
-    import c.universe._
-    t match {
-      case TypeRef(_, x, Nil) ⇒ Some(x.asType.toType)
-      case TypeRef(_, _, x :: Nil) ⇒ innerType(c)(x)
-      case _ ⇒ None
-    }
-  }
-
   def onBase[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String]) = {
     import c.universe._
 
-    // fight against variance (A may be inferred as View, since Tweak[View] <:< Tweak[A <: View])
-    val TildeArrow = newTermName("~>").encodedName
-    val tweaking: PartialFunction[Tree, Boolean] = { case Apply(Select(_, TildeArrow), _) ⇒ true }
-
-    // find `widget ~> On....` application and get widget’s exact type
-    var tp = findImmediateParentTree(c)(tweaking) flatMap {
-      // extract the target of ~> application
-      case Apply(Select(victim, _), _) ⇒ Some(c.typeCheck(victim).tpe.widen)
-      case _ ⇒ None
-    } flatMap { t ⇒
-      // in case of Option[T] or even Future[Option[T]], we need just T
-      innerType(c)(t)
-    } getOrElse {
-      // resort to A
-      weakTypeOf[A]
-    }
+    val tp = weakTypeOf[A]
 
     // find the setter
     val Expr(Literal(Constant(eventName: String))) = event
@@ -227,17 +197,6 @@ object TweakMacros extends Tweaking {
     } getOrElse {
       c.abort(c.enclosingPosition, s"Could not find method setOn${eventName.capitalize}Listener in $tp. You may need to provide the type argument explicitly")
     }
-
-    // settle on widget’s type less eagerly
-    var oldtp = tp
-    while (scala.util.Try {
-      assert(tp.member(newTermName(s"setOn${eventName.capitalize}Listener")).asMethod != NoSymbol)
-    }.isSuccess && tp.baseClasses.length > 1) {
-      oldtp = tp
-      tp = tp.baseClasses(1).asType.toType
-    }
-    tp = oldtp
-    fixTypeInference(c)(tp)
 
     // find the method to override
     val listener = setter.paramss(0)(0).typeSignature
@@ -266,7 +225,7 @@ object TweakMacros extends Tweaking {
       case FuncListener ⇒ q"$f(..$argIdents)"
       case ThunkListener ⇒ q"$f()"
     }
-    q"{ x: $tpe ⇒ x.$setter(new $listener { override def ${on.name.toTermName}(..$params) = $impl })}"
+    q"org.macroid.Tweak[$tpe] { x ⇒ x.$setter(new $listener { override def ${on.name.toTermName}(..$params) = $impl })}"
   }
 
   def onBlockImpl[A <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]): c.Expr[Tweak[A]] = {

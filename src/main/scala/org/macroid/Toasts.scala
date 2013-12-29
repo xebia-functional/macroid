@@ -16,10 +16,10 @@ trait Toasts {
     def ~>(bread: Bread)(implicit ctx: ExecutionContext) = toast.map(t ⇒ t ~> bread)
   }
 
-  def toast(text: CharSequence)(implicit ctx: Context) =
-    UiThreading.runOnUiThread(Toast.makeText(ctx, text, Toast.LENGTH_SHORT))
+  def toast(text: CharSequence)(implicit ctx: AppContext) =
+    UiThreading.runOnUiThread(Toast.makeText(ctx.get, text, Toast.LENGTH_SHORT))
 
-  def toast(view: View)(implicit ctx: Context) = new Toast(ctx) {
+  def toast(view: View)(implicit ctx: AppContext) = new Toast(ctx.get) {
     setView(view)
     setDuration(Toast.LENGTH_SHORT)
   }

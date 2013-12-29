@@ -9,16 +9,19 @@ trait Effector[F[_]] {
 }
 
 trait Effectors {
-  implicit object listF extends Effector[List] {
+  implicit object listEffector extends Effector[List] {
     def foreach[A](fa: List[A])(f: A ⇒ Any) = fa.foreach(f)
   }
-  implicit object optionF extends Effector[Option] {
+
+  implicit object optionEffector extends Effector[Option] {
     def foreach[A](fa: Option[A])(f: A ⇒ Any) = fa.foreach(f)
   }
-  implicit def futureF(implicit ec: ExecutionContext) = new Effector[Future] {
+
+  implicit def futureEffector(implicit ec: ExecutionContext) = new Effector[Future] {
     def foreach[A](fa: Future[A])(f: A ⇒ Any) = fa.foreach(f)
   }
-  implicit def eventStreamF(implicit obs: Observer) = new Effector[EventStream] {
+
+  implicit def eventStreamEffector(implicit obs: Observer) = new Effector[EventStream] {
     def foreach[A](fa: EventStream[A])(f: A ⇒ Any) = fa.foreach(f)
   }
 }

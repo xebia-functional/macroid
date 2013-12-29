@@ -19,8 +19,8 @@ object MediaQuery {
 }
 
 trait MediaQueries {
-  private def displayMetrics(implicit ctx: Context) = {
-    val display = ctx.getSystemService(Context.WINDOW_SERVICE).asInstanceOf[WindowManager].getDefaultDisplay
+  private def displayMetrics(implicit ctx: AppContext) = {
+    val display = ctx.get.getSystemService(Context.WINDOW_SERVICE).asInstanceOf[WindowManager].getDefaultDisplay
     val metrics = new DisplayMetrics
     display.getMetrics(metrics)
     metrics
@@ -31,18 +31,18 @@ trait MediaQueries {
     def |[B >: A](default: B) = o getOrElse default
   }
 
-  def ldpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_LOW)
-  def mdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_MEDIUM)
-  def hdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_HIGH)
-  def xhdpi(implicit ctx: Context) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_XHIGH)
+  def ldpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_LOW)
+  def mdpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_MEDIUM)
+  def hdpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_HIGH)
+  def xhdpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_XHIGH)
 
-  def portrait(implicit ctx: Context) =
-    MediaQuery(ctx.getResources.getConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT)
+  def portrait(implicit ctx: AppContext) =
+    MediaQuery(ctx.get.getResources.getConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT)
 
-  def landscape(implicit ctx: Context) =
-    MediaQuery(ctx.getResources.getConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+  def landscape(implicit ctx: AppContext) =
+    MediaQuery(ctx.get.getResources.getConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE)
 
-  implicit class Units[A](v: A)(implicit ctx: Context, numeric: Numeric[A]) {
+  implicit class Units[A](v: A)(implicit ctx: AppContext, numeric: Numeric[A]) {
     import Numeric.Implicits.infixNumericOps
     /** Using pixels is strictly discouraged! */
     def px = v.toInt()
@@ -53,22 +53,22 @@ trait MediaQueries {
   }
 
   /** Width is at least v */
-  def minWidth(v: Int)(implicit ctx: Context) = MediaQuery(displayMetrics.widthPixels >= v)
+  def minWidth(v: Int)(implicit ctx: AppContext) = MediaQuery(displayMetrics.widthPixels >= v)
   /** Same as minWidth(v) */
-  def widerThan(v: Int)(implicit ctx: Context) = minWidth(v)
+  def widerThan(v: Int)(implicit ctx: AppContext) = minWidth(v)
   /** Width is at most v */
-  def maxWidth(v: Int)(implicit ctx: Context) = MediaQuery(displayMetrics.widthPixels <= v)
+  def maxWidth(v: Int)(implicit ctx: AppContext) = MediaQuery(displayMetrics.widthPixels <= v)
   /** Same as maxWidth(v) */
-  def narrowerThan(v: Int)(implicit ctx: Context) = maxWidth(v)
+  def narrowerThan(v: Int)(implicit ctx: AppContext) = maxWidth(v)
 
   /** Height is at least v */
-  def minHeight(v: Int)(implicit ctx: Context) = MediaQuery(displayMetrics.heightPixels >= v)
+  def minHeight(v: Int)(implicit ctx: AppContext) = MediaQuery(displayMetrics.heightPixels >= v)
   /** Same as minHeight(v) */
-  def higherThan(v: Int)(implicit ctx: Context) = minHeight(v)
+  def higherThan(v: Int)(implicit ctx: AppContext) = minHeight(v)
   /** Height is at most v */
-  def maxHeight(v: Int)(implicit ctx: Context) = MediaQuery(displayMetrics.heightPixels <= v)
+  def maxHeight(v: Int)(implicit ctx: AppContext) = MediaQuery(displayMetrics.heightPixels <= v)
   /** Same as maxHeight(v) */
-  def lowerThan(v: Int)(implicit ctx: Context) = maxHeight(v)
+  def lowerThan(v: Int)(implicit ctx: AppContext) = maxHeight(v)
 }
 
 object MediaQueries extends MediaQueries

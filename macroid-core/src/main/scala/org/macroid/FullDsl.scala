@@ -2,7 +2,7 @@ package org.macroid
 
 import android.support.v4.app.{ Fragment, FragmentActivity }
 
-trait FullDslActivity extends ActivityContext
+trait FullDslActivity extends ActivityContexts
   with ActivityViewSearch
   with LayoutDsl
   with FragmentDsl
@@ -11,7 +11,7 @@ trait FullDslActivity extends ActivityContext
   with MediaQueries
   with UiThreading { self: FragmentActivity ⇒ }
 
-trait FullDslFragment extends FragmentContext
+trait FullDslFragment extends FragmentContexts
   with FragmentViewSearch
   with LayoutDsl
   with FragmentDsl

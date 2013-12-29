@@ -2,7 +2,8 @@ package org.macroid.util
 
 import scala.language.implicitConversions
 import android.content.Context
+import org.macroid.AppContext
 
 object Text {
-  def apply(id: Int)(implicit ctx: Context): CharSequence = ctx.getResources.getString(id)
+  def apply(id: Int)(implicit ctx: AppContext): CharSequence = ctx.get.getResources.getString(id)
 }

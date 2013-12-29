@@ -17,7 +17,7 @@ trait FragmentBuilding extends Bundles { self: ViewSearch ⇒
    * A fragment builder proxy that handles both inserting fragments into layout
    * (via `framed`) and creating fragment factories (via `factory`)
    */
-  case class FragmentBuilder[A <: Fragment](constructor: Thunk[A], arguments: Bundle)(implicit ctx: Context) {
+  case class FragmentBuilder[A <: Fragment](constructor: Thunk[A], arguments: Bundle)(implicit ctx: ActivityContext) {
     /** Pass arguments in a Bundle */
     def pass(bundle: Bundle) = FragmentBuilder(constructor, arguments + bundle)
     /** Pass arguments, which will be put into a Bundle */
@@ -31,21 +31,21 @@ trait FragmentBuilding extends Bundles { self: ViewSearch ⇒
       findFrag[Fragment](tag) getOrElse {
         fragmentManager.beginTransaction().add(id, factory(), tag).commit()
       }
-      new FrameLayout(ctx) { setId(id) }
+      new FrameLayout(ctx.get) { setId(id) }
     }
   }
 
-  def f[A <: Fragment](implicit ctx: Context) = macro fragmentImpl[A]
+  def f[A <: Fragment](implicit ctx: ActivityContext) = macro fragmentImpl[A]
 
   /**
    * Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
    * Without arguments, newInstance() is called, and if that fails, class constructor is used.
    */
-  def f[A <: Fragment](newInstanceArgs: Any*)(implicit ctx: Context) = macro fragmentArgImpl[A]
+  def f[A <: Fragment](newInstanceArgs: Any*)(implicit ctx: ActivityContext) = macro fragmentArgImpl[A]
 }
 
 object FragmentBuildingMacros {
-  def instFrag[A <: Fragment: c.WeakTypeTag](c: MacroContext)(args: Seq[c.Expr[Any]], ctx: c.Expr[Context]) = {
+  def instFrag[A <: Fragment: c.WeakTypeTag](c: MacroContext)(args: Seq[c.Expr[Any]], ctx: c.Expr[ActivityContext]) = {
     import c.universe._
 
     scala.util.Try {
@@ -60,13 +60,13 @@ object FragmentBuildingMacros {
     }
   }
 
-  def fragmentImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[Context]) = {
+  def fragmentImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[ActivityContext]) = {
     import c.universe._
     val constructor = instFrag(c)(Seq(), ctx)
     c.Expr[FragmentBuilding#FragmentBuilder[A]](q"FragmentBuilder(org.macroid.util.Thunk($constructor), new android.os.Bundle)($ctx)")
   }
 
-  def fragmentArgImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(newInstanceArgs: c.Expr[Any]*)(ctx: c.Expr[Context]) = {
+  def fragmentArgImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(newInstanceArgs: c.Expr[Any]*)(ctx: c.Expr[ActivityContext]) = {
     import c.universe._
     val constructor = instFrag(c)(newInstanceArgs, ctx)
     c.Expr[FragmentBuilding#FragmentBuilder[A]](q"FragmentBuilder(org.macroid.util.Thunk($constructor), new android.os.Bundle)($ctx)")

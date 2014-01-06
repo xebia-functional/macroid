@@ -8,7 +8,11 @@ trait LayoutDsl
   with Tweaking
   with Snailing
 
-object LayoutDsl extends LayoutDsl
+object LayoutDsl
+  extends LayoutDsl
+
+trait FragmentDsl
+  extends FragmentBuilding { self: ViewSearch ⇒ }
 
 trait FullDslActivity
   extends ActivityContexts

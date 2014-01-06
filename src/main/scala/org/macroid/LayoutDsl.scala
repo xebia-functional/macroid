@@ -70,7 +70,3 @@ trait LayoutTransforming {
     }
   }
 }
-
-trait LayoutDsl extends LayoutBuilding with Tweaking with Snailing with LayoutTransforming
-
-object LayoutDsl extends LayoutDsl

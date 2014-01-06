@@ -78,5 +78,3 @@ object FragmentBuildingMacros {
     c.Expr[FragmentBuilding#FragmentBuilder[A]](q"FragmentBuilder($constructor, $args + bundle(..$arguments))($ctx)")
   }
 }
-
-trait FragmentDsl extends FragmentBuilding { self: ViewSearch ⇒ }

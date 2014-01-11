@@ -6,6 +6,7 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 import android.content.res.Configuration
 
+/** A media query is a small wrapper around Boolean with nicer operators */
 case class MediaQuery(b: Boolean) {
   /** Return Some(v) if the queried condition holds, otherwise None */
   def ?[A](v: A) = if (b) Some(v) else None
@@ -14,34 +15,35 @@ case class MediaQuery(b: Boolean) {
   def &(q: MediaQuery) = MediaQuery(b && q.b)
   def |(q: MediaQuery) = MediaQuery(b || q.b)
 }
+
 object MediaQuery {
   implicit def toBoolean(q: MediaQuery) = q.b
 }
 
-trait MediaQueries {
-  private def displayMetrics(implicit ctx: AppContext) = {
+sealed trait MediaQueryEssentials {
+  protected def displayMetrics(implicit ctx: AppContext) = {
     val display = ctx.get.getSystemService(Context.WINDOW_SERVICE).asInstanceOf[WindowManager].getDefaultDisplay
     val metrics = new DisplayMetrics
     display.getMetrics(metrics)
     metrics
   }
+}
 
-  implicit class RichOption[A](o: Option[A]) {
-    def |[B >: A](alternative: Option[B]) = o orElse alternative
-    def |[B >: A](default: B) = o getOrElse default
-  }
-
+trait DensityQueries extends MediaQueryEssentials {
   def ldpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_LOW)
   def mdpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_MEDIUM)
   def hdpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_HIGH)
   def xhdpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_XHIGH)
+}
 
+trait OrientationQueries {
   def portrait(implicit ctx: AppContext) =
     MediaQuery(ctx.get.getResources.getConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT)
-
   def landscape(implicit ctx: AppContext) =
     MediaQuery(ctx.get.getResources.getConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+}
 
+trait DisplayUnits extends MediaQueryEssentials {
   implicit class Units[A](v: A)(implicit ctx: AppContext, numeric: Numeric[A]) {
     import Numeric.Implicits.infixNumericOps
     /** Using pixels is strictly discouraged! */
@@ -51,7 +53,9 @@ trait MediaQueries {
     /** Scale-independent points */
     def sp = (v.toFloat() * displayMetrics.scaledDensity).toInt
   }
+}
 
+trait SizeQueries extends MediaQueryEssentials {
   /** Width is at least v */
   def minWidth(v: Int)(implicit ctx: AppContext) = MediaQuery(displayMetrics.widthPixels >= v)
   /** Same as minWidth(v) */
@@ -71,6 +75,16 @@ trait MediaQueries {
   def lowerThan(v: Int)(implicit ctx: AppContext) = maxHeight(v)
 }
 
-object MediaQueries extends MediaQueries
+trait MediaQueries
+  extends DensityQueries
+  with OrientationQueries
+  with DisplayUnits
+  with SizeQueries {
 
-object MQ extends MediaQueries
+  implicit class RichOption[A](o: Option[A]) {
+    def |[B >: A](alternative: Option[B]) = o orElse alternative
+    def |[B >: A](default: B) = o getOrElse default
+  }
+}
+
+object MediaQueries extends MediaQueries

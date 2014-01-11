@@ -1,35 +1,32 @@
 package org.macroid
 
-import android.support.v4.app.{ Fragment, FragmentActivity }
+import android.support.v4.app.Fragment
+import android.app.Activity
 
 trait LayoutDsl
-  extends LayoutBuilding
-  with LayoutTransforming
+  extends Searching
+  with LayoutBuilding
+  with FragmentBuilding
   with Tweaking
   with Snailing
+  with Transforming
 
 object LayoutDsl
   extends LayoutDsl
 
-trait FragmentDsl
-  extends FragmentBuilding { self: ViewSearch ⇒ }
+trait FullDsl
+  extends LayoutDsl
+  with Tweaks
+  with Snails
+  with MediaQueries
+  with UiThreading
+
+object FullDsl extends FullDsl
 
 trait FullDslActivity
   extends ActivityContexts
-  with ActivityViewSearch
-  with LayoutDsl
-  with FragmentDsl
-  with Tweaks
-  with Snails
-  with MediaQueries
-  with UiThreading { self: FragmentActivity ⇒ }
+  with FullDsl { self: Activity ⇒ }
 
 trait FullDslFragment
   extends FragmentContexts
-  with FragmentViewSearch
-  with LayoutDsl
-  with FragmentDsl
-  with Tweaks
-  with Snails
-  with MediaQueries
-  with UiThreading { self: Fragment ⇒ }
+  with FullDsl { self: Fragment ⇒ }

@@ -9,31 +9,34 @@ import org.macroid.util.Thunk
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import android.os.Bundle
 
-trait FragmentBuilding extends Bundles { self: ViewSearch ⇒
+/** A fragment builder proxy */
+case class FragmentBuilder[A <: Fragment](constructor: Thunk[A], arguments: Bundle)(implicit ctx: ActivityContext) {
+  import Searching._
+  import Bundles._
+
+  /** Pass arguments in a Bundle */
+  def pass(bundle: Bundle) = FragmentBuilder(constructor, arguments + bundle)
+  /** Pass arguments, which will be put into a Bundle */
+  def pass(arguments: (String, Any)*) = macro FragmentBuildingMacros.passImpl[A]
+
+  /** Fragment factory. In contrast to `constructor`, `factory` passes arguments to the fragment */
+  def factory = constructor map { f ⇒ f.setArguments(arguments); f }
+
+  /** Fragment wrapped in FrameLayout to be added to layout */
+  def framedInside[X: CanManageFragments](manager: X, id: Int, tag: String) = {
+    manager.findFrag[Fragment](tag) getOrElse {
+      manager.fragmentManager.beginTransaction().add(id, factory(), tag).commit()
+    }
+    new FrameLayout(ctx.get) { setId(id) }
+  }
+}
+
+trait FragmentBuilding extends Bundles {
   import FragmentBuildingMacros._
 
   /**
-   * A fragment builder proxy that handles both inserting fragments into layout
-   * (via `framed`) and creating fragment factories (via `factory`)
+   * Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
    */
-  case class FragmentBuilder[A <: Fragment](constructor: Thunk[A], arguments: Bundle)(implicit ctx: ActivityContext) {
-    /** Pass arguments in a Bundle */
-    def pass(bundle: Bundle) = FragmentBuilder(constructor, arguments + bundle)
-    /** Pass arguments, which will be put into a Bundle */
-    def pass(arguments: (String, Any)*) = macro passImpl[A]
-
-    /** Fragment factory. In contrast to `constructor`, `factory` passes arguments to the fragment */
-    def factory = constructor map { f ⇒ f.setArguments(arguments); f }
-
-    /** Fragment wrapped in FrameLayout to be added to layout */
-    def framed(id: Int, tag: String) = {
-      findFrag[Fragment](tag) getOrElse {
-        fragmentManager.beginTransaction().add(id, factory(), tag).commit()
-      }
-      new FrameLayout(ctx.get) { setId(id) }
-    }
-  }
-
   def f[A <: Fragment](implicit ctx: ActivityContext) = macro fragmentImpl[A]
 
   /**
@@ -62,18 +65,18 @@ object FragmentBuildingMacros {
   def fragmentImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[ActivityContext]) = {
     import c.universe._
     val constructor = instFrag(c)(Seq(), ctx)
-    c.Expr[FragmentBuilding#FragmentBuilder[A]](q"FragmentBuilder(org.macroid.util.Thunk($constructor), new android.os.Bundle)($ctx)")
+    c.Expr[FragmentBuilder[A]](q"org.macroid.FragmentBuilder(org.macroid.util.Thunk($constructor), new android.os.Bundle)($ctx)")
   }
 
   def fragmentArgImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(newInstanceArgs: c.Expr[Any]*)(ctx: c.Expr[ActivityContext]) = {
     import c.universe._
     val constructor = instFrag(c)(newInstanceArgs, ctx)
-    c.Expr[FragmentBuilding#FragmentBuilder[A]](q"FragmentBuilder(org.macroid.util.Thunk($constructor), new android.os.Bundle)($ctx)")
+    c.Expr[FragmentBuilder[A]](q"org.macroid.FragmentBuilder(org.macroid.util.Thunk($constructor), new android.os.Bundle)($ctx)")
   }
 
   def passImpl[A <: Fragment: c.WeakTypeTag](c: MacroContext)(arguments: c.Expr[(String, Any)]*) = {
     import c.universe._
     val Apply(Apply(_, List(constructor, args)), List(ctx)) = c.prefix.tree
-    c.Expr[FragmentBuilding#FragmentBuilder[A]](q"FragmentBuilder($constructor, $args + bundle(..$arguments))($ctx)")
+    c.Expr[FragmentBuilder[A]](q"org.macroid.FragmentBuilder($constructor, $args + bundle(..$arguments))($ctx)")
   }
 }

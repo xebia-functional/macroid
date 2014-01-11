@@ -101,7 +101,7 @@ object TweakingMacros {
   /** Create an instance of WidgetType */
   def writeWidgetType(c: MacroContext)(tp: c.Type) = {
     import c.universe._
-    q"new org.macroid.WidgetType { type W = $tp }"
+    q"new ${typeOf[WidgetType]} { type W = $tp }"
   }
 
   /** Get W from WidgetType */

@@ -3,7 +3,7 @@ package org.macroid.contrib
 import android.view.{ ViewGroup, View }
 import android.widget.{ TextView, ArrayAdapter }
 import scala.util.Try
-import org.macroid.{ Tweak, ActivityContext, LayoutDsl }
+import org.macroid.{ Transformer, Tweak, ActivityContext, LayoutDsl }
 import scala.collection.JavaConversions._
 
 abstract class ListAdapter[A, B <: View](implicit ctx: ActivityContext) extends ArrayAdapter[A](ctx.get, 0) {

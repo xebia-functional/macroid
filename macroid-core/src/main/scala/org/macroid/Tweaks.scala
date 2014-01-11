@@ -159,12 +159,12 @@ object Tweaks extends Tweaks
 object BasicTweakMacros {
   def wireImpl[W <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[W]): c.Expr[Tweak[W]] = {
     import c.universe._
-    c.Expr[Tweak[W]](q"org.macroid.Tweak[${weakTypeOf[W]}] { x ⇒ $v = x }")
+    c.Expr[Tweak[W]](q"${weakTypeOf[Tweak[W]]} { x ⇒ $v = x }")
   }
 
   def wireOptionImpl[W <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[Option[W]]): c.Expr[Tweak[W]] = {
     import c.universe._
-    c.Expr[Tweak[W]](q"org.macroid.Tweak[${weakTypeOf[W]}] { x ⇒ $v = Some(x) }")
+    c.Expr[Tweak[W]](q"${weakTypeOf[Tweak[W]]} { x ⇒ $v = Some(x) }")
   }
 }
 
@@ -183,7 +183,7 @@ object LayoutTweakMacros {
 
   def writeLayoutType(c: MacroContext)(tp: c.Type) = {
     import c.universe._
-    q"new org.macroid.LayoutType { type L = $tp }"
+    q"new ${typeOf[LayoutType]} { type L = $tp }"
   }
 
   def readLayoutType(c: MacroContext)(ltp: c.Expr[LayoutType]) = {

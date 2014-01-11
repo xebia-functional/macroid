@@ -37,33 +37,3 @@ object LayoutBuildingMacros {
     c.Expr[L](q"new ${weakTypeOf[L]}($ctx.get) { ..$additions }")
   }
 }
-
-/** This trait defines transformers and transforming operator (~~>) */
-trait LayoutTransforming {
-  /** A transformer is a partial mutating function that can be recursively applied to a layout */
-  type Transformer = PartialFunction[View, Unit]
-
-  // transforming layouts
-  implicit class RichViewGroup[L <: ViewGroup](v: L) {
-    /** Apply transformer. Always runs on UI thread */
-    def ~~>(t: Transformer) = {
-      def applyTo(v: View) {
-        if (t.isDefinedAt(v)) t(v)
-        v match {
-          case Layout(children @ _*) ⇒ children.foreach(applyTo)
-          case _ ⇒ ()
-        }
-      }
-      UiThreading.runOnUiThread(applyTo(v))
-      v
-    }
-  }
-
-  /** layout extractor */
-  object Layout {
-    def unapplySeq(v: View): Option[Seq[View]] = v match {
-      case g: ViewGroup ⇒ Some((0 until g.getChildCount).map(i ⇒ g.getChildAt(i)))
-      case _ ⇒ None
-    }
-  }
-}

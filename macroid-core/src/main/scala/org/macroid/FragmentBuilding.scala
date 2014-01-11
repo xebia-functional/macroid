@@ -3,7 +3,6 @@ package org.macroid
 import scala.language.experimental.macros
 import scala.language.implicitConversions
 import scala.language.postfixOps
-import android.content.Context
 import android.support.v4.app.Fragment
 import android.widget.FrameLayout
 import org.macroid.util.Thunk

@@ -20,8 +20,6 @@ trait LayoutBuilding {
   def slot[W <: View]: Option[W] = None
 }
 
-object LayoutBuilding extends LayoutBuilding
-
 object LayoutBuildingMacros {
   def widgetImpl[W <: View: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[ActivityContext]): c.Expr[W] = {
     import c.universe._
@@ -60,7 +58,6 @@ trait LayoutTransforming {
       v
     }
   }
-  object LayoutTransforming extends LayoutTransforming
 
   /** layout extractor */
   object Layout {

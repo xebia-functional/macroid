@@ -2,8 +2,7 @@ package org.macroid
 
 import org.scalatest.FlatSpec
 import android.widget.{ LinearLayout, TextView, Button }
-import android.view.{ KeyEvent, View }
-import android.widget.TextView.OnEditorActionListener
+import android.app.Activity
 
 class TweakingSpec extends FlatSpec with LayoutBuilding with Tweaks {
   implicit val ctx = ActivityContext(null)
@@ -50,6 +49,15 @@ class TweakingSpec extends FlatSpec with LayoutBuilding with Tweaks {
       l[LinearLayout](
         w[TextView] ~> lp(0, 0, 1.0f)
       )
+    }
+  }
+
+  it should "boo" in {
+    def foo = {
+      import Contexts._
+      class X extends Activity {
+        implicitly[AppContext]
+      }
     }
   }
 }

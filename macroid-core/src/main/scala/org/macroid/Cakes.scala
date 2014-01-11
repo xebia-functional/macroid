@@ -1,18 +1,15 @@
 package org.macroid
 
-import android.support.v4.app.Fragment
-import android.app.Activity
-
 trait LayoutDsl
-  extends Searching
+  extends Contexts
+  with Searching
   with LayoutBuilding
   with FragmentBuilding
   with Tweaking
   with Snailing
   with Transforming
 
-object LayoutDsl
-  extends LayoutDsl
+object LayoutDsl extends LayoutDsl
 
 trait FullDsl
   extends LayoutDsl
@@ -22,11 +19,3 @@ trait FullDsl
   with UiThreading
 
 object FullDsl extends FullDsl
-
-trait FullDslActivity
-  extends ActivityContexts
-  with FullDsl { self: Activity ⇒ }
-
-trait FullDslFragment
-  extends FragmentContexts
-  with FullDsl { self: Fragment ⇒ }

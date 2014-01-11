@@ -9,34 +9,34 @@ trait LayoutBuilding {
   import LayoutBuildingMacros._
 
   /** Define a widget */
-  def w[A <: View](implicit ctx: ActivityContext) = macro widgetImpl[A]
+  def w[W <: View](implicit ctx: ActivityContext) = macro widgetImpl[W]
   /** Define a widget, supplying additional arguments */
-  def w[A <: View](args: Any*)(implicit ctx: ActivityContext) = macro widgetArgImpl[A]
+  def w[W <: View](args: Any*)(implicit ctx: ActivityContext) = macro widgetArgImpl[W]
 
   /** Define a layout */
-  def l[A <: ViewGroup](children: View*)(implicit ctx: ActivityContext) = macro layoutImpl[A]
+  def l[L <: ViewGroup](children: View*)(implicit ctx: ActivityContext) = macro layoutImpl[L]
 
   /** Define a slot */
-  def slot[A <: View]: Option[A] = None
+  def slot[W <: View]: Option[W] = None
 }
 
 object LayoutBuilding extends LayoutBuilding
 
 object LayoutBuildingMacros {
-  def widgetImpl[A <: View: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[ActivityContext]): c.Expr[A] = {
+  def widgetImpl[W <: View: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[ActivityContext]): c.Expr[W] = {
     import c.universe._
-    c.Expr[A](q"new ${weakTypeOf[A]}($ctx.get)")
+    c.Expr[W](q"new ${weakTypeOf[W]}($ctx.get)")
   }
 
-  def widgetArgImpl[A <: View: c.WeakTypeTag](c: MacroContext)(args: c.Expr[Any]*)(ctx: c.Expr[ActivityContext]): c.Expr[A] = {
+  def widgetArgImpl[W <: View: c.WeakTypeTag](c: MacroContext)(args: c.Expr[Any]*)(ctx: c.Expr[ActivityContext]): c.Expr[W] = {
     import c.universe._
-    c.Expr[A](q"new ${weakTypeOf[A]}($ctx.get, ..$args)")
+    c.Expr[W](q"new ${weakTypeOf[W]}($ctx.get, ..$args)")
   }
 
-  def layoutImpl[A <: View: c.WeakTypeTag](c: MacroContext)(children: c.Expr[View]*)(ctx: c.Expr[ActivityContext]): c.Expr[A] = {
+  def layoutImpl[L <: ViewGroup: c.WeakTypeTag](c: MacroContext)(children: c.Expr[View]*)(ctx: c.Expr[ActivityContext]): c.Expr[L] = {
     import c.universe._
     val additions = children.map(ch ⇒ c.resetLocalAttrs(q"this.addView($ch)"))
-    c.Expr[A](q"new ${weakTypeOf[A]}($ctx.get) { ..$additions }")
+    c.Expr[L](q"new ${weakTypeOf[L]}($ctx.get) { ..$additions }")
   }
 }
 
@@ -46,7 +46,7 @@ trait LayoutTransforming {
   type Transformer = PartialFunction[View, Unit]
 
   // transforming layouts
-  implicit class RichViewGroup[A <: ViewGroup](v: A) {
+  implicit class RichViewGroup[L <: ViewGroup](v: L) {
     /** Apply transformer. Always runs on UI thread */
     def ~~>(t: Transformer) = {
       def applyTo(v: View) {

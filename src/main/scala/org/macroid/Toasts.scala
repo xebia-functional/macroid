@@ -5,7 +5,7 @@ import android.content.Context
 import android.view.View
 import scala.concurrent.{ ExecutionContext, Future }
 
-trait Toasts {
+private[macroid] trait Toasts {
   type Bread = Toast ⇒ Unit
 
   implicit class RichToast(toast: Toast) {

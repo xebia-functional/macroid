@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.support.v4.app.Fragment
 import scala.ref.WeakReference
-import scala.reflect.macros.{ Context ⇒ MacroContext }
 import scala.annotation.implicitNotFound
 
 @implicitNotFound("Could not find `AppContext`. If you are inside Activity or Fragment, add `implicit val context = this`, otherwise pass an instance of `AppContext` from outside.") /** Global application context, which is safe to hold on to */
@@ -18,8 +17,9 @@ case class ActivityContext(activity: WeakReference[Activity]) {
   def get = activity()
 }
 
-trait Contexts {
-  import ContextMacros._
+trait Contexts[A] { self: A ⇒
+
+  implicit val implicitSelf = self
 
   implicit def activity2app(implicit activity: Activity): AppContext =
     AppContext(activity.getApplicationContext)
@@ -32,21 +32,4 @@ trait Contexts {
 
   implicit def fragment2activity(implicit fragment: Fragment): ActivityContext =
     ActivityContext(WeakReference(fragment.getActivity))
-
-  implicit def inferActivity: Activity = macro inferActivityImpl
-  implicit def inferFragment: Fragment = macro inferFragmentImpl
-}
-
-object Contexts extends Contexts
-
-object ContextMacros {
-  def inferActivityImpl(c: MacroContext) = {
-    import c.universe._
-    c.Expr[Activity](q"this")
-  }
-
-  def inferFragmentImpl(c: MacroContext) = {
-    import c.universe._
-    c.Expr[Fragment](q"this")
-  }
 }

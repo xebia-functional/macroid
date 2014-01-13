@@ -1,8 +1,7 @@
 package org.macroid
 
-trait LayoutDsl
-  extends Contexts
-  with Searching
+private[macroid] trait LayoutDsl
+  extends Searching
   with LayoutBuilding
   with FragmentBuilding
   with Tweaking
@@ -11,7 +10,7 @@ trait LayoutDsl
 
 object LayoutDsl extends LayoutDsl
 
-trait FullDsl
+private[macroid] trait FullDsl
   extends LayoutDsl
   with Tweaks
   with Snails

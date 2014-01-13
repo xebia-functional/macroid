@@ -28,7 +28,7 @@ trait WidgetType {
 }
 
 /** This trait defines tweaking operations */
-trait Tweaking extends Effectors {
+private[macroid] trait Tweaking extends Effectors {
   /** Combining tweaks */
   implicit class TweakAddition[W <: View](t: Tweak[W]) {
     /** Combine (sequence) with another tweak */

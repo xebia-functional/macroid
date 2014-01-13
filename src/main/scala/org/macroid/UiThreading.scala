@@ -4,7 +4,7 @@ import scala.concurrent.{ ExecutionContext, Promise, Future }
 import scala.util.Try
 import android.os.{ Looper, Handler }
 
-trait UiThreading {
+private[macroid] trait UiThreading {
   lazy val uiHandler = new Handler(Looper.getMainLooper)
   lazy val uiThread = Looper.getMainLooper.getThread
 

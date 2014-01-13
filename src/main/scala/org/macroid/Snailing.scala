@@ -22,7 +22,7 @@ trait SnailableWith[W, S] {
 }
 
 /** This trait defines snails, snailing operator (~@>) and its generalizations */
-trait Snailing {
+private[macroid] trait Snailing {
   /** Combining tweaks with snails */
   implicit class TweakSnailAddition[W <: View](t: Tweak[W]) {
     /** Combine (sequence) with a snail */

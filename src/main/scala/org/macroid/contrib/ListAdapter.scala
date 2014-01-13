@@ -15,7 +15,9 @@ abstract class ListAdapter[A, B <: View](implicit ctx: ActivityContext) extends 
   def fillView(view: B, parent: ViewGroup, data: A): Any
 }
 
-object ListAdapter extends LayoutDsl {
+object ListAdapter {
+  import LayoutDsl._
+
   def text[A](data: Seq[A])(t: Tweak[TextView], f: A ⇒ Tweak[TextView])(implicit ctx: ActivityContext) = new ListAdapter[A, TextView] {
     addAll(data)
     def makeView = new TextView(ctx.get) ~> t

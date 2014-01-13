@@ -9,7 +9,7 @@ import org.macroid.util.{ MacroUtils, Thunk }
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.annotation.implicitNotFound
 
-trait BasicTweaks {
+private[macroid] trait BasicTweaks {
   import BasicTweakMacros._
 
   /** Set this view’s id */
@@ -21,7 +21,7 @@ trait BasicTweaks {
   def wire[W <: View](v: Option[W]): Tweak[W] = macro wireOptionImpl[W]
 }
 
-trait VisibilityTweaks {
+private[macroid] trait VisibilityTweaks {
   /** Hide this view (uses View.GONE) */
   val hide = Tweak[View](_.setVisibility(View.GONE))
   /** Show this view (uses View.VISIBLE) */
@@ -30,7 +30,7 @@ trait VisibilityTweaks {
   def show(c: Boolean): Tweak[View] = if (c) show else hide
 }
 
-trait AbilityTweaks {
+private[macroid] trait AbilityTweaks {
   /** Disable this view */
   val disable = Tweak[View](_.setEnabled(false))
   /** Enable this view */
@@ -39,7 +39,7 @@ trait AbilityTweaks {
   def enable(c: Boolean): Tweak[View] = if (c) enable else disable
 }
 
-trait PaddingTweaks {
+private[macroid] trait PaddingTweaks {
   // TODO: replace with setPaddingRelative!
 
   /** Set padding */
@@ -55,7 +55,7 @@ trait LayoutType {
   type L <: ViewGroup
 }
 
-trait LayoutTweaks {
+private[macroid] trait LayoutTweaks {
   import LayoutTweakMacros._
 
   /** Automatically find the appropriate `LayoutParams` class from the parent layout. */
@@ -91,7 +91,7 @@ trait LayoutTweaks {
   }
 }
 
-trait TextTweaks {
+private[macroid] trait TextTweaks {
   /** Set text */
   def text(text: CharSequence) = Tweak[TextView](_.setText(text))
   /** Set text */
@@ -103,7 +103,7 @@ trait TextTweaks {
   }
 }
 
-trait ProgressTweaks extends VisibilityTweaks {
+private[macroid] trait ProgressTweaks extends VisibilityTweaks {
   import Tweaking._
 
   /** Show this progress bar with indeterminate progress and hide it once `future` is done */
@@ -127,7 +127,7 @@ trait ProgressTweaks extends VisibilityTweaks {
   }
 }
 
-trait EventTweaks {
+private[macroid] trait EventTweaks {
   import EventTweakMacros._
 
   object On extends Dynamic {
@@ -147,9 +147,8 @@ trait EventTweaks {
 }
 
 /** This trait provides the most useful tweaks. For an expanded set, see `contrib.ExtraTweaks` */
-trait Tweaks
-  extends Tweaking
-  with BasicTweaks
+private[macroid] trait Tweaks
+  extends BasicTweaks
   with VisibilityTweaks
   with AbilityTweaks
   with PaddingTweaks
@@ -163,12 +162,12 @@ object Tweaks extends Tweaks
 object BasicTweakMacros {
   def wireImpl[W <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[W]): c.Expr[Tweak[W]] = {
     import c.universe._
-    c.Expr[Tweak[W]](q"${weakTypeOf[Tweak[W]]} { x ⇒ $v = x }")
+    c.Expr[Tweak[W]](q"org.macroid.Tweak[${weakTypeOf[W]}] { x ⇒ $v = x }")
   }
 
   def wireOptionImpl[W <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[Option[W]]): c.Expr[Tweak[W]] = {
     import c.universe._
-    c.Expr[Tweak[W]](q"${weakTypeOf[Tweak[W]]} { x ⇒ $v = Some(x) }")
+    c.Expr[Tweak[W]](q"org.macroid.Tweak[${weakTypeOf[W]}] { x ⇒ $v = Some(x) }")
   }
 }
 

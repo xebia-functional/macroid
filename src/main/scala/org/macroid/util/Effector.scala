@@ -8,7 +8,7 @@ trait Effector[F[_]] {
   def foreach[A](fa: F[A])(f: A ⇒ Any): Unit
 }
 
-trait Effectors {
+private[macroid] trait Effectors {
   implicit object listEffector extends Effector[List] {
     def foreach[A](fa: List[A])(f: A ⇒ Any) = fa.foreach(f)
   }

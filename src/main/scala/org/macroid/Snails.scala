@@ -7,7 +7,7 @@ import android.view.animation.Animation.AnimationListener
 import scala.util.Success
 import android.widget.ProgressBar
 
-trait BasicSnails {
+private[macroid] trait BasicSnails {
   // TODO: sane implementation!
   /** A delay to be inserted somewhere between ~@>s and ~>s */
   def delay(millis: Long)(implicit ec: ExecutionContext) = Snail[View](x ⇒ future { Thread.sleep(millis) })
@@ -16,7 +16,7 @@ trait BasicSnails {
   def wait(f: Future[Any])(implicit ec: ExecutionContext) = Snail[View](x ⇒ f.recover { case _ ⇒ }.map(_ ⇒ ()))
 }
 
-trait ProgressSnails extends BasicSnails with VisibilityTweaks {
+private[macroid] trait ProgressSnails extends BasicSnails with VisibilityTweaks {
   import Tweaking._
   import Snailing._
 
@@ -34,7 +34,7 @@ trait ProgressSnails extends BasicSnails with VisibilityTweaks {
     } + show +@ wait(Future.sequence(futures)) @+ hide
 }
 
-trait AnimationSnails extends VisibilityTweaks {
+private[macroid] trait AnimationSnails extends VisibilityTweaks {
   import Snailing._
 
   /** Run animation, indicating when it’s finished */
@@ -56,7 +56,7 @@ trait AnimationSnails extends VisibilityTweaks {
   def fadeOut(millis: Long)(implicit ec: ExecutionContext) = anim(new AlphaAnimation(1, 0), duration = millis) @+ hide
 }
 
-trait Snails
+private[macroid] trait Snails
   extends Snailing
   with BasicSnails
   with ProgressSnails

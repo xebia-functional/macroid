@@ -73,11 +73,11 @@ trait Tweaking extends Effectors {
     def doing(f: W ⇒ Unit) = Tweak(f)
   }
 
-  /** Use this when you want to infer the type of the widget from the context */
+  /** Create a tweak, inferring the widget type from the context */
   def tweak(implicit wtp: WidgetType) = new TweakMaker[wtp.W]
 
-  /** Use this to provide widget type explicitly */
-  def tweak[W <: View] = new TweakMaker[W]
+  /** Use to provide widget type explicitly */
+  def W[X <: View] = new WidgetType { type W = X }
 
   /** Infer widget type */
   implicit def inferWidgetType: WidgetType = macro TweakingMacros.inferWidgetType

@@ -63,6 +63,10 @@ trait LayoutTweaks {
   /** Automatically find the appropriate `LayoutParams` class from the parent layout. */
   def lp(params: Any*)(implicit ltp: LayoutType): Tweak[View] = macro layoutParamsImpl
 
+  /** Use to provide parent layout type explicitly */
+  def L[X <: ViewGroup] = new LayoutType { type L = X }
+
+  /** Infer parent layout type */
   implicit def inferLayoutType: LayoutType = macro inferLayoutTypeImpl
 
   /** Use `LayoutParams` of the specified layout class */

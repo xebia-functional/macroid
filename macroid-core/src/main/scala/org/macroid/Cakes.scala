@@ -15,6 +15,7 @@ trait FullDsl
   extends LayoutDsl
   with Tweaks
   with Snails
+  with Toasts
   with MediaQueries
   with UiThreading
 

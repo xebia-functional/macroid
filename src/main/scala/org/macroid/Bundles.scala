@@ -8,7 +8,7 @@ trait Bundles {
   import BundleMacros._
   def bundle(pairs: (String, Any)*) = macro bundleImpl
 
-  implicit class RichBundle(b: Bundle) {
+  implicit class BundleAddition(b: Bundle) {
     def +(other: Bundle) = {
       val c = new Bundle
       c.putAll(b)

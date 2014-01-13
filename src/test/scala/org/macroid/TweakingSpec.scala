@@ -34,6 +34,7 @@ class TweakingSpec extends FlatSpec with LayoutBuilding with Tweaks {
   it should "infer widget type" in {
     def foo = {
       Option(w[Button]) ~> (tweak doing (_.setText("test")))
+      val t = tweak(W[Button]) doing (_.setText("test"))
     }
   }
 
@@ -49,6 +50,7 @@ class TweakingSpec extends FlatSpec with LayoutBuilding with Tweaks {
       l[LinearLayout](
         w[TextView] ~> lp(0, 0, 1.0f)
       )
+      val z = lp(0, 0, 1.0f)(L[LinearLayout])
     }
   }
 

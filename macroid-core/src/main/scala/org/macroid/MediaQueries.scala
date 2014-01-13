@@ -20,7 +20,7 @@ object MediaQuery {
   implicit def toBoolean(q: MediaQuery) = q.b
 }
 
-sealed trait MediaQueryEssentials {
+private[macroid] trait MediaQueryEssentials {
   protected def displayMetrics(implicit ctx: AppContext) = {
     val display = ctx.get.getSystemService(Context.WINDOW_SERVICE).asInstanceOf[WindowManager].getDefaultDisplay
     val metrics = new DisplayMetrics
@@ -29,21 +29,21 @@ sealed trait MediaQueryEssentials {
   }
 }
 
-trait DensityQueries extends MediaQueryEssentials {
+private[macroid] trait DensityQueries extends MediaQueryEssentials {
   def ldpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_LOW)
   def mdpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_MEDIUM)
   def hdpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_HIGH)
   def xhdpi(implicit ctx: AppContext) = MediaQuery(displayMetrics.densityDpi == DisplayMetrics.DENSITY_XHIGH)
 }
 
-trait OrientationQueries {
+private[macroid] trait OrientationQueries {
   def portrait(implicit ctx: AppContext) =
     MediaQuery(ctx.get.getResources.getConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT)
   def landscape(implicit ctx: AppContext) =
     MediaQuery(ctx.get.getResources.getConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE)
 }
 
-trait DisplayUnits extends MediaQueryEssentials {
+private[macroid] trait DisplayUnits extends MediaQueryEssentials {
   implicit class Units[A](v: A)(implicit ctx: AppContext, numeric: Numeric[A]) {
     import Numeric.Implicits.infixNumericOps
     /** Using pixels is strictly discouraged! */
@@ -55,7 +55,7 @@ trait DisplayUnits extends MediaQueryEssentials {
   }
 }
 
-trait SizeQueries extends MediaQueryEssentials {
+private[macroid] trait SizeQueries extends MediaQueryEssentials {
   /** Width is at least v */
   def minWidth(v: Int)(implicit ctx: AppContext) = MediaQuery(displayMetrics.widthPixels >= v)
   /** Same as minWidth(v) */
@@ -75,7 +75,7 @@ trait SizeQueries extends MediaQueryEssentials {
   def lowerThan(v: Int)(implicit ctx: AppContext) = maxHeight(v)
 }
 
-trait MediaQueries
+private[macroid] trait MediaQueries
   extends DensityQueries
   with OrientationQueries
   with DisplayUnits

@@ -23,15 +23,15 @@ case class FragmentBuilder[A <: Fragment](constructor: Thunk[A], arguments: Bund
   def factory = constructor map { f ⇒ f.setArguments(arguments); f }
 
   /** Fragment wrapped in FrameLayout to be added to layout */
-  def framedInside[X: CanManageFragments](manager: X, id: Int, tag: String) = {
+  def framed[X](id: Int, tag: String)(implicit manager: X, canManage: CanManageFragments[X]) = {
     manager.findFrag[Fragment](tag) getOrElse {
-      manager.fragmentManager.beginTransaction().add(id, factory(), tag).commit()
+      canManage.fragmentManager(manager).beginTransaction().add(id, factory(), tag).commit()
     }
     new FrameLayout(ctx.get) { setId(id) }
   }
 }
 
-trait FragmentBuilding extends Bundles {
+private[macroid] trait FragmentBuilding extends Bundles {
   import FragmentBuildingMacros._
 
   /**
@@ -45,6 +45,8 @@ trait FragmentBuilding extends Bundles {
    */
   def f[A <: Fragment](newInstanceArgs: Any*)(implicit ctx: ActivityContext) = macro fragmentArgImpl[A]
 }
+
+object FragmentBuilding extends FragmentBuilding
 
 object FragmentBuildingMacros {
   def instFrag[A <: Fragment: c.WeakTypeTag](c: MacroContext)(args: Seq[c.Expr[Any]], ctx: c.Expr[ActivityContext]) = {

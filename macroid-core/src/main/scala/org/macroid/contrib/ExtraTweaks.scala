@@ -1,12 +1,12 @@
 package org.macroid.contrib
 
-import org.macroid.{ Tweak, LayoutDsl, Tweaks, AppContext }
+import org.macroid.{ Tweak, AppContext }
 import android.widget.{ ImageView, TextView }
 import android.graphics.{ Bitmap, Typeface }
 import android.util.TypedValue
 import android.view.View
 
-trait ExtraTweaks extends LayoutDsl with Tweaks {
+private[macroid] trait ExtraTweaks {
   object TextStyle {
     val bold = Tweak[TextView](x ⇒ x.setTypeface(x.getTypeface, Typeface.BOLD))
     val italic = Tweak[TextView](x ⇒ x.setTypeface(x.getTypeface, Typeface.ITALIC))

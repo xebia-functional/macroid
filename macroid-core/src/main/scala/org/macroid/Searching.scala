@@ -1,7 +1,9 @@
 package org.macroid
 
 import scala.language.dynamics
-import android.view.{ ViewGroup, View }
+import scala.language.experimental.macros
+
+import android.view.View
 import android.support.v4.app.{ FragmentActivity, Fragment, FragmentManager }
 import java.util.concurrent.atomic.AtomicInteger
 import scala.util.Try
@@ -31,10 +33,11 @@ trait CanFindViews[-X] {
 }
 
 trait CanManageFragments[-X] {
+  /** Fragment manager */
   def fragmentManager(x: X): FragmentManager
 }
 
-trait Searching {
+private[macroid] trait Searching {
   val Id = new IdGen(1000)
   val Tag = new TagGen
 
@@ -44,13 +47,10 @@ trait Searching {
 
     def findFrag[F <: Fragment](tag: String)(implicit canManage: CanManageFragments[X]) =
       Try(Option(canManage.fragmentManager(x).findFragmentByTag(tag)).map(_.asInstanceOf[F])).toOption.flatten
-
-    def fragmentManager(implicit canManage: CanManageFragments[X]) =
-      canManage.fragmentManager(x)
   }
 
-  implicit object layoutCanFindViews extends CanFindViews[ViewGroup] {
-    def findView(x: ViewGroup, id: Int) = x.findViewById(id)
+  implicit object viewCanFindViews extends CanFindViews[View] {
+    def findView(x: View, id: Int) = x.findViewById(id)
   }
 
   implicit object activityCanFindViews extends CanFindViews[Activity] {

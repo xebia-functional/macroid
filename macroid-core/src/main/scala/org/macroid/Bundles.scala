@@ -4,7 +4,7 @@ import scala.language.experimental.macros
 import android.os.Bundle
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 
-trait Bundles {
+private[macroid] trait Bundles {
   import BundleMacros._
   def bundle(pairs: (String, Any)*) = macro bundleImpl
 

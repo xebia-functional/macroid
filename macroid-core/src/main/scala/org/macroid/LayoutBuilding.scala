@@ -5,7 +5,7 @@ import android.view.{ ViewGroup, View }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 
 /** This trait contains basic building blocks used to define layouts: w, l and slot */
-trait LayoutBuilding {
+private[macroid] trait LayoutBuilding {
   import LayoutBuildingMacros._
 
   /** Define a widget */
@@ -19,6 +19,8 @@ trait LayoutBuilding {
   /** Define a slot */
   def slot[W <: View]: Option[W] = None
 }
+
+object LayoutBuilding extends LayoutBuilding
 
 object LayoutBuildingMacros {
   def widgetImpl[W <: View: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[ActivityContext]): c.Expr[W] = {

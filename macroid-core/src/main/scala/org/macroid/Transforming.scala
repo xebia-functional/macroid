@@ -25,7 +25,7 @@ object Layout {
   }
 }
 
-trait Transforming {
+private[macroid] trait Transforming {
   /** Transforming operator */
   implicit class TransformingOps[L <: ViewGroup](l: L) {
     /** Apply transformer. Always runs on UI thread */

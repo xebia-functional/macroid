@@ -27,44 +27,72 @@ class TagGen extends Dynamic {
   def selectDynamic(tag: String) = tag
 }
 
-trait CanFindViews[-X] {
-  /** Find a view with a given id */
-  def findView(x: X, id: Int): View
+trait CanFindById[-X, Y] {
+  def find(x: X, id: Int): Option[Y]
+}
+
+trait CanFindByTag[-X, Y] {
+  def find(x: X, tag: String): Option[Y]
 }
 
 trait CanManageFragments[-X] {
-  /** Fragment manager */
   def fragmentManager(x: X): FragmentManager
 }
 
-private[macroid] trait Searching {
+trait IdGeneration {
   val Id = new IdGen(1000)
   val Tag = new TagGen
+}
+
+private[macroid] trait Searching {
+  def contentView[X](implicit hasContentView: X, canFind: CanFindById[X, View]) = hasContentView
 
   implicit class SearchingOps[X](x: X) {
-    def findView[V <: View](id: Int)(implicit canFind: CanFindViews[X]) =
-      Try(Option(canFind.findView(x, id)).map(_.asInstanceOf[V])).toOption.flatten
-
-    def findFrag[F <: Fragment](tag: String)(implicit canManage: CanManageFragments[X]) =
-      Try(Option(canManage.fragmentManager(x).findFragmentByTag(tag)).map(_.asInstanceOf[F])).toOption.flatten
+    def find[Y](id: Int)(implicit canFind: CanFindById[X, Y]) = canFind.find(x, id)
+    def find[Y](tag: String)(implicit canFind: CanFindByTag[X, Y]) = canFind.find(x, tag)
   }
 
-  implicit object viewCanFindViews extends CanFindViews[View] {
-    def findView(x: View, id: Int) = x.findViewById(id)
-  }
+  private def safeCast[From, To](x: From) =
+    Try(Option(x).map(_.asInstanceOf[To])).toOption.flatten
 
-  implicit object activityCanFindViews extends CanFindViews[Activity] {
-    def findView(x: Activity, id: Int) = x.findViewById(id)
-  }
+  // format: off
 
-  implicit object fragmentActivityCanManageFragments extends CanManageFragments[FragmentActivity] {
+  implicit def viewCanFindView[Y <: View] =
+    new (View CanFindById Y) {
+      def find(x: View, id: Int) = safeCast[View, Y](x.findViewById(id))
+    }
+
+  implicit def activityCanFindView[Y <: View] =
+    new (Activity CanFindById Y) {
+      def find(x: Activity, id: Int) = safeCast[View, Y](x.findViewById(id))
+    }
+
+  implicit def fragmentCanFindView[Y <: View] =
+    new (Fragment CanFindById Y) {
+      def find(x: Fragment, id: Int) = safeCast[View, Y](x.getView.findViewById(id))
+    }
+
+  implicit def managerCanFindFragmentById[X, Y <: Fragment](implicit canManage: CanManageFragments[X]) =
+    new (X CanFindById Y) {
+      def find(x: X, id: Int) = safeCast[Fragment, Y](canManage.fragmentManager(x).findFragmentById(id))
+    }
+
+  implicit def managerCanFindFragmentByTag[X, Y <: Fragment](implicit canManage: CanManageFragments[X]) =
+    new (X CanFindByTag Y) {
+      def find(x: X, tag: String) = safeCast[Fragment, Y](canManage.fragmentManager(x).findFragmentByTag(tag))
+    }
+
+  implicit object fragmentActivityCanManageFragments
+    extends CanManageFragments[FragmentActivity] {
     def fragmentManager(x: FragmentActivity) = x.getSupportFragmentManager
   }
 
-  implicit object fragmentCanFindViewsAndManageFragments extends CanFindViews[Fragment] with CanManageFragments[Fragment] {
-    def findView(x: Fragment, id: Int) = x.getView.findViewById(id)
+  implicit object fragmentCanManageFragments
+    extends CanManageFragments[Fragment] {
     def fragmentManager(x: Fragment) = x.getChildFragmentManager
   }
+
+  // format: on
 }
 
 object Searching extends Searching

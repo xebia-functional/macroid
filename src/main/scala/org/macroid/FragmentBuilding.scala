@@ -24,7 +24,7 @@ case class FragmentBuilder[A <: Fragment](constructor: Thunk[A], arguments: Bund
 
   /** Fragment wrapped in FrameLayout to be added to layout */
   def framed[X](id: Int, tag: String)(implicit manager: X, canManage: CanManageFragments[X]) = {
-    manager.findFrag[Fragment](tag) getOrElse {
+    manager.find[Fragment](tag) getOrElse {
       canManage.fragmentManager(manager).beginTransaction().add(id, factory(), tag).commit()
     }
     new FrameLayout(ctx.get) { setId(id) }

@@ -284,7 +284,7 @@ object EventTweakMacros {
 
     val (setter, listener, on, tp) = onBase(c)(event, wtp)
     scala.util.Try {
-      c.Expr[Tweak[View]](c.typeCheck(getListener(c)(tp, setter, listener, on, f, FuncListener)))
+      c.Expr[Tweak[View]](c.typeCheck(getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(f.tree)), FuncListener)))
     } getOrElse {
       c.abort(c.enclosingPosition, s"f should have type signature ${on.typeSignature}")
     }

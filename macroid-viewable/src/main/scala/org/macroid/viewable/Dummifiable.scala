@@ -4,6 +4,6 @@ trait Dummifiable[A] {
   def dummy: A
 }
 
-object Dummifiable {
+object Dummifying {
   def dummy[A: Dummifiable] = implicitly[Dummifiable[A]].dummy
 }

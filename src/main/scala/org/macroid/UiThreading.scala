@@ -1,8 +1,9 @@
 package org.macroid
 
-import scala.concurrent.{ ExecutionContext, Promise, Future }
+import scala.concurrent.{ Await, ExecutionContext, Promise, Future }
 import scala.util.Try
 import android.os.{ Looper, Handler }
+import scala.concurrent.duration.Duration
 
 private[macroid] trait UiThreading {
   lazy val uiHandler = new Handler(Looper.getMainLooper)
@@ -29,6 +30,11 @@ private[macroid] trait UiThreading {
     } else uiHandler.post(new Runnable {
       def run() { Try(f) }
     })
+  }
+
+  /** Make UI Future happen now */
+  @inline private[macroid] def forceUi[A](uiFuture: Future[A]) = {
+    Await.result(uiFuture, Duration.Inf)
   }
 
   implicit class UiFuture[A](val value: Future[A]) {

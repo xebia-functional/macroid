@@ -1,32 +1,35 @@
 package org.macroid
 
 import android.widget.Toast
-import android.content.Context
 import android.view.View
 import scala.concurrent.{ ExecutionContext, Future }
 
-private[macroid] trait Toasts {
-  type Bread = Toast ⇒ Unit
+case class Loaf(f: Toast ⇒ Unit) {
+  def apply(t: Toast) = f(t)
+}
 
-  implicit class RichToast(toast: Toast) {
-    def ~>(bread: Bread) = { UiThreading.fireUi(bread(toast)); toast }
+private[macroid] trait Loafs {
+  val long = Loaf(_.setDuration(Toast.LENGTH_LONG))
+  def gravity(g: Int, xOffset: Int = 0, yOffset: Int = 0) = Loaf(_.setGravity(g, xOffset, yOffset))
+  val fry = Loaf(_.show())
+}
+
+private[macroid] trait ToastBuilding {
+  def toast(text: CharSequence)(implicit ctx: AppContext) = UiThreading.runOnUiThread {
+    Toast.makeText(ctx.get, text, Toast.LENGTH_SHORT)
   }
 
-  implicit class RichFutureToast(toast: Future[Toast]) {
-    def ~>(bread: Bread)(implicit ctx: ExecutionContext) = toast.map(t ⇒ t ~> bread)
+  def toast(view: ⇒ View)(implicit ctx: AppContext) = UiThreading.runOnUiThread {
+    new Toast(ctx.get) { setView(view); setDuration(Toast.LENGTH_SHORT) }
   }
+}
 
-  def toast(text: CharSequence)(implicit ctx: AppContext) =
-    UiThreading.runOnUiThread(Toast.makeText(ctx.get, text, Toast.LENGTH_SHORT))
+private[macroid] trait Toasts extends ToastBuilding with Loafs {
+  import UiThreading._
 
-  def toast(view: View)(implicit ctx: AppContext) = new Toast(ctx.get) {
-    setView(view)
-    setDuration(Toast.LENGTH_SHORT)
+  implicit class ToastOps(toast: Future[Toast])(implicit ec: ExecutionContext) {
+    def ~>(loaf: Loaf) = toast mapUi { t ⇒ loaf(t); t }
   }
-
-  val fry: Bread = _.show()
-  val long: Bread = _.setDuration(Toast.LENGTH_LONG)
-  def gravity(g: Int, xOffset: Int = 0, yOffset: Int = 0): Bread = _.setGravity(g, xOffset, yOffset)
 }
 
 object Toasts extends Toasts

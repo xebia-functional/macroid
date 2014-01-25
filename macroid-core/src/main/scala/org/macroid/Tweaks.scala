@@ -15,6 +15,9 @@ private[macroid] trait BasicTweaks {
   /** Set this view’s id */
   def id(id: Int) = Tweak[View](_.setId(id))
 
+  /** Attach arbitrary value to a view by means of setTag */
+  def hold[A](value: A) = Tweak[View](_.setTag(value))
+
   /** Assign the view to the provided `var` */
   def wire[W <: View](v: W): Tweak[W] = macro wireImpl[W]
   /** Assign the view to the provided slot */

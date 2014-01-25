@@ -15,6 +15,8 @@ private[macroid] trait FullDsl
   with Tweaks
   with Snails
   with Toasts
+  with Dialogs
+  with Resources
   with MediaQueries
   with UiThreading
 

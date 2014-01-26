@@ -30,6 +30,8 @@ private[macroid] trait DialogBuilding {
   }
 }
 
+object DialogBuilding extends DialogBuilding
+
 private[macroid] trait DialogImplicits {
   implicit def lazy2OnClickListener(f: ⇒ Any) = new OnClickListener {
     def onClick(dialog: DialogInterface, which: Int): Unit = f
@@ -71,17 +73,19 @@ private[macroid] trait Phrases {
 
   /** Show the dialog */
   def speak = Phrase { d ⇒ d.show(); () }
-
-  object create
 }
 
-private[macroid] trait Dialogs extends DialogBuilding with DialogImplicits with Phrases {
-  import UiThreading._
+object Phrases extends Phrases
 
-  implicit class DialogOps(dialog: Future[AlertDialog.Builder])(implicit ec: ExecutionContext) {
+private[macroid] trait Phrasing extends DialogImplicits {
+  import org.macroid.UiThreading._
+
+  object create
+
+  implicit class PhrasingOps(dialog: Future[AlertDialog.Builder])(implicit ec: ExecutionContext) {
     def ~>(phrase: Phrase) = dialog mapUi { d ⇒ phrase(d); d }
     def ~>(creator: create.type) = forceUi(dialog.mapUi(_.create()))
   }
 }
 
-object Dialogs extends Dialogs
+object Phrasing extends Phrasing

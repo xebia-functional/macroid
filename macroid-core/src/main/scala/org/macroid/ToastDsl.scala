@@ -14,6 +14,8 @@ private[macroid] trait Loafs {
   val fry = Loaf(_.show())
 }
 
+object Loafs extends Loafs
+
 private[macroid] trait ToastBuilding {
   def toast(text: CharSequence)(implicit ctx: AppContext) = UiThreading.runOnUiThread {
     Toast.makeText(ctx.get, text, Toast.LENGTH_SHORT)
@@ -24,12 +26,14 @@ private[macroid] trait ToastBuilding {
   }
 }
 
-private[macroid] trait Toasts extends ToastBuilding with Loafs {
+object ToastBuilding extends ToastBuilding
+
+private[macroid] trait Loafing {
   import UiThreading._
 
-  implicit class ToastOps(toast: Future[Toast])(implicit ec: ExecutionContext) {
+  implicit class LoafingOps(toast: Future[Toast])(implicit ec: ExecutionContext) {
     def ~>(loaf: Loaf) = toast mapUi { t ⇒ loaf(t); t }
   }
 }
 
-object Toasts extends Toasts
+object Loafing extends Loafing

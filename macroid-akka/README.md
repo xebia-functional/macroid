@@ -111,3 +111,10 @@ class MyFragment extends Fragment with AkkaFragment {
   }
 }
 ```
+
+There is also an Android-compatible Akka logger. To use it, add to your `src/main/resources/application.conf`:
+```javascript
+akka {
+  loggers = ["org.macroid.akkafragments.AkkaAndroidLogger"]
+}
+```

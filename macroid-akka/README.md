@@ -69,9 +69,7 @@ object MyActor {
   def props = Props(new MyActor)
 }
 
-class MyActor(apis: Apis) extends FragmentActor[MyFragment] {
-  import FragmentActor._
-
+class MyActor extends FragmentActor[MyFragment] {
   // receiveUi handles attaching and detaching UI
   // and then (sic!) passes the message to us
   def receive = receiveUi andThen {

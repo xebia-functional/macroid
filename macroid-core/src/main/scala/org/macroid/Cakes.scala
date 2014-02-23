@@ -12,6 +12,7 @@ object LayoutDsl extends LayoutDsl
 
 private[macroid] trait DialogDsl
   extends DialogBuilding
+  with DialogCreation
   with Phrasing
 
 object DialogDsl extends DialogDsl

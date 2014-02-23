@@ -15,10 +15,19 @@ trait AkkaActivity { self: Activity ⇒
   )
 }
 
-trait AkkaFragment { self: Fragment ⇒
+trait AkkaFragment extends Fragment {
   def actorSystem = getActivity.asInstanceOf[AkkaActivity].actorSystem
-  def attach(actor: ActorSelection) = actor ! FragmentActor.AttachUi[this.type](this)
-  def detach(actor: ActorSelection) = actor ! FragmentActor.DetachUi
+  def actor: Option[ActorSelection]
+
+  abstract override def onStart() = {
+    super.onStart()
+    actor.foreach(_ ! FragmentActor.AttachUi(this))
+  }
+
+  abstract override def onStop() = {
+    super.onStop()
+    actor.foreach(_ ! FragmentActor.DetachUi)
+  }
 }
 
 object FragmentActor {

@@ -32,11 +32,6 @@ private[macroid] trait UiThreading {
     })
   }
 
-  /** Make UI Future happen now */
-  @inline private[macroid] def forceUi[A](uiFuture: Future[A]) = {
-    Await.result(uiFuture, Duration.Inf)
-  }
-
   implicit class UiFuture[A](val value: Future[A]) {
     /** Same as map, but performed on UI thread */
     def mapUi[S](f: Function[A, S])(implicit ec: ExecutionContext): Future[S] = {

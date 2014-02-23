@@ -25,12 +25,28 @@ private[macroid] trait DialogBuilding {
     new AlertDialog.Builder(ctx.get).setMessage(message)
   }
 
-  def dialog(theme: Int)(message: CharSequence)(implicit ctx: ActivityContext) = UiThreading.runOnUiThread {
+  def dialog(message: CharSequence, theme: Int)(implicit ctx: ActivityContext) = UiThreading.runOnUiThread {
     new AlertDialog.Builder(ctx.get, theme).setMessage(message)
   }
 }
 
+private[macroid] trait DialogCreation {
+  def createDialog(view: ⇒ View)(implicit ctx: ActivityContext) =
+    new AlertDialog.Builder(ctx.get).setView(view)
+
+  def createDialog(theme: Int)(view: ⇒ View)(implicit ctx: ActivityContext) =
+    new AlertDialog.Builder(ctx.get, theme).setView(view)
+
+  def createDialog(message: CharSequence)(implicit ctx: ActivityContext) =
+    new AlertDialog.Builder(ctx.get).setMessage(message)
+
+  def createDialog(message: CharSequence, theme: Int)(implicit ctx: ActivityContext) =
+    new AlertDialog.Builder(ctx.get, theme).setMessage(message)
+}
+
 object DialogBuilding extends DialogBuilding
+
+object DialogCreation extends DialogCreation
 
 private[macroid] trait DialogImplicits {
   implicit def lazy2OnClickListener(f: ⇒ Any) = new OnClickListener {
@@ -82,9 +98,13 @@ private[macroid] trait Phrasing extends DialogImplicits {
 
   object create
 
-  implicit class PhrasingOps(dialog: Future[AlertDialog.Builder])(implicit ec: ExecutionContext) {
+  implicit class FuturePhrasingOps(dialog: Future[AlertDialog.Builder])(implicit ec: ExecutionContext) {
     def ~>(phrase: Phrase) = dialog mapUi { d ⇒ phrase(d); d }
-    def ~>(creator: create.type) = forceUi(dialog.mapUi(_.create()))
+  }
+
+  implicit class PhrasingOps(dialog: AlertDialog.Builder)(implicit ec: ExecutionContext) {
+    def ~>(phrase: Phrase) = { phrase(dialog); dialog }
+    def ~>(c: create.type) = dialog.create()
   }
 }
 

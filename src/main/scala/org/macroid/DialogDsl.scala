@@ -1,52 +1,38 @@
 package org.macroid
 
 import scala.language.implicitConversions
-import android.app.{ Dialog, AlertDialog }
+import android.app.AlertDialog
 import android.view.View
 import scala.concurrent.{ ExecutionContext, Future }
 import android.content.DialogInterface
 import android.content.DialogInterface.OnClickListener
 import org.macroid.util.Thunk
+import android.widget.ListAdapter
 
 case class Phrase(f: AlertDialog.Builder ⇒ Unit) {
   def apply(d: AlertDialog.Builder) = f(d)
 }
 
 private[macroid] trait DialogBuilding {
-  def dialog(view: ⇒ View)(implicit ctx: ActivityContext) = UiThreading.runOnUiThread {
-    new AlertDialog.Builder(ctx.get).setView(view)
+  class Builder[A](theme: Option[Int], f: AlertDialog.Builder ⇒ A) {
+    def apply(view: ⇒ View)(implicit ctx: ActivityContext) =
+      f(new AlertDialog.Builder(ctx.get).setView(view))
+
+    def apply(message: CharSequence)(implicit ctx: ActivityContext) =
+      f(new AlertDialog.Builder(ctx.get).setMessage(message))
+
+    def apply(adapter: ListAdapter)(handler: OnClickListener)(implicit ctx: ActivityContext) =
+      f(new AlertDialog.Builder(ctx.get).setAdapter(adapter, handler))
   }
 
-  def dialog(theme: Int)(view: ⇒ View)(implicit ctx: ActivityContext) = UiThreading.runOnUiThread {
-    new AlertDialog.Builder(ctx.get, theme).setView(view)
-  }
+  def dialog = new Builder(None, code ⇒ UiThreading.runOnUiThread(code))
+  def dialog(theme: Int) = new Builder(Some(theme), code ⇒ UiThreading.runOnUiThread(code))
 
-  def dialog(message: CharSequence)(implicit ctx: ActivityContext) = UiThreading.runOnUiThread {
-    new AlertDialog.Builder(ctx.get).setMessage(message)
-  }
-
-  def dialog(message: CharSequence, theme: Int)(implicit ctx: ActivityContext) = UiThreading.runOnUiThread {
-    new AlertDialog.Builder(ctx.get, theme).setMessage(message)
-  }
-}
-
-private[macroid] trait DialogCreation {
-  def createDialog(view: ⇒ View)(implicit ctx: ActivityContext) =
-    new AlertDialog.Builder(ctx.get).setView(view)
-
-  def createDialog(theme: Int)(view: ⇒ View)(implicit ctx: ActivityContext) =
-    new AlertDialog.Builder(ctx.get, theme).setView(view)
-
-  def createDialog(message: CharSequence)(implicit ctx: ActivityContext) =
-    new AlertDialog.Builder(ctx.get).setMessage(message)
-
-  def createDialog(message: CharSequence, theme: Int)(implicit ctx: ActivityContext) =
-    new AlertDialog.Builder(ctx.get, theme).setMessage(message)
+  def createDialog = new Builder(None, identity)
+  def createDialog(theme: Int) = new Builder(Some(theme), identity)
 }
 
 object DialogBuilding extends DialogBuilding
-
-object DialogCreation extends DialogCreation
 
 private[macroid] trait DialogImplicits {
   implicit def lazy2OnClickListener(f: ⇒ Any) = new OnClickListener {

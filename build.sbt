@@ -15,14 +15,14 @@ scalacOptions ++= Seq("-feature", "-deprecation")
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   "Typesafe" at "http://repo.typesafe.com/typesafe/releases/",
-  "Google Repository" at (new File(System.getenv("ANDROID_SDK_HOME")) / "extras" / "google" / "m2repository").getAbsolutePath
+  "Google Repository" at (new File(System.getenv("ANDROID_SDK_HOME")) / "extras" / "android" / "m2repository").getAbsolutePath
 )
 
 autoCompilerPlugins := true
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-  compilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M2" cross CrossVersion.full)
+  compilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M3" cross CrossVersion.full)
 )
 
 libraryDependencies ++= Seq(

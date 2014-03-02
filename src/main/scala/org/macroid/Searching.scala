@@ -69,11 +69,11 @@ private[macroid] trait FragmentFinding {
     def findFrag[F1 <: F](tag: String) = canFindFragments.find[F1](x, tag)
   }
 
-  implicit def activityCanFindFragments[F, M, A <: Activity](implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[A, F] {
+  implicit def activityCanFindFragments[F, M, A](implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[A, F] {
     def find[F1 <: F](x: A, tag: String) = fragmentApi.findFragmentByTag[F1](fragmentApi.activityManager(x), tag)
   }
 
-  implicit def fragmentCanFindFragments[F, M, A <: Activity](implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[F, F] {
+  implicit def fragmentCanFindFragments[F, M, A](implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[F, F] {
     def find[F1 <: F](x: F, tag: String) = fragmentApi.findFragmentByTag[F1](fragmentApi.fragmentManager(x), tag)
   }
 }

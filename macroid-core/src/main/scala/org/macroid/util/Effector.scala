@@ -8,22 +8,20 @@ trait Effector[F[_]] {
   def foreach[A](fa: F[A])(f: A ⇒ Any): Unit
 }
 
-private[macroid] trait Effectors {
-  implicit object listEffector extends Effector[List] {
+object Effector {
+  implicit object `List is Effector` extends Effector[List] {
     def foreach[A](fa: List[A])(f: A ⇒ Any) = fa.foreach(f)
   }
 
-  implicit object optionEffector extends Effector[Option] {
+  implicit object `Option is Effector` extends Effector[Option] {
     def foreach[A](fa: Option[A])(f: A ⇒ Any) = fa.foreach(f)
   }
 
-  implicit def futureEffector(implicit ec: ExecutionContext) = new Effector[Future] {
+  implicit def `Future is Effector`(implicit ec: ExecutionContext) = new Effector[Future] {
     def foreach[A](fa: Future[A])(f: A ⇒ Any) = fa.foreach(f)
   }
 
-  implicit def eventStreamEffector(implicit obs: Observer) = new Effector[EventStream] {
+  implicit def `EventStream is Effector`(implicit obs: Observer) = new Effector[EventStream] {
     def foreach[A](fa: EventStream[A])(f: A ⇒ Any) = fa.foreach(f)
   }
 }
-
-object Effectors extends Effectors

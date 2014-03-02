@@ -4,7 +4,7 @@ import scala.language.experimental.macros
 import scala.language.higherKinds
 import android.view.View
 import scala.annotation.implicitNotFound
-import org.macroid.util.{ MacroUtils, Effector, Effectors }
+import org.macroid.util.{ MacroUtils, Effector }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 
 /** A Tweak is something that mutates a widget */
@@ -22,13 +22,34 @@ trait TweakableWith[W, T] {
   def tweakWith(w: W, t: T): Unit
 }
 
+object TweakableWith {
+  // format: OFF
+
+  implicit def `Widget is tweakable with Tweak`[W <: View, T <: Tweak[W]] =
+    new (W TweakableWith T) {
+      def tweakWith(w: W, t: T) = UiThreading.fireUi(t(w))
+    }
+
+  implicit def `Widget is tweakable with Effector`[W <: View, F[+_], T](implicit effector: Effector[F], tweakableWith: W TweakableWith T) =
+    new (W TweakableWith F[T]) {
+      def tweakWith(w: W, f: F[T]) = effector.foreach(f)(t ⇒ tweakableWith.tweakWith(w, t))
+    }
+
+  implicit def `Effector is tweakable`[W, F[+_], T](implicit effector: Effector[F], tweakableWith: W TweakableWith T) =
+    new (F[W] TweakableWith T) {
+      def tweakWith(f: F[W], t: T) = effector.foreach(f)(w ⇒ tweakableWith.tweakWith(w, t))
+    }
+
+  // format: ON
+}
+
 @implicitNotFound("Could not infer the type of the widget being tweaked. Please provide it explicitly.") /** The type of the widget(s) being tweaked */
 trait WidgetType {
   type W <: View
 }
 
 /** This trait defines tweaking operations */
-private[macroid] trait Tweaking extends Effectors {
+private[macroid] trait Tweaking {
   /** Combining tweaks */
   implicit class TweakAddition[W <: View](t: Tweak[W]) {
     /** Combine (sequence) with another tweak */
@@ -47,36 +68,18 @@ private[macroid] trait Tweaking extends Effectors {
     def tweakWith[T](t: T)(implicit tweakableWith: W TweakableWith T): W = { tweakableWith.tweakWith(w, t); w }
   }
 
-  /** A widget can be tweaked with a Tweak */
-  implicit def tweakableWithTweak[W <: View, T <: Tweak[W]] =
-    new (W TweakableWith T) {
-      def tweakWith(w: W, t: T) = UiThreading.fireUi(t(w))
-    }
-
-  /** A widget can be tweaked with an Effector */
-  implicit def tweakableWithEffector[W <: View, F[+_], T](implicit effector: Effector[F], tweakableWith: W TweakableWith T) =
-    new (W TweakableWith F[T]) {
-      def tweakWith(w: W, f: F[T]) = effector.foreach(f)(t ⇒ tweakableWith.tweakWith(w, t))
-    }
-
-  /** Effector can be tweaked with something */
-  implicit def effectorTweakable[W, F[+_], T](implicit effector: Effector[F], tweakableWith: W TweakableWith T) =
-    new (F[W] TweakableWith T) {
-      def tweakWith(f: F[W], t: T) = effector.foreach(f)(w ⇒ tweakableWith.tweakWith(w, t))
-    }
-
   // format: ON
 
-  /** A helper class to make tweaks */
+  @deprecated("To be replaced with http://github.com/dsl-paradise/dsl-paradise", "2.0") /** A helper class to make tweaks */
   class TweakMaker[W <: View] {
     def ~(f: W ⇒ Unit) = Tweak(f)
     def doing(f: W ⇒ Unit) = Tweak(f)
   }
 
-  /** Create a tweak, inferring the widget type from the context */
+  @deprecated("To be replaced with http://github.com/dsl-paradise/dsl-paradise", "2.0") /** Create a tweak, inferring the widget type from the context */
   def tweak(implicit wtp: WidgetType) = new TweakMaker[wtp.W]
 
-  /** Use to provide widget type explicitly */
+  @deprecated("To be replaced with http://github.com/dsl-paradise/dsl-paradise", "2.0") /** Use to provide widget type explicitly */
   def W[X <: View] = new WidgetType { type W = X }
 
   /** Infer widget type */

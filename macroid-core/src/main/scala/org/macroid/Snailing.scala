@@ -21,6 +21,61 @@ trait SnailableWith[W, S] {
   def snailWith(w: W, s: S): Future[Unit]
 }
 
+object SnailableWith {
+  // format: OFF
+
+  implicit def `Widget is snailable with Snail`[W <: View, S <: Snail[W]](implicit ec: ExecutionContext) =
+    new (W SnailableWith S) {
+      def snailWith(w: W, s: S) = {
+        val snailPromise = Promise[Unit]()
+        UiThreading.fireUi(snailPromise.completeWith(s(w)))
+        snailPromise.future
+      }
+    }
+
+  implicit def `Widget is snailable with Option`[W <: View, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
+    new (W SnailableWith Option[S]) {
+      def snailWith(w: W, o: Option[S]) = o.fold(Future.successful(()))(s ⇒ snailableWith.snailWith(w, s))
+    }
+
+  implicit def `Option is snailable`[W, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
+    new (Option[W] SnailableWith S) {
+      def snailWith(o: Option[W], s: S) = o.fold(Future.successful(()))(w ⇒ snailableWith.snailWith(w, s))
+    }
+
+  implicit def `Widget is snailable with Future`[W <: View, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
+    new (W SnailableWith Future[S]) {
+      def snailWith(w: W, f: Future[S]) = f.flatMap(s ⇒ snailableWith.snailWith(w, s))
+    }
+
+  implicit def `Future is snailable`[W, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
+    new (Future[W] SnailableWith S) {
+      def snailWith(f: Future[W], s: S) = f.flatMap(w ⇒ snailableWith.snailWith(w, s))
+    }
+
+  implicit def `Widget is snailable with List`[W <: View, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
+    new (W SnailableWith List[S]) {
+      def snailWith(w: W, l: List[S]) = async {
+        val it = l.iterator
+        while (it.hasNext) {
+          await(snailableWith.snailWith(w, it.next()))
+        }
+      }
+    }
+
+  implicit def `List is snailable`[W, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
+    new (List[W] SnailableWith S) {
+      def snailWith(l: List[W], s: S) = async {
+        val it = l.iterator
+        while (it.hasNext) {
+          await(snailableWith.snailWith(it.next(), s))
+        }
+      }
+    }
+
+  // format: ON
+}
+
 /** This trait defines snails, snailing operator (~@>) and its generalizations */
 private[macroid] trait Snailing {
   /** Combining tweaks with snails */
@@ -62,66 +117,6 @@ private[macroid] trait Snailing {
     def snailWith[T](t: T)(implicit snailableWith: W SnailableWith T): Future[W] =
       snailableWith.snailWith(w, t).map(_ ⇒ w)
   }
-
-  // format: OFF
-
-  /** A widget can be snailed with a Snail */
-  implicit def snailableWithSnail[W <: View, S <: Snail[W]](implicit ec: ExecutionContext) =
-    new (W SnailableWith S) {
-      def snailWith(w: W, s: S) = {
-        val snailPromise = Promise[Unit]()
-        UiThreading.fireUi(snailPromise.completeWith(s(w)))
-        snailPromise.future
-      }
-    }
-
-  /** A widget can be snailed with an Option */
-  implicit def snailableWithOption[W <: View, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
-    new (W SnailableWith Option[S]) {
-      def snailWith(w: W, o: Option[S]) = o.fold(Future.successful(()))(s ⇒ snailableWith.snailWith(w, s))
-    }
-
-  /** Option can be snailed with something */
-  implicit def optionSnailable[W, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
-    new (Option[W] SnailableWith S) {
-      def snailWith(o: Option[W], s: S) = o.fold(Future.successful(()))(w ⇒ snailableWith.snailWith(w, s))
-    }
-
-  /** A widget can be snailed with a Future */
-  implicit def snailableWithFuture[W <: View, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
-    new (W SnailableWith Future[S]) {
-      def snailWith(w: W, f: Future[S]) = f.flatMap(s ⇒ snailableWith.snailWith(w, s))
-    }
-
-  /** Future can be snailed with something */
-  implicit def futureSnailable[W, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
-    new (Future[W] SnailableWith S) {
-      def snailWith(f: Future[W], s: S) = f.flatMap(w ⇒ snailableWith.snailWith(w, s))
-    }
-
-  /** A widget can be snailed with a List */
-  implicit def snailableWithList[W <: View, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
-    new (W SnailableWith List[S]) {
-      def snailWith(w: W, l: List[S]) = async {
-        val it = l.iterator
-        while (it.hasNext) {
-          await(snailableWith.snailWith(w, it.next()))
-        }
-      }
-    }
-
-  /** List can be snailed with something */
-  implicit def listSnailable[W, S](implicit ec: ExecutionContext, snailableWith: W SnailableWith S) =
-    new (List[W] SnailableWith S) {
-      def snailWith(l: List[W], s: S) = async {
-        val it = l.iterator
-        while (it.hasNext) {
-          await(snailableWith.snailWith(it.next(), s))
-        }
-      }
-    }
-
-  // format: ON
 }
 
 object Snailing extends Snailing

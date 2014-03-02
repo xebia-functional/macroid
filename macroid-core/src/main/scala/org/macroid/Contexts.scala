@@ -1,45 +1,45 @@
 package org.macroid
 
-import scala.language.experimental.macros
 import android.app.Activity
 import android.content.Context
-import android.support.v4.app.{ FragmentActivity, Fragment, FragmentManager }
 import scala.ref.WeakReference
 import scala.annotation.implicitNotFound
+import org.macroid.support.{ Fragment, FragmentApi }
 
-@implicitNotFound("Could not find `AppContext`. If you are inside Activity or Fragment, add `implicit val context = this`, otherwise pass an instance of `AppContext` from outside.") /** Global application context, which is safe to hold on to */
-case class AppContext(ctx: Context) {
-  def get = ctx
+@implicitNotFound("Could not find `AppContext`. If you are inside Activity or Fragment, extend Contexts[Activity] or Contexts[Fragment], otherwise pass an instance of `AppContext` from outside.") /** Global application context, which is safe to hold on to */
+case class AppContext(app: Context) {
+  def get = app
 }
 
-@implicitNotFound("Could not find `ActivityContext`. If you are inside Activity or Fragment, add `implicit val context = this`, otherwise pass an instance of `ActivityContext` from outside.") /** Activity context, which is not recommended to hold on to */
+@implicitNotFound("Could not find `ActivityContext`. If you are inside Activity or Fragment, extend Contexts[Activity] or Contexts[Fragment], otherwise pass an instance of `ActivityContext` from outside.") /** Activity context, stored as a WeakReference */
 case class ActivityContext(activity: WeakReference[Activity]) {
   def get = activity()
 }
+object ActivityContext {
+  def apply(activity: Activity) = new ActivityContext(WeakReference(activity))
+}
 
-case class ManagerContext(manager: FragmentManager) {
+@implicitNotFound("Could not find `FragmentManagerContext[${F}, ${M}]`. If you are inside Activity or Fragment, extend Contexts[Activity] or Contexts[Fragment], otherwise pass an instance of `FragmentManagerContext` from outside.") /** FragmentManager context */
+case class FragmentManagerContext[-F, M](manager: M)(implicit val fragmentApi: FragmentApi[F, M, _]) {
   def get = manager
 }
 
-trait Contexts[A] { self: A ⇒
+trait Contexts[X] { self: X ⇒
+  implicit def activityAppContext(implicit activity: X <:< Activity) =
+    AppContext(activity(self).getApplicationContext)
 
-  implicit val implicitSelf = self
+  implicit def activityActivityContext(implicit activity: X <:< Activity) =
+    ActivityContext(activity(self))
 
-  implicit def activity2app(implicit activity: Activity): AppContext =
-    AppContext(activity.getApplicationContext)
+  implicit def fragmentAppContext(implicit fragment: Fragment[X]) =
+    AppContext(fragment.activity(self).getApplicationContext)
 
-  implicit def activity2activity(implicit activity: Activity): ActivityContext =
-    ActivityContext(WeakReference(activity))
+  implicit def fragmentActivityContext(implicit fragment: Fragment[X]) =
+    ActivityContext(fragment.activity(self))
 
-  implicit def activity2manager(implicit activity: FragmentActivity): ManagerContext =
-    ManagerContext(activity.getSupportFragmentManager)
+  implicit def activityManagerContext[M, F, A >: X <: Activity](implicit fragmentApi: FragmentApi[F, M, A]) =
+    FragmentManagerContext[F, M](fragmentApi.activityManager(self))
 
-  implicit def fragment2app(implicit fragment: Fragment): AppContext =
-    AppContext(fragment.getActivity.getApplicationContext)
-
-  implicit def fragment2activity(implicit fragment: Fragment): ActivityContext =
-    ActivityContext(WeakReference(fragment.getActivity))
-
-  implicit def fragment2manager(implicit fragment: Fragment): ManagerContext =
-    ManagerContext(fragment.getChildFragmentManager)
+  implicit def fragmentManagerContext[M, F >: X, A <: Activity](implicit fragmentApi: FragmentApi[F, M, A]) =
+    FragmentManagerContext[F, M](fragmentApi.fragmentManager(self))
 }

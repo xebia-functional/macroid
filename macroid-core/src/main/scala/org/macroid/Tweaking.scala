@@ -32,7 +32,7 @@ private[macroid] trait Tweaking extends Effectors {
   /** Combining tweaks */
   implicit class TweakAddition[W <: View](t: Tweak[W]) {
     /** Combine (sequence) with another tweak */
-    def +[V <: W](other: Tweak[V]) = Tweak[V] { x ⇒ t(x); other(x) }
+    def +[W1 <: W](other: Tweak[W1]) = Tweak[W1] { x ⇒ t(x); other(x) }
   }
 
   // format: OFF

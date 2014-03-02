@@ -31,7 +31,7 @@ private[macroid] trait LegacyFragment {
 
 object Fragment extends ModernFragment with LegacyFragment
 
-sealed trait FragmentApi[-F, M, A <: Activity] {
+sealed trait FragmentApi[-F, M, A] {
   def fragmentManager: F ⇒ M
   def activityManager: A ⇒ M
   def findFragmentByTag[F1 <: F](m: M, t: String): Option[F1]

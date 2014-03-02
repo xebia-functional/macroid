@@ -7,7 +7,7 @@ import android.widget.FrameLayout
 import org.macroid.util.Thunk
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import android.os.Bundle
-import org.macroid.support.{ Fragment, FragmentApi }
+import org.macroid.support.Fragment
 
 /** A fragment builder proxy */
 case class FragmentBuilder[F](constructor: Thunk[F], arguments: Bundle)(implicit ctx: ActivityContext, fragment: Fragment[F]) {

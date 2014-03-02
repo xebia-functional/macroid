@@ -37,9 +37,9 @@ trait Contexts[X] { self: X ⇒
   implicit def fragmentActivityContext(implicit fragment: Fragment[X]) =
     ActivityContext(fragment.activity(self))
 
-  implicit def activityManagerContext[M, F, A >: X <: Activity](implicit fragmentApi: FragmentApi[F, M, A]) =
+  implicit def activityManagerContext[M, F, A >: X](implicit fragmentApi: FragmentApi[F, M, A]) =
     FragmentManagerContext[F, M](fragmentApi.activityManager(self))
 
-  implicit def fragmentManagerContext[M, F >: X, A <: Activity](implicit fragmentApi: FragmentApi[F, M, A]) =
+  implicit def fragmentManagerContext[M, F >: X, A](implicit fragmentApi: FragmentApi[F, M, A]) =
     FragmentManagerContext[F, M](fragmentApi.fragmentManager(self))
 }

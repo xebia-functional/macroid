@@ -35,26 +35,38 @@ trait CanFindViews[-X] {
   def find[V <: View](x: X, id: Int): Option[V]
 }
 
-private[macroid] trait ViewFinding {
-  implicit class ViewFindingOps[X](x: X)(implicit canFindViews: CanFindViews[X]) {
-    def find[V <: View](id: Int) = canFindViews.find[V](x, id)
-  }
-
-  implicit object viewCanFindViews extends CanFindViews[View] {
+object CanFindViews {
+  implicit object `View can find views` extends CanFindViews[View] {
     def find[V <: View](x: View, id: Int) = SafeCast[View, V](x.findViewById(id))
   }
 
-  implicit object activityCanFindViews extends CanFindViews[Activity] {
+  implicit object `Activity can find views` extends CanFindViews[Activity] {
     def find[V <: View](x: Activity, id: Int) = SafeCast[View, V](x.findViewById(id))
   }
 
-  implicit def fragmentCanFindViews[F](implicit fragment: Fragment[F]) = new CanFindViews[F] {
+  implicit def `Fragment can find views`[F](implicit fragment: Fragment[F]) = new CanFindViews[F] {
     def find[V <: View](x: F, id: Int) = SafeCast[View, V](fragment.view(x).findViewById(id))
+  }
+}
+
+private[macroid] trait ViewFinding {
+  implicit class ViewFindingOps[X](x: X)(implicit canFindViews: CanFindViews[X]) {
+    def find[V <: View](id: Int) = canFindViews.find[V](x, id)
   }
 }
 
 trait CanFindFragments[-X, -F] {
   def find[F1 <: F](x: X, tag: String): Option[F1]
+}
+
+object CanFindFragments {
+  implicit def `Activity can find fragments`[F, M, A](implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[A, F] {
+    def find[F1 <: F](x: A, tag: String) = fragmentApi.findFragmentByTag[F1](fragmentApi.activityManager(x), tag)
+  }
+
+  implicit def `Fragment can find fragments`[F, M, A](implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[F, F] {
+    def find[F1 <: F](x: F, tag: String) = fragmentApi.findFragmentByTag[F1](fragmentApi.fragmentManager(x), tag)
+  }
 }
 
 private[macroid] trait FragmentFinding {
@@ -67,14 +79,6 @@ private[macroid] trait FragmentFinding {
 
   implicit class FragmentFindingOps[X, F](x: X)(implicit canFindFragments: CanFindFragments[X, F]) {
     def findFrag[F1 <: F](tag: String) = canFindFragments.find[F1](x, tag)
-  }
-
-  implicit def activityCanFindFragments[F, M, A](implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[A, F] {
-    def find[F1 <: F](x: A, tag: String) = fragmentApi.findFragmentByTag[F1](fragmentApi.activityManager(x), tag)
-  }
-
-  implicit def fragmentCanFindFragments[F, M, A](implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[F, F] {
-    def find[F1 <: F](x: F, tag: String) = fragmentApi.findFragmentByTag[F1](fragmentApi.fragmentManager(x), tag)
   }
 }
 

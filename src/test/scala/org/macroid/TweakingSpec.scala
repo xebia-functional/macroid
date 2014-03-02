@@ -4,8 +4,8 @@ import org.scalatest.FlatSpec
 import android.widget.{ LinearLayout, TextView, Button }
 import android.app.Activity
 
-class TweakingSpec extends FlatSpec with LayoutBuilding with Tweaks {
-  implicit val ctx = ActivityContext(null)
+class TweakingSpec extends FlatSpec with LayoutDsl with Tweaks {
+  implicit val ctx = ActivityContext(null: Activity)
 
   "Tweaking" should "work with widgets and tweaks" in {
     def foo = {
@@ -51,15 +51,6 @@ class TweakingSpec extends FlatSpec with LayoutBuilding with Tweaks {
         w[TextView] ~> lp(0, 0, 1.0f)
       )
       val z = lp(0, 0, 1.0f)(L[LinearLayout])
-    }
-  }
-
-  it should "boo" in {
-    def foo = {
-      import Contexts._
-      class X extends Activity {
-        implicitly[AppContext]
-      }
     }
   }
 }

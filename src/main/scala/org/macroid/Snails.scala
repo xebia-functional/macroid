@@ -57,8 +57,7 @@ private[macroid] trait AnimationSnails extends VisibilityTweaks {
 }
 
 private[macroid] trait Snails
-  extends Snailing
-  with BasicSnails
+  extends BasicSnails
   with ProgressSnails
   with AnimationSnails
 

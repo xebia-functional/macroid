@@ -29,7 +29,6 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "com.google.android" % "android" % "4.1.1.4" % "provided",
   "com.android.support" % "support-v13" % "19.0.0",
-  "io.dylemma" %% "scala-frp" % "1.1",
   "org.scala-lang.modules" %% "scala-async" % "0.9.0-M4",
   "org.scalatest" %% "scalatest" % "2.0" % "test"
 )

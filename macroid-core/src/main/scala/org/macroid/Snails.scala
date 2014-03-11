@@ -6,6 +6,7 @@ import scala.concurrent.{ Future, Promise, ExecutionContext, future }
 import android.view.animation.Animation.AnimationListener
 import scala.util.Success
 import android.widget.ProgressBar
+import scala.util.control.NonFatal
 
 private[macroid] trait BasicSnails {
   // TODO: sane implementation!
@@ -13,7 +14,7 @@ private[macroid] trait BasicSnails {
   def delay(millis: Long)(implicit ec: ExecutionContext) = Snail[View](x ⇒ future { Thread.sleep(millis) })
 
   /** A snail that waits for a given future to finish */
-  def wait(f: Future[Any])(implicit ec: ExecutionContext) = Snail[View](x ⇒ f.recover { case _ ⇒ }.map(_ ⇒ ()))
+  def wait(f: Future[Any])(implicit ec: ExecutionContext) = Snail[View](x ⇒ f.recover { case NonFatal(_) ⇒ }.map(_ ⇒ ()))
 }
 
 private[macroid] trait ProgressSnails extends BasicSnails with VisibilityTweaks {
@@ -30,7 +31,7 @@ private[macroid] trait ProgressSnails extends BasicSnails with VisibilityTweaks 
       x.setIndeterminate(false)
       x.setMax(futures.length)
       x.setProgress(0)
-      futures.foreach(f ⇒ f.recover { case _ ⇒ }.foreach(_ ⇒ UiThreading.fireUi(x.incrementProgressBy(1))))
+      futures.foreach(f ⇒ f.recover { case NonFatal(_) ⇒ }.foreach(_ ⇒ UiThreading.fireUi(x.incrementProgressBy(1))))
     } + show +@ wait(Future.sequence(futures)) @+ hide
 }
 

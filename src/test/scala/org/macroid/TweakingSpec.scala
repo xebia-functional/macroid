@@ -31,26 +31,26 @@ class TweakingSpec extends FlatSpec with LayoutDsl with Tweaks {
     }
   }
 
-  it should "infer widget type" in {
+  it should "use provided widget type" in {
     def foo = {
-      Option(w[Button]) ~> (tweak doing (_.setText("test")))
-      val t = tweak(W[Button]) doing (_.setText("test"))
+      w[Button] ~> Tweak[Button] { _.setText("test") }
+      Option(w[Button]) ~> Tweak[Button] { _.setText("test") }
     }
   }
 
   it should "allow setting method handlers" in {
     def foo = {
       w[Button] ~> On.click(println("duh"))
-      w[Button] ~> On.editorAction { println("duhduh"); true }
+      w[Button] ~> On.editorAction[Button] { println("duhduh"); true }
     }
   }
 
-  it should "infer parent layout type" in {
+  it should "use provided layout type" in {
     def foo = {
       l[LinearLayout](
-        w[TextView] ~> lp(0, 0, 1.0f)
+        w[TextView] ~> lp[LinearLayout](0, 0, 1.0f)
       )
-      val z = lp(0, 0, 1.0f)(L[LinearLayout])
+      val z = lp[LinearLayout](0, 0, 1.0f)
     }
   }
 }

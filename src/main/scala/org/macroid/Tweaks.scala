@@ -5,9 +5,10 @@ import scala.language.experimental.macros
 import android.view.{ ViewGroup, View }
 import android.widget.{ ProgressBar, LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
-import org.macroid.util.{ MacroUtils, Thunk }
+import org.macroid.util.{ Thunk }
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.annotation.implicitNotFound
+import scala.util.control.NonFatal
 
 private[macroid] trait BasicTweaks {
   import BasicTweakMacros._
@@ -61,21 +62,10 @@ trait LayoutType {
 private[macroid] trait LayoutTweaks {
   import LayoutTweakMacros._
 
-  /** Automatically find the appropriate `LayoutParams` class from the parent layout. */
-  def layoutParams(params: Any*)(implicit ltp: LayoutType): Tweak[View] = macro layoutParamsImpl
-  /** Automatically find the appropriate `LayoutParams` class from the parent layout. */
-  def lp(params: Any*)(implicit ltp: LayoutType): Tweak[View] = macro layoutParamsImpl
-
-  /** Use to provide parent layout type explicitly */
-  def L[X <: ViewGroup] = new LayoutType { type L = X }
-
-  /** Infer parent layout type */
-  implicit def inferLayoutType: LayoutType = macro inferLayoutTypeImpl
-
   /** Use `LayoutParams` of the specified layout class */
-  def layoutParamsOf[L <: ViewGroup](params: Any*): Tweak[View] = macro layoutParamsOfImpl[L]
+  def layoutParams[L <: ViewGroup](params: Any*): Tweak[View] = macro layoutParamsImpl[L]
   /** Use `LayoutParams` of the specified layout class */
-  def lpOf[L <: ViewGroup](params: Any*): Tweak[View] = macro layoutParamsOfImpl[L]
+  def lp[L <: ViewGroup](params: Any*): Tweak[View] = macro layoutParamsImpl[L]
 
   /** Make this layout vertical */
   val vertical = Tweak[LinearLayout](_.setOrientation(LinearLayout.VERTICAL))
@@ -112,7 +102,7 @@ private[macroid] trait ProgressTweaks extends VisibilityTweaks {
   /** Show this progress bar with indeterminate progress and hide it once `future` is done */
   def showProgress(future: Future[Any])(implicit ec: ExecutionContext) = Tweak[ProgressBar] { x ⇒
     x.setIndeterminate(true)
-    x ~> show ~> future.recover { case _ ⇒ }.map(_ ⇒ hide)
+    x ~> show ~> future.recover { case NonFatal(_) ⇒ }.map(_ ⇒ hide)
   }
   /** Show this progress bar with determinate progress and hide it once all futures are done */
   def showProgress(futures: Seq[Future[Any]])(implicit ec: ExecutionContext) = Tweak[ProgressBar] { x ⇒
@@ -121,7 +111,7 @@ private[macroid] trait ProgressTweaks extends VisibilityTweaks {
     x.setProgress(0)
     x.setMax(length)
     x ~> show
-    futures.foreach(f ⇒ f.recover { case _ ⇒ }.foreach { _ ⇒
+    futures.foreach(f ⇒ f.recover { case NonFatal(_) ⇒ }.foreach { _ ⇒
       UiThreading.fireUi {
         x.incrementProgressBy(1)
         if (x.getProgress == x.getMax - 1) x ~> hide
@@ -135,17 +125,17 @@ private[macroid] trait EventTweaks {
 
   object On extends Dynamic {
     /** Override the listener treating `f` as a by-name argument. */
-    def applyDynamic(event: String)(f: Any)(implicit wtp: WidgetType): Tweak[wtp.W] = macro onBlockImpl
+    def applyDynamic[W <: View](event: String)(f: Any): Tweak[W] = macro onBlockImpl[W]
   }
 
   object FuncOn extends Dynamic {
     /** Override the listener with `f` */
-    def applyDynamic(event: String)(f: Any)(implicit wtp: WidgetType): Tweak[wtp.W] = macro onFuncImpl
+    def applyDynamic[W <: View](event: String)(f: Any): Tweak[W] = macro onFuncImpl[W]
   }
 
   object ThunkOn extends Dynamic {
     /** Override the listener with `f()` */
-    def applyDynamic(event: String)(f: Thunk[Any])(implicit wtp: WidgetType): Tweak[wtp.W] = macro onThunkImpl
+    def applyDynamic[W <: View](event: String)(f: Thunk[Any]): Tweak[W] = macro onThunkImpl[W]
   }
 }
 
@@ -175,28 +165,6 @@ object BasicTweakMacros {
 }
 
 object LayoutTweakMacros {
-  def inferLayoutTypeImpl(c: MacroContext) = {
-    import c.universe._
-    val L = newTermName("l")
-    val lay: PartialFunction[Tree, Type] = {
-      case Apply(TypeApply(Ident(L), t), _) ⇒
-        // avoid recursive typechecking
-        c.typeCheck(Apply(TypeApply(Ident(L), t), List())).tpe
-    }
-    val tp = MacroUtils.fromImmediateParentTree(c)(lay)
-    c.Expr[LayoutType](writeLayoutType(c)(tp.getOrElse(sys.error(""))))
-  }
-
-  def writeLayoutType(c: MacroContext)(tp: c.Type) = {
-    import c.universe._
-    q"new ${typeOf[LayoutType]} { type L = $tp }"
-  }
-
-  def readLayoutType(c: MacroContext)(ltp: c.Expr[LayoutType]) = {
-    import c.universe._
-    c.typeCheck(q"val x = $ltp; val y: x.L = ???; y").tpe
-  }
-
   def layoutParams(c: MacroContext)(l: c.Type, params: Seq[c.Expr[Any]]) = {
     import c.universe._
     q"org.macroid.Tweak[android.view.View] { x ⇒ x.setLayoutParams(new ${l.typeSymbol.companionSymbol}.LayoutParams(..$params)) }"
@@ -217,19 +185,14 @@ object LayoutTweakMacros {
     c.Expr[Tweak[View]](layoutParams(c)(tp, params))
   }
 
-  def layoutParamsImpl(c: MacroContext)(params: c.Expr[Any]*)(ltp: c.Expr[LayoutType]): c.Expr[Tweak[View]] = {
-    findLayoutParams(c)(readLayoutType(c)(ltp), params)
-  }
-
-  def layoutParamsOfImpl[L <: ViewGroup: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[Tweak[View]] = {
+  def layoutParamsImpl[L <: ViewGroup: c.WeakTypeTag](c: MacroContext)(params: c.Expr[Any]*): c.Expr[Tweak[View]] = {
     findLayoutParams(c)(c.weakTypeOf[L], params)
   }
 }
 
 object EventTweakMacros {
-  def onBase(c: MacroContext)(event: c.Expr[String], wtp: c.Expr[WidgetType]) = {
+  def onBase(c: MacroContext)(event: c.Expr[String], tp: c.Type) = {
     import c.universe._
-    val tp = TweakingMacros.readWidgetType(c)(wtp)
 
     // find the setter
     val Expr(Literal(Constant(eventName: String))) = event
@@ -270,10 +233,10 @@ object EventTweakMacros {
     q"org.macroid.Tweak[$tpe] { x ⇒ x.$setter(new $listener { override def ${on.name.toTermName}(..$params) = $impl })}"
   }
 
-  def onBlockImpl(c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any])(wtp: c.Expr[WidgetType]) = {
+  def onBlockImpl[W <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]) = {
     import c.universe._
 
-    val (setter, listener, on, tp) = onBase(c)(event, wtp)
+    val (setter, listener, on, tp) = onBase(c)(event, weakTypeOf[W])
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType <:< on.returnType)
       c.Expr[Tweak[View]](getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(f.tree)), BlockListener))
@@ -282,10 +245,10 @@ object EventTweakMacros {
     }
   }
 
-  def onFuncImpl(c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any])(wtp: c.Expr[WidgetType]) = {
+  def onFuncImpl[W <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]) = {
     import c.universe._
 
-    val (setter, listener, on, tp) = onBase(c)(event, wtp)
+    val (setter, listener, on, tp) = onBase(c)(event, weakTypeOf[W])
     scala.util.Try {
       c.Expr[Tweak[View]](c.typeCheck(getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(f.tree)), FuncListener)))
     } getOrElse {
@@ -293,10 +256,10 @@ object EventTweakMacros {
     }
   }
 
-  def onThunkImpl(c: MacroContext)(event: c.Expr[String])(f: c.Expr[Thunk[Any]])(wtp: c.Expr[WidgetType]) = {
+  def onThunkImpl[W <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Thunk[Any]]) = {
     import c.universe._
 
-    val (setter, listener, on, tp) = onBase(c)(event, wtp)
+    val (setter, listener, on, tp) = onBase(c)(event, weakTypeOf[W])
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType.member(newTermName("apply")).asMethod.returnType <:< on.returnType)
       c.Expr[Tweak[View]](getListener(c)(tp, setter, listener, on, f, ThunkListener))

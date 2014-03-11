@@ -12,6 +12,8 @@ scalaVersion := "2.10.3"
 
 scalacOptions ++= Seq("-feature", "-deprecation")
 
+crossScalaVersions := Seq("2.10.3", "2.11.0-RC1")
+
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   "Typesafe" at "http://repo.typesafe.com/typesafe/releases/",
@@ -22,14 +24,18 @@ autoCompilerPlugins := true
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-  "org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full,
   compilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M3" cross CrossVersion.full)
 )
+
+libraryDependencies ++= (scalaVersion.value match {
+  case "2.10.3" ⇒ Seq("org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full)
+  case "2.11.0-RC1" ⇒ Seq()
+})
 
 libraryDependencies ++= Seq(
   "com.google.android" % "android" % "4.1.1.4" % "provided",
   "com.android.support" % "support-v13" % "19.0.0",
-  "org.scala-lang.modules" %% "scala-async" % "0.9.0-M4",
+  "org.scala-lang.modules" %% "scala-async" % "0.9.0-M5",
   "org.scalatest" %% "scalatest" % "2.1.0" % "test"
 )
 

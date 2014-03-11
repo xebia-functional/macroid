@@ -9,12 +9,12 @@ private[macroid] trait LayoutBuilding {
   import LayoutBuildingMacros._
 
   /** Define a widget */
-  def w[W <: View](implicit ctx: ActivityContext) = macro widgetImpl[W]
+  def w[W <: View](implicit ctx: ActivityContext): W = macro widgetImpl[W]
   /** Define a widget, supplying additional arguments */
-  def w[W <: View](args: Any*)(implicit ctx: ActivityContext) = macro widgetArgImpl[W]
+  def w[W <: View](args: Any*)(implicit ctx: ActivityContext): W = macro widgetArgImpl[W]
 
   /** Define a layout */
-  def l[L <: ViewGroup](children: View*)(implicit ctx: ActivityContext) = macro layoutImpl[L]
+  def l[L <: ViewGroup](children: View*)(implicit ctx: ActivityContext): L = macro layoutImpl[L]
 
   /** Define a slot */
   def slot[W <: View]: Option[W] = None

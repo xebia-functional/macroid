@@ -17,7 +17,7 @@ case class FragmentBuilder[F](constructor: Thunk[F], arguments: Bundle)(implicit
   /** Pass arguments in a Bundle */
   def pass(bundle: Bundle) = FragmentBuilder(constructor, arguments + bundle)
   /** Pass arguments, which will be put into a Bundle */
-  def pass(arguments: (String, Any)*) = macro FragmentBuildingMacros.passImpl[F]
+  def pass(arguments: (String, Any)*): FragmentBuilder[F] = macro FragmentBuildingMacros.passImpl[F]
 
   /** Fragment factory. In contrast to `constructor`, `factory` passes arguments to the fragment */
   def factory = constructor map { f ⇒ fragment.setArguments(f, arguments); f }
@@ -37,13 +37,13 @@ private[macroid] trait FragmentBuilding extends Bundles {
   /**
    * Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
    */
-  def f[F](implicit ctx: ActivityContext, fragment: Fragment[F]) = macro fragmentImpl[F]
+  def f[F](implicit ctx: ActivityContext, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentImpl[F]
 
   /**
    * Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
    * Without arguments, newInstance() is called, and if that fails, class constructor is used.
    */
-  def f[F](newInstanceArgs: Any*)(implicit ctx: ActivityContext, fragment: Fragment[F]) = macro fragmentArgImpl[F]
+  def f[F](newInstanceArgs: Any*)(implicit ctx: ActivityContext, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentArgImpl[F]
 }
 
 object FragmentBuilding extends FragmentBuilding

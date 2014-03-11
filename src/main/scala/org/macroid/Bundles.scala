@@ -6,7 +6,7 @@ import scala.reflect.macros.{ Context ⇒ MacroContext }
 
 private[macroid] trait Bundles {
   import BundleMacros._
-  def bundle(pairs: (String, Any)*) = macro bundleImpl
+  def bundle(pairs: (String, Any)*): Bundle = macro bundleImpl
 
   implicit class BundleAddition(b: Bundle) {
     def +(other: Bundle) = {

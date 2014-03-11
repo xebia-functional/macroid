@@ -2,7 +2,7 @@ package org.macroid
 
 import android.view.animation.{ AlphaAnimation, Animation }
 import android.view.View
-import scala.concurrent.{ Future, Promise, ExecutionContext, future }
+import scala.concurrent.{ Future, Promise, ExecutionContext }
 import android.view.animation.Animation.AnimationListener
 import scala.util.Success
 import android.widget.ProgressBar
@@ -11,7 +11,7 @@ import scala.util.control.NonFatal
 private[macroid] trait BasicSnails {
   // TODO: sane implementation!
   /** A delay to be inserted somewhere between ~@>s and ~>s */
-  def delay(millis: Long)(implicit ec: ExecutionContext) = Snail[View](x ⇒ future { Thread.sleep(millis) })
+  def delay(millis: Long)(implicit ec: ExecutionContext) = Snail[View](x ⇒ Future { Thread.sleep(millis) })
 
   /** A snail that waits for a given future to finish */
   def wait(f: Future[Any])(implicit ec: ExecutionContext) = Snail[View](x ⇒ f.recover { case NonFatal(_) ⇒ }.map(_ ⇒ ()))

@@ -6,7 +6,7 @@ import android.view.View
 import scala.concurrent.{ ExecutionContext, Future }
 import android.content.DialogInterface
 import android.content.DialogInterface.OnClickListener
-import org.macroid.util.Thunk
+import org.macroid.util.{ Ui, Thunk }
 import android.widget.ListAdapter
 
 case class Phrase(f: AlertDialog.Builder ⇒ Unit) {
@@ -14,22 +14,30 @@ case class Phrase(f: AlertDialog.Builder ⇒ Unit) {
 }
 
 private[macroid] trait DialogBuilding {
-  class Builder[A](theme: Option[Int], f: AlertDialog.Builder ⇒ A) {
-    def apply(view: ⇒ View)(implicit ctx: ActivityContext) =
-      f(new AlertDialog.Builder(ctx.get).setView(view))
+  /** A helper class to provide different ways of building a dialog */
+  class DialogBuilder[A](theme: Option[Int]) {
+    /** Create a dialog with the specified view */
+    def apply(view: ⇒ View)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
+      Ui(new AlertDialog.Builder(ctx.get).setView(view))
 
-    def apply(message: CharSequence)(implicit ctx: ActivityContext) =
-      f(new AlertDialog.Builder(ctx.get).setMessage(message))
+    /** Create a dialog with the specified view */
+    def apply(view: Ui[View])(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
+      view.flatMap(v ⇒ apply(v))
 
-    def apply(adapter: ListAdapter)(handler: OnClickListener)(implicit ctx: ActivityContext) =
-      f(new AlertDialog.Builder(ctx.get).setAdapter(adapter, handler))
+    /** Create a dialog with the specified message */
+    def apply(message: CharSequence)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
+      Ui(new AlertDialog.Builder(ctx.get).setMessage(message))
+
+    /** Create a dialog with the specified ListAdapter and click handler */
+    def apply(adapter: ListAdapter)(handler: OnClickListener)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
+      Ui(new AlertDialog.Builder(ctx.get).setAdapter(adapter, handler))
   }
 
-  def dialog = new Builder(None, code ⇒ UiThreading.runOnUiThread(code))
-  def dialog(theme: Int) = new Builder(Some(theme), code ⇒ UiThreading.runOnUiThread(code))
+  /** Create a dialog with the default theme */
+  def dialog = new DialogBuilder(None)
 
-  def createDialog = new Builder(None, identity)
-  def createDialog(theme: Int) = new Builder(Some(theme), identity)
+  /** Create a dialog with the specified theme */
+  def dialog(theme: Int) = new DialogBuilder(Some(theme))
 }
 
 object DialogBuilding extends DialogBuilding
@@ -80,17 +88,11 @@ private[macroid] trait Phrases {
 object Phrases extends Phrases
 
 private[macroid] trait Phrasing extends DialogImplicits {
-  import org.macroid.UiThreading._
-
   object create
 
-  implicit class FuturePhrasingOps(dialog: Future[AlertDialog.Builder])(implicit ec: ExecutionContext) {
-    def ~>(phrase: Phrase) = dialog mapUi { d ⇒ phrase(d); d }
-  }
-
-  implicit class PhrasingOps(dialog: AlertDialog.Builder)(implicit ec: ExecutionContext) {
-    def ~>(phrase: Phrase) = { phrase(dialog); dialog }
-    def ~>(c: create.type) = dialog.create()
+  implicit class PhrasingOps(dialog: Ui[AlertDialog.Builder]) {
+    def ~>(phrase: Phrase) = dialog map { d ⇒ phrase(d); d }
+    def ~>(c: create.type) = dialog.map(_.create())
   }
 }
 

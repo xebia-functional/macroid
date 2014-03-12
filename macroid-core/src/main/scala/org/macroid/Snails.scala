@@ -7,6 +7,7 @@ import android.view.animation.Animation.AnimationListener
 import scala.util.Success
 import android.widget.ProgressBar
 import scala.util.control.NonFatal
+import org.macroid.util.AfterFuture
 
 private[macroid] trait BasicSnails {
   // TODO: sane implementation!
@@ -14,7 +15,7 @@ private[macroid] trait BasicSnails {
   def delay(millis: Long)(implicit ec: ExecutionContext) = Snail[View](x ⇒ Future { Thread.sleep(millis) })
 
   /** A snail that waits for a given future to finish */
-  def wait(f: Future[Any])(implicit ec: ExecutionContext) = Snail[View](x ⇒ f.recover { case NonFatal(_) ⇒ }.map(_ ⇒ ()))
+  def wait(f: Future[Any])(implicit ec: ExecutionContext) = Snail[View](x ⇒ AfterFuture(f, ()))
 }
 
 private[macroid] trait ProgressSnails extends BasicSnails with VisibilityTweaks {

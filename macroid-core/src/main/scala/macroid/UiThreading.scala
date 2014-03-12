@@ -8,6 +8,9 @@ private[macroid] trait UiThreading {
   /** Run UI code on the UI thread */
   def runUi[A](ui: Ui[A]) = ui.run
 
+  /** Run UI code on the UI thread */
+  def runUi[A](ui1: Ui[A], ui2: Ui[A], uis: Ui[A]*) = Ui.sequence(ui1 +: ui2 +: uis: _*).run
+
   /** Get the result of executing UI code on the current (hopefully, UI!) tread */
   def getUi[A](ui: Ui[A]) = ui.get
 

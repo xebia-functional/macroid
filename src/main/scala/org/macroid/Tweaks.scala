@@ -5,7 +5,7 @@ import scala.language.experimental.macros
 import android.view.{ ViewGroup, View }
 import android.widget.{ ProgressBar, LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
-import org.macroid.util.{ Thunk }
+import org.macroid.util.{ AfterFuture, Thunk }
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.annotation.implicitNotFound
 import scala.util.control.NonFatal
@@ -103,7 +103,7 @@ private[macroid] trait ProgressTweaks extends VisibilityTweaks {
   /** Show this progress bar with indeterminate progress and hide it once `future` is done */
   def showProgress(future: Future[Any])(implicit ec: ExecutionContext) = Tweak[ProgressBar] { x ⇒
     x.setIndeterminate(true)
-    (x ~> show ~> future.recover { case NonFatal(_) ⇒ }.map(_ ⇒ hide)).run
+    (x ~> show ~> AfterFuture(future, hide)).run
   }
   /** Show this progress bar with determinate progress and hide it once all futures are done */
   def showProgress(futures: Seq[Future[Any]])(implicit ec: ExecutionContext) = Tweak[ProgressBar] { x ⇒

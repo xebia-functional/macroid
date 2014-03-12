@@ -1,4 +1,4 @@
-package org.macroid.viewable
+package macroid.viewable
 
 trait Dummifiable[A] {
   def dummy: A

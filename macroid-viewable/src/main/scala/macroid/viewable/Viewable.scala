@@ -1,16 +1,15 @@
-package org.macroid.viewable
+package macroid.viewable
 
-import org.macroid._
 import android.view.View
 import android.widget.TextView
-import org.macroid.LayoutBuilding._
-import org.macroid.Tweaking._
-import org.macroid.AppContext
-import org.macroid.ActivityContext
+import macroid._
+import macroid.LayoutBuilding._
+import macroid.Tweaking._
+import macroid.util.Ui
 
 trait Viewable[A] {
   type W <: View
-  def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): W
+  def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
 }
 
 object Viewable {

@@ -1,18 +1,16 @@
-package org.macroid.viewable
+package macroid.viewable
 
-import org.macroid._
-import org.macroid.LayoutBuilding._
-import org.macroid.Tweaking._
-import org.macroid.Transforming._
+import macroid._
+import macroid.LayoutDsl._
+import macroid.Tweaks._
 import scala.util.Try
 import android.view.{ View, ViewGroup }
 import android.widget.TextView
-import org.macroid.AppContext
-import org.macroid.ActivityContext
+import macroid.util.Ui
 
 trait FillableViewable[A] extends Viewable[A] {
-  def makeView(implicit ctx: ActivityContext, appCtx: AppContext): W
-  def fillView(view: W, data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Any
+  def makeView(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
+  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Any
 
   def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = {
     val view = makeView
@@ -21,10 +19,10 @@ trait FillableViewable[A] extends Viewable[A] {
 }
 
 object FillableViewable {
-  def apply[A, V <: View](make: ⇒ V, fill: V ⇒ A ⇒ Any) = new FillableViewable[A] {
+  def apply[A, V <: View](make: Ui[V], fill: Ui[V] ⇒ A ⇒ Any) = new FillableViewable[A] {
     type W = V
     def makeView(implicit ctx: ActivityContext, appCtx: AppContext) = make
-    def fillView(view: W, data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(view)(data)
+    def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(view)(data)
   }
 
   def text(make: Tweak[TextView]) = new TweakFillableViewable[String] {
@@ -39,13 +37,13 @@ object FillableViewable {
     def tweak(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(data)
   }
 
-  def tw[A, V <: View](make: ⇒ V, fill: A ⇒ Tweak[V]) = new TweakFillableViewable[A] {
+  def tw[A, V <: View](make: Ui[V], fill: A ⇒ Tweak[V]) = new TweakFillableViewable[A] {
     type W = V
     def makeView(implicit ctx: ActivityContext, appCtx: AppContext) = make
     def tweak(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(data)
   }
 
-  def tr[A](make: ⇒ ViewGroup, fill: A ⇒ Transformer) = new TransformerFillableViewable[A] {
+  def tr[A](make: Ui[ViewGroup], fill: A ⇒ Transformer) = new TransformerFillableViewable[A] {
     def makeView(implicit ctx: ActivityContext, appCtx: AppContext) = make
     def transformer(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(data)
   }
@@ -54,30 +52,30 @@ object FillableViewable {
 trait TweakFillableViewable[A] extends FillableViewable[A] {
   def tweak(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Tweak[W]
 
-  def fillView(view: W, data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view ~> tweak(data)
+  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view ~> tweak(data)
 }
 
 trait TransformerFillableViewable[A] extends FillableViewable[A] {
   def transformer(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Transformer
 
   type W = ViewGroup
-  def fillView(view: W, data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view ~~> transformer(data)
+  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view.map(_ ~~> transformer(data))
 }
 
 trait SlottedFillableViewable[A] extends FillableViewable[A] {
   type Slots
-  def makeSlots(implicit ctx: ActivityContext, appCtx: AppContext): (W, Slots)
+  def makeSlots(implicit ctx: ActivityContext, appCtx: AppContext): (Ui[W], Slots)
   def fillSlots(slots: Slots, data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Any
 
   type W = View
 
   def makeView(implicit ctx: ActivityContext, appCtx: AppContext) = {
     val (v, s) = makeSlots
-    v.setTag(s); v
+    v ~> hold(s)
   }
 
-  def fillView(view: W, data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = {
-    val slots = Option(view.getTag).flatMap(x ⇒ Try(x.asInstanceOf[Slots]).toOption).getOrElse(makeSlots._2)
+  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view map { v ⇒
+    val slots = Option(v.getTag).flatMap(x ⇒ Try(x.asInstanceOf[Slots]).toOption).getOrElse(makeSlots._2)
     fillSlots(slots, data)
   }
 }

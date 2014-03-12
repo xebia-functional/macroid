@@ -15,7 +15,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "com.google.android" % "android" % "4.1.1.4" % "provided",
   "com.android.support" % "support-v13" % "19.0.0",
-  "org.macroid" %% "macroid" % "2.0.0-SNAPSHOT"
+  "org.macroid" %% "macroid" % "2.0.0-20140312"
 )
 
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))

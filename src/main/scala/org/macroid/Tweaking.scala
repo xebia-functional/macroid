@@ -1,11 +1,9 @@
 package org.macroid
 
-import scala.language.experimental.macros
 import scala.language.higherKinds
 import android.view.View
 import scala.annotation.implicitNotFound
-import org.macroid.util.{ Effector }
-import scala.reflect.macros.{ Context ⇒ MacroContext }
+import org.macroid.util.{ Ui, Effector }
 
 /** A Tweak is something that mutates a widget */
 case class Tweak[-W <: View](f: W ⇒ Unit) {
@@ -19,6 +17,7 @@ object Tweak {
 
 @implicitNotFound("Don't know how to tweak ${W} with ${T}. Try importing an instance of TweakableWith[${W}, ${T}].") /** A typeclass for 'tweakable' relation */
 trait TweakableWith[W, T] {
+  /** Warning: this method expects to be called from the UI thread */
   def tweakWith(w: W, t: T): Unit
 }
 
@@ -27,17 +26,17 @@ object TweakableWith {
 
   implicit def `Widget is tweakable with Tweak`[W <: View, T <: Tweak[W]] =
     new (W TweakableWith T) {
-      def tweakWith(w: W, t: T) = UiThreading.fireUi(t(w))
+      def tweakWith(w: W, t: T) = t(w)
     }
 
-  implicit def `Widget is tweakable with Effector`[W <: View, F[+_], T](implicit effector: Effector[F], tweakableWith: W TweakableWith T) =
+  implicit def `Widget is tweakable with Effector`[W <: View, F[+_], T](implicit effector: Effector[F], tweakable: W TweakableWith T) =
     new (W TweakableWith F[T]) {
-      def tweakWith(w: W, f: F[T]) = effector.foreach(f)(t ⇒ tweakableWith.tweakWith(w, t))
+      def tweakWith(w: W, f: F[T]) = effector.foreach(f)(t ⇒ tweakable.tweakWith(w, t))
     }
 
-  implicit def `Effector is tweakable`[W, F[+_], T](implicit effector: Effector[F], tweakableWith: W TweakableWith T) =
+  implicit def `Effector is tweakable`[W, F[+_], T](implicit effector: Effector[F], tweakable: W TweakableWith T) =
     new (F[W] TweakableWith T) {
-      def tweakWith(f: F[W], t: T) = effector.foreach(f)(w ⇒ tweakableWith.tweakWith(w, t))
+      def tweakWith(f: F[W], t: T) = effector.foreach(f)(w ⇒ tweakable.tweakWith(w, t))
     }
 
   // format: ON
@@ -53,14 +52,16 @@ private[macroid] trait Tweaking {
 
   // format: OFF
 
-  /** Tweaking operator and its aliases */
+  /** Tweaking operator */
+  implicit class UiTweakingOps[W](ui: Ui[W]) {
+    /** Apply a tweak */
+    def ~>[T](t: T)(implicit tweakable: W TweakableWith T): Ui[W] = ui map { w ⇒ tweakable.tweakWith(w, t); w }
+  }
+
+  /** Tweaking operator */
   implicit class TweakingOps[W](w: W) {
-    /** Apply a tweak on the UI thread */
-    def ~>[T](t: T)(implicit tweakable: W TweakableWith T): W = { tweakable.tweakWith(w, t); w }
-    /** Apply a tweak on the UI thread (unicode alias for `~>`) */
-    def ⇝[T](t: T)(implicit tweakable: W TweakableWith T): W = { tweakable.tweakWith(w, t); w }
-    /** Apply a tweak on the UI thread (plain text alias for `~>`) */
-    def tweakWith[T](t: T)(implicit tweakable: W TweakableWith T): W = { tweakable.tweakWith(w, t); w }
+    /** Apply a tweak */
+    def ~>[T](t: T)(implicit tweakable: W TweakableWith T): Ui[W] = Ui { tweakable.tweakWith(w, t); w }
   }
 
   // format: ON

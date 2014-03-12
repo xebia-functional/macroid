@@ -1,58 +1,59 @@
 package org.macroid
 
-import scala.concurrent.{ Await, ExecutionContext, Promise, Future }
-import scala.util.Try
-import android.os.{ Looper, Handler }
-import scala.concurrent.duration.Duration
+import scala.concurrent.Future
+import scala.util.{ Failure, Success, Try }
+import android.os.Looper
+import org.macroid.util.{ Ui, UiThreadExecutionContext }
 
 private[macroid] trait UiThreading {
-  lazy val uiHandler = new Handler(Looper.getMainLooper)
-  lazy val uiThread = Looper.getMainLooper.getThread
+  private lazy val uiThread = Looper.getMainLooper.getThread
 
-  /** Run the supplied block of code on UI thread */
-  @inline def runOnUiThread[A](f: ⇒ A): Future[A] = {
-    val uiPromise = Promise[A]()
-    if (uiThread == Thread.currentThread) {
-      uiPromise.complete(Try(f))
-    } else uiHandler.post(new Runnable {
-      def run() { uiPromise.complete(Try(f)) }
-    })
-    uiPromise.future
+  /** An operation unfortunately missing in Future API */
+  implicit class CompletedFuture(future: Future.type) {
+    def completed[T](value: Try[T]) = value match {
+      case Success(result) ⇒ Future.successful(result)
+      case Failure(exception) ⇒ Future.failed(exception)
+    }
   }
 
-  /** Run supplied block of code on UI thread (shortcut for runOnUiThread) */
-  @inline def ui[A](f: ⇒ A): Future[A] = runOnUiThread(f)
-
-  /** Run supplied block of code on UI thread without tracking its progress */
-  @inline private[macroid] def fireUi[A](f: ⇒ A) {
-    if (uiThread == Thread.currentThread) {
-      Try(f)
-    } else uiHandler.post(new Runnable {
-      def run() { Try(f) }
-    })
+  /**
+   * Run the supplied block of code on the UI thread.
+   * If the calling thread is already the UI thread, the code is run in-place.
+   */
+  private[macroid] def runOnUiThread[A](f: ⇒ A): Future[A] = if (uiThread == Thread.currentThread) {
+    Future.completed(Try(f))
+  } else {
+    Future(f)(UiThreadExecutionContext)
   }
 
-  implicit class UiFuture[A](val value: Future[A]) {
+  /** Run UI code on the UI thread */
+  def runUi[A](ui: Ui[A]) = ui.run
+
+  /** Get the result of executing UI code on the current (hopefully, UI!) tread */
+  def getUi[A](ui: Ui[A]) = ui.get
+
+  /** Helpers to run Future callbacks on the UI thread */
+  implicit class UiFuture[T](future: Future[T]) {
     /** Same as map, but performed on UI thread */
-    def mapUi[S](f: Function[A, S])(implicit ec: ExecutionContext): Future[S] = {
-      value flatMap (x ⇒ runOnUiThread(f(x)))
-    }
-    /** Same as foreach, but performed on Ui thread */
-    def foreachUi[S](f: Function[A, S])(implicit ec: ExecutionContext) {
-      value foreach (x ⇒ runOnUiThread(f(x)))
-    }
+    def mapUi[S](f: Function[T, S]) = future.map(f)(UiThreadExecutionContext)
+
+    /** Same as flatMap, but performed on UI thread */
+    def flatMapUi[S](f: Function[T, Future[S]]) = future.flatMap(f)(UiThreadExecutionContext)
+
+    /** Same as foreach, but performed on UI thread */
+    def foreachUi[U](f: Function[T, U]) = future.foreach(f)(UiThreadExecutionContext)
+
     /** Same as recover, but performed on UI thread */
-    def recoverUi[U >: A](pf: PartialFunction[Throwable, U])(implicit ec: ExecutionContext): Future[U] = {
-      value recoverWith { case t if pf.isDefinedAt(t) ⇒ runOnUiThread(pf(t)) }
-    }
+    def recoverUi[U >: T](pf: PartialFunction[Throwable, U]) = future.recover(pf)(UiThreadExecutionContext)
+
     /** Same as onSuccess, but performed on UI thread */
-    def onSuccessUi[U >: A](pf: PartialFunction[A, U])(implicit ec: ExecutionContext) {
-      value onSuccess { case v if pf.isDefinedAt(v) ⇒ runOnUiThread(pf(v)) }
-    }
+    def onSuccessUi[U >: T](pf: PartialFunction[T, U]) = future.onSuccess(pf)(UiThreadExecutionContext)
+
     /** Same as onFailure, but performed on UI thread */
-    def onFailureUi[U](pf: PartialFunction[Throwable, U])(implicit ec: ExecutionContext) {
-      value onFailure { case t if pf.isDefinedAt(t) ⇒ runOnUiThread(pf(t)) }
-    }
+    def onFailureUi[U](pf: PartialFunction[Throwable, U]) = future.onFailure(pf)(UiThreadExecutionContext)
+
+    /** Same as onComplete, but performed on UI thread */
+    def onCompleteUi[U](pf: PartialFunction[Try[T], U]) = future.onComplete(pf)(UiThreadExecutionContext)
   }
 }
 

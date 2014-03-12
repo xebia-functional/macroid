@@ -1,6 +1,7 @@
 package org.macroid
 
 import android.view.{ ViewGroup, View }
+import org.macroid.util.Ui
 
 case class Transformer(f: PartialFunction[View, Unit]) {
   def apply(w: View): Unit = {
@@ -28,10 +29,8 @@ object Layout {
 private[macroid] trait Transforming {
   /** Transforming operator */
   implicit class TransformingOps[L <: ViewGroup](l: L) {
-    /** Apply transformer. Always runs on UI thread */
-    def ~~>(t: Transformer) = { UiThreading.runOnUiThread(t(l)); l }
-    /** Apply transformer. Always runs on UI thread (plain text alias for ~~>) */
-    def transformWith(t: Transformer) = { UiThreading.runOnUiThread(t(l)); l }
+    /** Apply transformer */
+    def ~~>(t: Transformer) = Ui { t(l); l }
   }
 }
 

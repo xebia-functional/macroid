@@ -98,11 +98,12 @@ private[macroid] trait TextTweaks {
 
 private[macroid] trait ProgressTweaks extends VisibilityTweaks {
   import Tweaking._
+  import UiThreading._
 
   /** Show this progress bar with indeterminate progress and hide it once `future` is done */
   def showProgress(future: Future[Any])(implicit ec: ExecutionContext) = Tweak[ProgressBar] { x ⇒
     x.setIndeterminate(true)
-    x ~> show ~> future.recover { case NonFatal(_) ⇒ }.map(_ ⇒ hide)
+    (x ~> show ~> future.recover { case NonFatal(_) ⇒ }.map(_ ⇒ hide)).run
   }
   /** Show this progress bar with determinate progress and hide it once all futures are done */
   def showProgress(futures: Seq[Future[Any]])(implicit ec: ExecutionContext) = Tweak[ProgressBar] { x ⇒
@@ -110,12 +111,10 @@ private[macroid] trait ProgressTweaks extends VisibilityTweaks {
     x.setIndeterminate(false)
     x.setProgress(0)
     x.setMax(length)
-    x ~> show
-    futures.foreach(f ⇒ f.recover { case NonFatal(_) ⇒ }.foreach { _ ⇒
-      UiThreading.fireUi {
-        x.incrementProgressBy(1)
-        if (x.getProgress == x.getMax - 1) x ~> hide
-      }
+    (x ~> show).run
+    futures.foreach(f ⇒ f.recover { case NonFatal(_) ⇒ }.foreachUi { _ ⇒
+      x.incrementProgressBy(1)
+      if (x.getProgress == x.getMax - 1) (x ~> hide).run
     })
   }
 }

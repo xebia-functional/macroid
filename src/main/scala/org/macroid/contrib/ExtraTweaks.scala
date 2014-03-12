@@ -20,9 +20,9 @@ private[macroid] trait ExtraTweaks {
   }
 
   object TextFace {
-    val serif = Tweak[TextView](_.setTypeface(Typeface.SERIF))
-    val sans = Tweak[TextView](_.setTypeface(Typeface.SANS_SERIF))
-    val mono = Tweak[TextView](_.setTypeface(Typeface.MONOSPACE))
+    val serif = Tweak[TextView](x ⇒ x.setTypeface(Typeface.SERIF, x.getTypeface.getStyle))
+    val sans = Tweak[TextView](x ⇒ x.setTypeface(Typeface.SANS_SERIF, x.getTypeface.getStyle))
+    val mono = Tweak[TextView](x ⇒ x.setTypeface(Typeface.MONOSPACE, x.getTypeface.getStyle))
   }
 
   object Bg {

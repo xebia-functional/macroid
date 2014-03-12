@@ -15,9 +15,6 @@ private[macroid] trait LayoutBuilding {
   def w[W <: View](args: Any*)(implicit ctx: ActivityContext): Ui[W] = macro widgetArgImpl[W]
 
   /** Define a layout */
-  //def l[L <: ViewGroup](children: View*)(implicit ctx: ActivityContext): Ui[L] = macro layoutImpl[L]
-
-  /** Define a layout */
   def l[L <: ViewGroup](children: Ui[View]*)(implicit ctx: ActivityContext): Ui[L] = macro layoutUiImpl[L]
 
   /** Define a slot */

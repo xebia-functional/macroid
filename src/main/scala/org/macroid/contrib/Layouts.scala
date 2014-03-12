@@ -11,11 +11,4 @@ object Layouts {
   class HorizontalLinearLayout(ctx: Context) extends LinearLayout(ctx) {
     setOrientation(LinearLayout.HORIZONTAL)
   }
-
-  class GravityGridLayout(ctx: Context) extends GridLayout(ctx)
-  object GravityGridLayout {
-    class LayoutParams(gravity: Int) extends GridLayout.LayoutParams {
-      setGravity(gravity)
-    }
-  }
 }

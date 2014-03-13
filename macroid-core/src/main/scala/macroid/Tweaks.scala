@@ -5,7 +5,7 @@ import scala.language.experimental.macros
 import android.view.{ ViewGroup, View }
 import android.widget.{ ProgressBar, LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
-import macroid.util.{ AfterFuture, Thunk }
+import macroid.util.{ Ui, AfterFuture, Thunk }
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.annotation.implicitNotFound
 import scala.util.control.NonFatal
@@ -123,18 +123,13 @@ private[macroid] trait EventTweaks {
   import EventTweakMacros._
 
   object On extends Dynamic {
-    /** Override the listener treating `f` as a by-name argument. */
-    def applyDynamic[W <: View](event: String)(f: Any): Tweak[W] = macro onBlockImpl[W]
+    /** Set event handler */
+    def applyDynamic[W <: View](event: String)(handler: Ui[Any]): Tweak[W] = macro onUnitImpl[W]
   }
 
   object FuncOn extends Dynamic {
-    /** Override the listener with `f` */
-    def applyDynamic[W <: View](event: String)(f: Any): Tweak[W] = macro onFuncImpl[W]
-  }
-
-  object ThunkOn extends Dynamic {
-    /** Override the listener with `f()` */
-    def applyDynamic[W <: View](event: String)(f: Thunk[Any]): Tweak[W] = macro onThunkImpl[W]
+    /** Set event handler */
+    def applyDynamic[W <: View](event: String)(handler: Any): Tweak[W] = macro onFuncImpl[W]
   }
 }
 
@@ -215,9 +210,8 @@ object EventTweakMacros {
   }
 
   sealed trait ListenerType
-  object BlockListener extends ListenerType
   object FuncListener extends ListenerType
-  object ThunkListener extends ListenerType
+  object UnitListener extends ListenerType
 
   def getListener(c: MacroContext)(tpe: c.Type, setter: c.universe.MethodSymbol, listener: c.Type, on: c.universe.MethodSymbol, f: c.Expr[Any], mode: ListenerType) = {
     import c.universe._
@@ -225,45 +219,32 @@ object EventTweakMacros {
     val params = args zip on.paramss(0) map { case (a, p) ⇒ q"val $a: ${p.typeSignature}" }
     lazy val argIdents = args.map(a ⇒ Ident(a))
     val impl = mode match {
-      case BlockListener ⇒ q"$f"
-      case FuncListener ⇒ q"$f(..$argIdents)"
-      case ThunkListener ⇒ q"$f()"
+      case FuncListener ⇒ q"$f(..$argIdents).get"
+      case UnitListener ⇒ q"$f.get"
     }
     q"macroid.Tweak[$tpe] { x ⇒ x.$setter(new $listener { override def ${on.name.toTermName}(..$params) = $impl })}"
   }
 
-  def onBlockImpl[W <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]) = {
+  def onUnitImpl[W <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handler: c.Expr[Ui[Any]]) = {
     import c.universe._
 
     val (setter, listener, on, tp) = onBase(c)(event, weakTypeOf[W])
     scala.util.Try {
-      if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType <:< on.returnType)
-      c.Expr[Tweak[View]](getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(f.tree)), BlockListener))
+      if (!(on.returnType =:= typeOf[Unit])) assert((handler.actualType match { case TypeRef(_, _, t :: _) ⇒ t }) <:< on.returnType)
+      c.Expr[Tweak[View]](getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(handler.tree)), UnitListener))
     } getOrElse {
-      c.abort(c.enclosingPosition, s"f should be of type ${on.returnType}")
+      c.abort(c.enclosingPosition, s"handler should be of type Ui[${on.returnType}]")
     }
   }
 
-  def onFuncImpl[W <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Any]) = {
+  def onFuncImpl[W <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handler: c.Expr[Any]) = {
     import c.universe._
 
     val (setter, listener, on, tp) = onBase(c)(event, weakTypeOf[W])
     scala.util.Try {
-      c.Expr[Tweak[View]](c.typeCheck(getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(f.tree)), FuncListener)))
+      c.Expr[Tweak[View]](c.typeCheck(getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(handler.tree)), FuncListener)))
     } getOrElse {
-      c.abort(c.enclosingPosition, s"f should have type signature ${on.typeSignature}")
-    }
-  }
-
-  def onThunkImpl[W <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(f: c.Expr[Thunk[Any]]) = {
-    import c.universe._
-
-    val (setter, listener, on, tp) = onBase(c)(event, weakTypeOf[W])
-    scala.util.Try {
-      if (!(on.returnType =:= typeOf[Unit])) assert(f.actualType.member(newTermName("apply")).asMethod.returnType <:< on.returnType)
-      c.Expr[Tweak[View]](getListener(c)(tp, setter, listener, on, f, ThunkListener))
-    } getOrElse {
-      c.abort(c.enclosingPosition, s"f should be of type Thunk[${on.returnType}]")
+      c.abort(c.enclosingPosition, s"handler should have type signature ${on.paramss.head.mkString("(", ",", ")")}⇒Ui[${on.returnType}]")
     }
   }
 }

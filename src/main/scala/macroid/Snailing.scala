@@ -37,6 +37,11 @@ object CanSnail {
       }
     }
 
+  implicit def `Ui is snailable`[W, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]) =
+    new CanSnail[Ui[W], S, W] {
+      def snail(ui: Ui[W], s: S) = ui flatMap { w ⇒ canSnail.snail(w, s).map(f ⇒ f.map(_ ⇒ w)) }
+    }
+
   implicit def `Option is snailable`[W, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]) =
     new CanSnail[Option[W], S, Option[W]] {
       def snail(o: Option[W], s: S) = o.fold(Ui(Future.successful(o))) { w ⇒

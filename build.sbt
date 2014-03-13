@@ -36,6 +36,7 @@ libraryDependencies ++= Seq(
   "com.google.android" % "android" % "4.1.1.4" % "provided",
   "com.android.support" % "support-v13" % "19.0.0",
   "org.scala-lang.modules" %% "scala-async" % "0.9.0-M6",
+  "org.brianmckenna" %% "wartremover" % "0.7",
   "org.scalatest" %% "scalatest" % "2.1.0" % "test"
 )
 

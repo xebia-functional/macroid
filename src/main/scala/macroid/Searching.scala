@@ -5,7 +5,7 @@ import scala.language.dynamics
 import android.view.View
 import java.util.concurrent.atomic.AtomicInteger
 import android.app.Activity
-import macroid.util.{Ui, SafeCast}
+import macroid.util.{ Ui, SafeCast }
 import macroid.support.{ Fragment, FragmentApi }
 
 /** A class to generate unique Ids */
@@ -66,6 +66,10 @@ object CanFindFragments {
 
   implicit def `Fragment can find fragments`[F, M, A](implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[F, F] {
     def find[F1 <: F](x: F, tag: String) = Ui(fragmentApi.findFragmentByTag[F1](fragmentApi.fragmentManager(x), tag))
+  }
+
+  implicit def `FragmentManager can find fragments`[F, M, A](implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[M, F] {
+    def find[F1 <: F](x: M, tag: String) = Ui(fragmentApi.findFragmentByTag[F1](x, tag))
   }
 }
 

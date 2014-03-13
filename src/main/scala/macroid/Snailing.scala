@@ -108,7 +108,7 @@ private[macroid] trait Snailing {
   /** Snailing operator */
   implicit class SnailingOps[W](w: W) {
     /** Apply a snail */
-    def ~@>[T, R](t: T)(implicit canSnail: CanSnail[W, T, R]): Ui[Future[R]] = canSnail.snail(w, t)
+    def <@~[T, R](t: T)(implicit canSnail: CanSnail[W, T, R]): Ui[Future[R]] = canSnail.snail(w, t)
   }
 }
 

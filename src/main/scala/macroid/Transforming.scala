@@ -46,7 +46,7 @@ private[macroid] trait Transforming {
   /** Transforming operator */
   implicit class TransformingOps[L](l: L) {
     /** Apply a transformer */
-    def ~~>[T, R](t: T)(implicit canTransform: CanTransform[L, T, R]) = canTransform.transform(l, t)
+    def <~~[T, R](t: T)(implicit canTransform: CanTransform[L, T, R]) = canTransform.transform(l, t)
   }
 }
 

@@ -4,13 +4,13 @@ import scala.language.experimental.macros
 import scala.language.implicitConversions
 import scala.language.postfixOps
 import android.widget.FrameLayout
-import macroid.util.Thunk
+import macroid.util.Ui
 import scala.reflect.macros.{ Context ⇒ MacroContext }
 import android.os.Bundle
 import macroid.support.Fragment
 
 /** A fragment builder proxy */
-case class FragmentBuilder[F](constructor: Thunk[F], arguments: Bundle)(implicit ctx: ActivityContext, fragment: Fragment[F]) {
+case class FragmentBuilder[F](constructor: Ui[F], arguments: Bundle)(implicit ctx: ActivityContext, fragment: Fragment[F]) {
   import Searching._
   import Bundles._
 
@@ -23,9 +23,9 @@ case class FragmentBuilder[F](constructor: Thunk[F], arguments: Bundle)(implicit
   def factory = constructor map { f ⇒ fragment.setArguments(f, arguments); f }
 
   /** Fragment wrapped in FrameLayout to be added to layout */
-  def framed[M](id: Int, tag: String)(implicit managerCtx: FragmentManagerContext[F, M]) = {
+  def framed[M](id: Int, tag: String)(implicit managerCtx: FragmentManagerContext[F, M]) = Ui {
     findFrag[F](tag) getOrElse {
-      managerCtx.fragmentApi.addFragment(managerCtx.get, id, tag, factory())
+      managerCtx.fragmentApi.addFragment(managerCtx.get, id, tag, factory.get)
     }
     new FrameLayout(ctx.get) { setId(id) }
   }
@@ -67,13 +67,13 @@ object FragmentBuildingMacros {
   def fragmentImpl[F: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[ActivityContext], fragment: c.Expr[Fragment[F]]) = {
     import c.universe._
     val constructor = instFrag(c)(Seq(), ctx)
-    c.Expr[FragmentBuilder[F]](q"macroid.FragmentBuilder(macroid.util.Thunk($constructor), new android.os.Bundle)($ctx, $fragment)")
+    c.Expr[FragmentBuilder[F]](q"macroid.FragmentBuilder(macroid.util.Ui($constructor), new android.os.Bundle)($ctx, $fragment)")
   }
 
   def fragmentArgImpl[F: c.WeakTypeTag](c: MacroContext)(newInstanceArgs: c.Expr[Any]*)(ctx: c.Expr[ActivityContext], fragment: c.Expr[Fragment[F]]) = {
     import c.universe._
     val constructor = instFrag(c)(newInstanceArgs, ctx)
-    c.Expr[FragmentBuilder[F]](q"macroid.FragmentBuilder(macroid.util.Thunk($constructor), new android.os.Bundle)($ctx, $fragment)")
+    c.Expr[FragmentBuilder[F]](q"macroid.FragmentBuilder(macroid.util.Ui($constructor), new android.os.Bundle)($ctx, $fragment)")
   }
 
   def passImpl[F: c.WeakTypeTag](c: MacroContext)(arguments: c.Expr[(String, Any)]*) = {

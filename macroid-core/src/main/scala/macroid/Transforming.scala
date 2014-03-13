@@ -3,9 +3,9 @@ package macroid
 import android.view.{ ViewGroup, View }
 import macroid.util.Ui
 
-case class Transformer(f: PartialFunction[View, Unit]) {
+case class Transformer(f: PartialFunction[View, Ui[Any]]) {
   def apply(w: View): Unit = {
-    f.lift.apply(w)
+    f.lift.apply(w).foreach(_.get)
     w match {
       case Layout(children @ _*) ⇒ children.foreach(apply)
       case _ ⇒ ()

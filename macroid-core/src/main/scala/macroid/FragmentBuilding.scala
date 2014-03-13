@@ -23,11 +23,14 @@ case class FragmentBuilder[F](constructor: Ui[F], arguments: Bundle)(implicit ct
   def factory = constructor map { f ⇒ fragment.setArguments(f, arguments); f }
 
   /** Fragment wrapped in FrameLayout to be added to layout */
-  def framed[M](id: Int, tag: String)(implicit managerCtx: FragmentManagerContext[F, M]) = Ui {
-    findFrag[F](tag) getOrElse {
-      managerCtx.fragmentApi.addFragment(managerCtx.get, id, tag, factory.get)
+  def framed[M](id: Int, tag: String)(implicit managerCtx: FragmentManagerContext[F, M]) = {
+    import managerCtx.fragmentApi
+    managerCtx.manager.findFrag[F](tag) map { f ⇒
+      f.getOrElse {
+        managerCtx.fragmentApi.addFragment(managerCtx.get, id, tag, factory.get)
+      }
+      new FrameLayout(ctx.get) { setId(id) }
     }
-    new FrameLayout(ctx.get) { setId(id) }
   }
 }
 

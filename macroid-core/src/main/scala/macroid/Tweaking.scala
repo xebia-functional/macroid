@@ -53,7 +53,7 @@ private[macroid] trait Tweaking {
   /** Tweaking operator */
   implicit class TweakingOps[W](w: W) {
     /** Apply a tweak */
-    def ~>[T, R](t: T)(implicit canTweak: CanTweak[W, T, R]): Ui[R] = canTweak.tweak(w, t)
+    def <~[T, R](t: T)(implicit canTweak: CanTweak[W, T, R]): Ui[R] = canTweak.tweak(w, t)
   }
 }
 

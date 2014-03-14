@@ -90,8 +90,8 @@ private[macroid] trait Phrasing extends DialogImplicits {
   object create
 
   implicit class PhrasingOps(dialog: Ui[AlertDialog.Builder]) {
-    def ~>(phrase: Phrase) = dialog map { d ⇒ phrase(d); d }
-    def ~>(c: create.type) = dialog.map(_.create())
+    def <~(phrase: Phrase) = dialog map { d ⇒ phrase(d); d }
+    def <~(c: create.type) = dialog.map(_.create())
   }
 }
 

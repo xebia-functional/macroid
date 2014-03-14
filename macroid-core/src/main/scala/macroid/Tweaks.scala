@@ -5,7 +5,7 @@ import scala.language.experimental.macros
 import android.view.{ ViewGroup, View }
 import android.widget.{ ProgressBar, LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
-import macroid.util.{ Ui, AfterFuture, Thunk }
+import macroid.util.{ Ui, AfterFuture }
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.annotation.implicitNotFound
 import scala.util.control.NonFatal

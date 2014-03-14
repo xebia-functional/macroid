@@ -5,7 +5,7 @@ import android.app.AlertDialog
 import android.view.View
 import android.content.DialogInterface
 import android.content.DialogInterface.OnClickListener
-import macroid.util.{ Ui, Thunk }
+import macroid.util.Ui
 import android.widget.ListAdapter
 
 case class Phrase(f: AlertDialog.Builder ⇒ Unit) {
@@ -46,8 +46,8 @@ private[macroid] trait DialogImplicits {
     def onClick(dialog: DialogInterface, which: Int): Unit = f
   }
 
-  implicit def thunk2OnClickListener(f: Thunk[Any]) = new OnClickListener {
-    def onClick(dialog: DialogInterface, which: Int): Unit = f()
+  implicit def thunk2OnClickListener(f: Ui[Any]) = new OnClickListener {
+    def onClick(dialog: DialogInterface, which: Int): Unit = f.get
   }
 
   implicit def func2OnClickListener(f: (DialogInterface, Int) ⇒ Any) = new OnClickListener {

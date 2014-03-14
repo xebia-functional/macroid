@@ -39,7 +39,7 @@ object ToastBuilding extends ToastBuilding
 
 private[macroid] trait Loafing {
   implicit class LoafingOps(toast: Ui[Toast]) {
-    def ~>(loaf: Loaf) = toast map { t ⇒ loaf(t); t }
+    def <~(loaf: Loaf) = toast map { t ⇒ loaf(t); t }
   }
 }
 

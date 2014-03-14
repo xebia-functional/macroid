@@ -1,4 +1,4 @@
-### *Macroid* — a Scala GUI DSL for Android
+### *Macroid* — a Scala GUI DSL for Android [![Build Status](https://travis-ci.org/macroid/macroid.png?branch=ui-monad)](https://travis-ci.org/macroid/macroid)
 
 Check http://macroid.github.io for documentation!
 

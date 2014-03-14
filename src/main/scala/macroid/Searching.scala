@@ -3,21 +3,23 @@ package macroid
 import scala.language.dynamics
 
 import android.view.View
-import java.util.concurrent.atomic.AtomicInteger
 import android.app.Activity
 import macroid.util.{ Ui, SafeCast }
 import macroid.support.{ Fragment, FragmentApi }
 
 /** A class to generate unique Ids */
 class IdGen(start: Int) extends Dynamic {
-  var ids = Map[String, Int]()
-  val counter = new AtomicInteger(start)
+  private var ids = Map[String, Int]()
+  private var counter = start
 
-  def selectDynamic(tag: String) = ids.get(tag) getOrElse {
-    val id = counter.incrementAndGet()
-    // TODO: this part does not seem thread-safe!
-    ids += tag → id
-    id
+  private val lock = new Object
+
+  def selectDynamic(tag: String) = lock synchronized {
+    ids.get(tag) getOrElse {
+      counter += 1
+      ids += tag → counter
+      counter
+    }
   }
 }
 

@@ -8,11 +8,21 @@ import scala.util.Success
 import android.widget.ProgressBar
 import scala.util.control.NonFatal
 import macroid.util.AfterFuture
+import java.util.concurrent.{ TimeUnit, Executors }
+
+private[macroid] object SnailScheduler {
+  val scheduler = Executors.newScheduledThreadPool(1)
+  def snailSchedulerEc(millis: Long) = new ExecutionContext {
+    def execute(runnable: Runnable) = scheduler.schedule(runnable, millis, TimeUnit.MILLISECONDS)
+    def reportFailure(t: Throwable) = t.printStackTrace()
+  }
+}
 
 private[macroid] trait BasicSnails {
-  // TODO: sane implementation!
+  import SnailScheduler._
+
   /** A delay to be inserted somewhere between ~@>s and ~>s */
-  def delay(millis: Long)(implicit ec: ExecutionContext) = Snail[View](x ⇒ Future { Thread.sleep(millis) })
+  def delay(millis: Long) = Snail[View](x ⇒ Future(())(snailSchedulerEc(millis)))
 
   /** A snail that waits for a given future to finish */
   def wait(f: Future[Any])(implicit ec: ExecutionContext) = Snail[View](x ⇒ AfterFuture(f, ()))

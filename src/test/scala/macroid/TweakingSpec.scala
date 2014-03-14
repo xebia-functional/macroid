@@ -5,13 +5,15 @@ import android.widget.{ LinearLayout, TextView, Button }
 import android.app.Activity
 import LayoutDsl._
 import Tweaks._
+import macroid.util.Ui
 
 class TweakingSpec extends FlatSpec {
   implicit val ctx = ActivityContext(null: Activity)
 
   "Tweaking" should "work with widgets and tweaks" in {
     def foo = {
-      w[Button] <~ On.click(println("Hm...")) <~ text("Hi") <~ id(2) <~ text("Hey") <~ On.click(println("Hurray"))
+      val action = Ui(println("Hmm..."))
+      w[Button] <~ On.click(action) <~ text("Hi") <~ id(2) <~ text("Hey") <~ On.click(action)
     }
   }
 
@@ -42,8 +44,8 @@ class TweakingSpec extends FlatSpec {
 
   it should "allow setting method handlers" in {
     def foo = {
-      w[Button] <~ On.click(println("duh"))
-      w[Button] <~ On.editorAction[Button] { println("duhduh"); true }
+      w[Button] <~ On.click(Ui(println("duh")))
+      w[Button] <~ On.editorAction[Button] { for (_ ← Ui(println("duhduh"))) yield true }
     }
   }
 

@@ -2,7 +2,7 @@ package macroid.warts
 
 import org.brianmckenna.wartremover.{ WartTraverser, WartUniverse }
 
-object Ui extends WartTraverser {
+object CheckUi extends WartTraverser {
   def apply(u: WartUniverse): u.Traverser = {
     import u.universe._
 

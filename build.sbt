@@ -12,7 +12,7 @@ scalaVersion := "2.10.3"
 
 scalacOptions ++= Seq("-feature", "-deprecation")
 
-crossScalaVersions := Seq("2.10.3", "2.11.0-RC1")
+crossScalaVersions := Seq("2.10.3", "2.11.0-RC3")
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
@@ -27,16 +27,17 @@ libraryDependencies ++= Seq(
   compilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M3" cross CrossVersion.full)
 )
 
-libraryDependencies ++= (if (scalaVersion.value.startsWith("2.10")) {
-  Seq("org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full)
-} else {
-  Seq()
+libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+  case Some((2, 10)) ⇒
+    Seq("org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full)
+  case _ ⇒
+    Seq()
 })
 
 libraryDependencies ++= Seq(
   "com.google.android" % "android" % "4.1.1.4" % "provided",
   "com.android.support" % "support-v13" % "19.0.0",
-  "org.scala-lang.modules" %% "scala-async" % "0.9.0-M6",
+  "org.scala-lang.modules" %% "scala-async" % "0.9.0",
   "org.brianmckenna" %% "wartremover" % "0.7",
   "org.scalatest" %% "scalatest" % "2.1.0" % "test"
 )

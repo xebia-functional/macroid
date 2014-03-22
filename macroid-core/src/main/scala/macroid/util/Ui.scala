@@ -12,11 +12,11 @@ object UiThreadExecutionContext extends ExecutionContext {
   def execute(runnable: Runnable) = uiHandler.post(runnable)
 }
 
-class Ui[+A](protected val v: () ⇒ A) {
+class Ui[+A](v: () ⇒ A) {
   import UiThreading._
 
   def map[B](f: A ⇒ B) = Ui(f(v()))
-  def flatMap[B](f: A ⇒ Ui[B]) = new Ui(f(v()).v)
+  def flatMap[B](f: A ⇒ Ui[B]) = Ui(f(v()).get)
 
   /** Run the code on the UI thread */
   def run = if (Ui.uiThread == Thread.currentThread) {
@@ -39,5 +39,5 @@ object Ui {
   private lazy val uiThread = Looper.getMainLooper.getThread
 
   def apply[A](v: ⇒ A) = new Ui(() ⇒ v)
-  def sequence[A](vs: Ui[A]*) = Ui(vs.map(_.v()))
+  def sequence[A](vs: Ui[A]*) = Ui(vs.map(_.get))
 }

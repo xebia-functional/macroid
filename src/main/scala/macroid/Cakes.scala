@@ -28,6 +28,7 @@ private[macroid] trait FullDsl
   with ToastDsl with Loafs
   with DialogDsl with Phrases
   with Resources
+  with Logging
   with MediaQueries
 
 object FullDsl extends FullDsl

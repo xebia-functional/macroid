@@ -34,12 +34,6 @@ object LayoutBuildingMacros {
     c.Expr[W](q"macroid.util.Ui(new ${weakTypeOf[W]}($ctx.get, ..$args))")
   }
 
-  def layoutImpl[L <: ViewGroup: c.WeakTypeTag](c: MacroContext)(children: c.Expr[View]*)(ctx: c.Expr[ActivityContext]): c.Expr[L] = {
-    import c.universe._
-    val additions = children.map(ch ⇒ c.resetLocalAttrs(q"this.addView($ch)"))
-    c.Expr[L](q"macroid.util.Ui(new ${weakTypeOf[L]}($ctx.get) { ..$additions })")
-  }
-
   def layoutUiImpl[L <: ViewGroup: c.WeakTypeTag](c: MacroContext)(children: c.Expr[Ui[View]]*)(ctx: c.Expr[ActivityContext]): c.Expr[L] = {
     import c.universe._
     val untypechecked = children.map(ch ⇒ c.resetLocalAttrs(ch.tree))

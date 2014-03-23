@@ -2,7 +2,7 @@ name := "macroid"
 
 description := "A Scala GUI DSL for Android"
 
-homepage := Some(url("http://github.com/stanch/macroid"))
+homepage := Some(url("http://github.com/macroid/macroid"))
 
 organization := "org.macroid"
 
@@ -38,8 +38,8 @@ libraryDependencies ++= Seq(
   "com.google.android" % "android" % "4.1.1.4" % "provided",
   "com.android.support" % "support-v13" % "19.0.0",
   "org.scala-lang.modules" %% "scala-async" % "0.9.0",
-  "org.brianmckenna" %% "wartremover" % "0.7",
-  "org.scalatest" %% "scalatest" % "2.1.0" % "test"
+  "org.brianmckenna" %% "wartremover" % "0.8" % "provided",
+  "org.scalatest" %% "scalatest" % "2.1.2" % "test"
 )
 
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))

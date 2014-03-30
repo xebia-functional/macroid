@@ -54,11 +54,6 @@ private[macroid] trait PaddingTweaks {
   }
 }
 
-@implicitNotFound("Could not infer the type of the parent layout. Please provide it explicitly.") /** The type of the parent layout */
-trait LayoutType {
-  type L <: ViewGroup
-}
-
 private[macroid] trait LayoutTweaks {
   import LayoutTweakMacros._
 
@@ -73,14 +68,9 @@ private[macroid] trait LayoutTweaks {
   val horizontal = Tweak[LinearLayout](_.setOrientation(LinearLayout.HORIZONTAL))
 
   /** Add views to the layout */
-  def addViews(children: Seq[View], removeOld: Boolean = false) = Tweak[ViewGroup] { x ⇒
+  def addViews(children: Seq[Ui[View]], removeOld: Boolean = false, reverse: Boolean = false) = Tweak[ViewGroup] { x ⇒
     if (removeOld) x.removeAllViews()
-    children.foreach(c ⇒ x.addView(c))
-  }
-  /** Add view to the layout in reversed order (uses addView(child, 0)) */
-  def addViewsReverse(children: Seq[View], removeOld: Boolean = false) = Tweak[ViewGroup] { x ⇒
-    if (removeOld) x.removeAllViews()
-    children.foreach(c ⇒ x.addView(c, 0))
+    children.foreach(c ⇒ if (reverse) x.addView(c.get, 0) else x.addView(c.get))
   }
 }
 

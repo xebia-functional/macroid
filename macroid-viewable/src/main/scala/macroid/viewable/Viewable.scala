@@ -15,7 +15,7 @@ trait Viewable[A] {
 object Viewable {
   def text(tweak: Tweak[TextView]) = new Viewable[String] {
     type W = TextView
-    def layout(data: String)(implicit ctx: ActivityContext, appCtx: AppContext) = w[TextView] ~> tweak ~> Tweaks.text(data)
+    def layout(data: String)(implicit ctx: ActivityContext, appCtx: AppContext) = w[TextView] <~ tweak <~ Tweaks.text(data)
   }
 }
 

@@ -70,18 +70,18 @@ object FragmentBuildingMacros {
   def fragmentImpl[F: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[ActivityContext], fragment: c.Expr[Fragment[F]]) = {
     import c.universe._
     val constructor = instFrag(c)(Seq(), ctx)
-    c.Expr[FragmentBuilder[F]](q"macroid.FragmentBuilder(macroid.util.Ui($constructor), new android.os.Bundle)($ctx, $fragment)")
+    c.Expr[FragmentBuilder[F]](q"_root_.macroid.FragmentBuilder(_root_.macroid.util.Ui($constructor), new _root_.android.os.Bundle)($ctx, $fragment)")
   }
 
   def fragmentArgImpl[F: c.WeakTypeTag](c: MacroContext)(newInstanceArgs: c.Expr[Any]*)(ctx: c.Expr[ActivityContext], fragment: c.Expr[Fragment[F]]) = {
     import c.universe._
     val constructor = instFrag(c)(newInstanceArgs, ctx)
-    c.Expr[FragmentBuilder[F]](q"macroid.FragmentBuilder(macroid.util.Ui($constructor), new android.os.Bundle)($ctx, $fragment)")
+    c.Expr[FragmentBuilder[F]](q"_root_.macroid.FragmentBuilder(_root_.macroid.util.Ui($constructor), new _root_.android.os.Bundle)($ctx, $fragment)")
   }
 
   def passImpl[F: c.WeakTypeTag](c: MacroContext)(arguments: c.Expr[(String, Any)]*) = {
     import c.universe._
     val Apply(Apply(_, List(constructor, args)), List(ctx, fragment)) = c.prefix.tree
-    c.Expr[FragmentBuilder[F]](q"macroid.FragmentBuilder($constructor, $args + bundle(..$arguments))($ctx, $fragment)")
+    c.Expr[FragmentBuilder[F]](q"_root_.macroid.FragmentBuilder($constructor, $args + bundle(..$arguments))($ctx, $fragment)")
   }
 }

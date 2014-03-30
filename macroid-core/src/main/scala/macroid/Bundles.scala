@@ -38,6 +38,6 @@ object BundleMacros {
         c.abort(pair.tree.pos, s"Could not put $value in a Bundle")
       q"$b.$put($pair._1, $pair._2)"
     }
-    c.Expr[Bundle](q"val $b = new android.os.Bundle; ..$puts; $b")
+    c.Expr[Bundle](q"val $b = new _root_.android.os.Bundle; ..$puts; $b")
   }
 }

@@ -24,12 +24,12 @@ autoCompilerPlugins := true
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-  compilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M3" cross CrossVersion.full)
+  compilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M6" cross CrossVersion.full)
 )
 
 libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
   case Some((2, 10)) ⇒
-    Seq("org.scalamacros" % "quasiquotes" % "2.0.0-M3" cross CrossVersion.full)
+    Seq("org.scalamacros" % "quasiquotes" % "2.0.0-M6" cross CrossVersion.full)
   case _ ⇒
     Seq()
 })

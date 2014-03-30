@@ -26,17 +26,17 @@ object LayoutBuilding extends LayoutBuilding
 object LayoutBuildingMacros {
   def widgetImpl[W <: View: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[ActivityContext]): c.Expr[W] = {
     import c.universe._
-    c.Expr[W](q"macroid.util.Ui(new ${weakTypeOf[W]}($ctx.get))")
+    c.Expr[W](q"_root_.macroid.util.Ui(new ${weakTypeOf[W]}($ctx.get))")
   }
 
   def widgetArgImpl[W <: View: c.WeakTypeTag](c: MacroContext)(args: c.Expr[Any]*)(ctx: c.Expr[ActivityContext]): c.Expr[W] = {
     import c.universe._
-    c.Expr[W](q"macroid.util.Ui(new ${weakTypeOf[W]}($ctx.get, ..$args))")
+    c.Expr[W](q"_root_.macroid.util.Ui(new ${weakTypeOf[W]}($ctx.get, ..$args))")
   }
 
   def layoutUiImpl[L <: ViewGroup: c.WeakTypeTag](c: MacroContext)(children: c.Expr[Ui[View]]*)(ctx: c.Expr[ActivityContext]): c.Expr[L] = {
     import c.universe._
     val untypechecked = children.map(ch ⇒ c.resetLocalAttrs(ch.tree))
-    c.Expr[L](q"macroid.util.Ui.sequence(..$untypechecked).map(ch ⇒ new ${weakTypeOf[L]}($ctx.get) { ch.foreach(this.addView) })")
+    c.Expr[L](q"_root_.macroid.util.Ui.sequence(..$untypechecked).map(ch ⇒ new ${weakTypeOf[L]}($ctx.get) { ch.foreach(this.addView) })")
   }
 }

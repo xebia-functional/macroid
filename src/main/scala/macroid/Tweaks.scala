@@ -149,19 +149,19 @@ object Tweaks extends Tweaks
 object BasicTweakMacros {
   def wireImpl[W <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[W]): c.Expr[Tweak[W]] = {
     import c.universe._
-    c.Expr[Tweak[W]](q"macroid.Tweak[${weakTypeOf[W]}] { x ⇒ $v = x }")
+    c.Expr[Tweak[W]](q"_root_.macroid.Tweak[${weakTypeOf[W]}] { x ⇒ $v = x }")
   }
 
   def wireOptionImpl[W <: View: c.WeakTypeTag](c: MacroContext)(v: c.Expr[Option[W]]): c.Expr[Tweak[W]] = {
     import c.universe._
-    c.Expr[Tweak[W]](q"macroid.Tweak[${weakTypeOf[W]}] { x ⇒ $v = Some(x) }")
+    c.Expr[Tweak[W]](q"_root_.macroid.Tweak[${weakTypeOf[W]}] { x ⇒ $v = Some(x) }")
   }
 }
 
 object LayoutTweakMacros {
   def layoutParams(c: MacroContext)(l: c.Type, params: Seq[c.Expr[Any]]) = {
     import c.universe._
-    q"macroid.Tweak[android.view.View] { x ⇒ x.setLayoutParams(new ${l.typeSymbol.companionSymbol}.LayoutParams(..$params)) }"
+    q"_root_.macroid.Tweak[_root_.android.view.View] { x ⇒ x.setLayoutParams(new ${l.typeSymbol.companionSymbol}.LayoutParams(..$params)) }"
   }
 
   def findLayoutParams(c: MacroContext)(layoutType: c.Type, params: Seq[c.Expr[Any]]): c.Expr[Tweak[View]] = {
@@ -222,7 +222,7 @@ object EventTweakMacros {
       case FuncListener ⇒ q"$f(..$argIdents).get"
       case UnitListener ⇒ q"$f.get"
     }
-    q"macroid.Tweak[$tpe] { x ⇒ x.$setter(new $listener { override def ${on.name.toTermName}(..$params) = $impl })}"
+    q"_root_.macroid.Tweak[$tpe] { x ⇒ x.$setter(new $listener { override def ${on.name.toTermName}(..$params) = $impl })}"
   }
 
   def onUnitImpl[W <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handler: c.Expr[Ui[Any]]) = {

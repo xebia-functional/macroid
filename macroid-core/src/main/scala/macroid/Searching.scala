@@ -49,6 +49,10 @@ object CanFindViews {
   implicit def `Fragment can find views`[F](implicit fragment: Fragment[F]) = new CanFindViews[F] {
     def find[V <: View](x: F, id: Int) = Ui(SafeCast[View, V](fragment.view(x).findViewById(id)))
   }
+
+  implicit def `Ui can find views`[X](implicit canFindViews: CanFindViews[X]) = new CanFindViews[Ui[X]] {
+    def find[V <: View](ui: Ui[X], id: Int) = ui.flatMap(x ⇒ canFindViews.find[V](x, id))
+  }
 }
 
 private[macroid] trait ViewFinding {
@@ -76,8 +80,8 @@ object CanFindFragments {
 }
 
 private[macroid] trait FragmentFinding {
-  implicit class FragmentFindingOps[X, F](x: X)(implicit canFindFragments: CanFindFragments[X, F]) {
-    def findFrag[F1 <: F](tag: String) = canFindFragments.find[F1](x, tag)
+  implicit class FragmentFindingOps[X](x: X) {
+    def findFrag[F](tag: String)(implicit canFindFragments: CanFindFragments[X, F]) = canFindFragments.find[F](x, tag)
   }
 }
 

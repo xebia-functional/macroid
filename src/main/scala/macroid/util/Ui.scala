@@ -38,6 +38,7 @@ class Ui[+A](v: () ⇒ A) {
 object Ui {
   private lazy val uiThread = Looper.getMainLooper.getThread
 
+  def nop = Ui(())
   def apply[A](v: ⇒ A) = new Ui(() ⇒ v)
   def sequence[A](vs: Ui[A]*) = Ui(vs.map(_.get))
 }

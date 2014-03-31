@@ -16,12 +16,8 @@ private[macroid] trait DialogBuilding {
   /** A helper class to provide different ways of building a dialog */
   class DialogBuilder[A](theme: Option[Int]) {
     /** Create a dialog with the specified view */
-    def apply(view: ⇒ View)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
-      Ui(new AlertDialog.Builder(ctx.get).setView(view))
-
-    /** Create a dialog with the specified view */
     def apply(view: Ui[View])(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
-      view.flatMap(v ⇒ apply(v))
+      view.map(v ⇒ new AlertDialog.Builder(ctx.get).setView(v))
 
     /** Create a dialog with the specified message */
     def apply(message: CharSequence)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
@@ -42,16 +38,12 @@ private[macroid] trait DialogBuilding {
 object DialogBuilding extends DialogBuilding
 
 private[macroid] trait DialogImplicits {
-  implicit def lazy2OnClickListener(f: ⇒ Any) = new OnClickListener {
-    def onClick(dialog: DialogInterface, which: Int): Unit = f
-  }
-
-  implicit def thunk2OnClickListener(f: Ui[Any]) = new OnClickListener {
+  implicit def unit2OnClickListener(f: Ui[Any]) = new OnClickListener {
     def onClick(dialog: DialogInterface, which: Int): Unit = f.get
   }
 
-  implicit def func2OnClickListener(f: (DialogInterface, Int) ⇒ Any) = new OnClickListener {
-    def onClick(dialog: DialogInterface, which: Int): Unit = f(dialog, which)
+  implicit def func2OnClickListener(f: (DialogInterface, Int) ⇒ Ui[Any]) = new OnClickListener {
+    def onClick(dialog: DialogInterface, which: Int): Unit = f(dialog, which).get
   }
 }
 
@@ -82,9 +74,6 @@ private[macroid] trait Phrases {
 
   /** Show the dialog */
   def speak = Phrase { d ⇒ d.show(); () }
-
-  /** Create the dialog */
-  object create
 }
 
 object Phrases extends Phrases
@@ -92,7 +81,6 @@ object Phrases extends Phrases
 private[macroid] trait Phrasing extends DialogImplicits {
   implicit class PhrasingOps(dialog: Ui[AlertDialog.Builder]) {
     def <~(phrase: Phrase) = dialog map { d ⇒ phrase(d); d }
-    def <~(c: Phrases.create.type) = dialog.map(_.create())
   }
 }
 

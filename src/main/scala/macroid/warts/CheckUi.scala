@@ -6,9 +6,11 @@ object CheckUi extends WartTraverser {
   def apply(u: WartUniverse): u.Traverser = {
     import u.universe._
 
-    def checkUiStatements(statements: List[Tree]) = statements foreach { stat ⇒
-      if (stat.tpe != null && stat.tpe <:< typeOf[macroid.util.Ui[_]])
-        u.error(stat.pos, s"This statement returns an Ui action, but does not actually perform it. Call the `run` method or wrap it in `runUi`.")
+    def checkUiStatements(statements: List[Tree]) = statements foreach {
+      case LabelDef(_, _, _) ⇒
+      case stat ⇒
+        if (stat.tpe != null && stat.tpe <:< typeOf[macroid.util.Ui[_]])
+          u.error(stat.pos, s"This statement returns an Ui action, but does not actually perform it. Call the `run` method, wrap it in `runUi`, or combine it with other Ui actions.")
     }
 
     new Traverser {

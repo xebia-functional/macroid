@@ -3,47 +3,44 @@ package macroid.viewable
 import macroid._
 import macroid.LayoutDsl._
 import macroid.Tweaks._
-import macroid.util.Ui
+import macroid.util.{ SafeCast, Ui }
 import scala.util.Try
 import android.view.{ View, ViewGroup }
 import android.widget.TextView
 
 trait FillableViewable[A] extends Viewable[A] {
   def makeView(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
-  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[Any]
+  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
 
-  def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = {
-    val view = makeView
-    fillView(view, data).flatMap(_ ⇒ view)
-  }
+  def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fillView(makeView, data)
 }
 
 object FillableViewable {
-  def apply[A, V <: View](make: Ui[V], fill: Ui[V] ⇒ A ⇒ Ui[Any]) = new FillableViewable[A] {
-    type W = V
+  def apply[A, W1 <: View](make: Ui[W1])(fill: Ui[W1] ⇒ A ⇒ Ui[W1]): FillableViewable[A] = new FillableViewable[A] {
+    type W = W1
     def makeView(implicit ctx: ActivityContext, appCtx: AppContext) = make
     def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(view)(data)
   }
 
-  def text(make: Tweak[TextView]) = new TweakFillableViewable[String] {
+  def text(make: Tweak[TextView]): FillableViewable[String] = new TweakFillableViewable[String] {
     type W = TextView
     def makeView(implicit ctx: ActivityContext, appCtx: AppContext) = w[TextView] <~ make
     def tweak(data: String)(implicit ctx: ActivityContext, appCtx: AppContext) = Tweaks.text(data)
   }
 
-  def text[A](make: Tweak[TextView], fill: A ⇒ Tweak[TextView]) = new TweakFillableViewable[A] {
+  def text[A](make: Tweak[TextView], fill: A ⇒ Tweak[TextView]): FillableViewable[A] = new TweakFillableViewable[A] {
     type W = TextView
     def makeView(implicit ctx: ActivityContext, appCtx: AppContext) = w[TextView] <~ make
     def tweak(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(data)
   }
 
-  def tw[A, V <: View](make: Ui[V], fill: A ⇒ Tweak[V]) = new TweakFillableViewable[A] {
-    type W = V
+  def tw[A, W1 <: View](make: Ui[W1])(fill: A ⇒ Tweak[W1]): FillableViewable[A] = new TweakFillableViewable[A] {
+    type W = W1
     def makeView(implicit ctx: ActivityContext, appCtx: AppContext) = make
     def tweak(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(data)
   }
 
-  def tr[A](make: Ui[ViewGroup], fill: A ⇒ Transformer) = new TransformerFillableViewable[A] {
+  def tr[A](make: Ui[ViewGroup])(fill: A ⇒ Transformer): FillableViewable[A] = new TransformerFillableViewable[A] {
     def makeView(implicit ctx: ActivityContext, appCtx: AppContext) = make
     def transformer(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(data)
   }
@@ -65,7 +62,7 @@ trait TransformerFillableViewable[A] extends FillableViewable[A] {
 trait SlottedFillableViewable[A] extends FillableViewable[A] {
   type Slots
   def makeSlots(implicit ctx: ActivityContext, appCtx: AppContext): (Ui[W], Slots)
-  def fillSlots(slots: Slots, data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Any
+  def fillSlots(slots: Slots, data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[Any]
 
   type W = View
 
@@ -74,8 +71,8 @@ trait SlottedFillableViewable[A] extends FillableViewable[A] {
     v <~ hold(s)
   }
 
-  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view map { v ⇒
-    val slots = Option(v.getTag).flatMap(x ⇒ Try(x.asInstanceOf[Slots]).toOption).getOrElse(makeSlots._2)
-    fillSlots(slots, data)
+  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view flatMap { v ⇒
+    val (v1, s) = SafeCast[Any, Slots](v.getTag).map(x ⇒ (Ui(v), x)).getOrElse(makeSlots)
+    fillSlots(s, data).flatMap(_ ⇒ v1)
   }
 }

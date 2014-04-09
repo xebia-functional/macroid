@@ -6,13 +6,13 @@ homepage := Some(url("http://github.com/macroid/macroid"))
 
 organization := "org.macroid"
 
-version := "2.0.0-SNAPSHOT"
+version := "2.0.0-20140407"
 
-scalaVersion := "2.10.3"
+scalaVersion := "2.10.4"
 
 scalacOptions ++= Seq("-feature", "-deprecation")
 
-crossScalaVersions := Seq("2.10.3", "2.11.0-RC3")
+crossScalaVersions := Seq("2.10.4", "2.11.0-RC4")
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
@@ -24,12 +24,12 @@ autoCompilerPlugins := true
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-  compilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M6" cross CrossVersion.full)
+  compilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M7" cross CrossVersion.full)
 )
 
 libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
   case Some((2, 10)) ⇒
-    Seq("org.scalamacros" % "quasiquotes" % "2.0.0-M6" cross CrossVersion.full)
+    Seq("org.scalamacros" %% "quasiquotes" % "2.0.0-M7")
   case _ ⇒
     Seq()
 })
@@ -37,9 +37,9 @@ libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
 libraryDependencies ++= Seq(
   "com.google.android" % "android" % "4.1.1.4" % "provided",
   "com.android.support" % "support-v13" % "19.0.0",
-  "org.scala-lang.modules" %% "scala-async" % "0.9.0",
-  "org.brianmckenna" %% "wartremover" % "0.8",
-  "org.scalatest" %% "scalatest" % "2.1.2" % "test"
+  "org.scala-lang.modules" %% "scala-async" % "0.9.1",
+  "org.brianmckenna" %% "wartremover" % "0.9",
+  "org.scalatest" %% "scalatest" % "2.1.3" % "test"
 )
 
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))

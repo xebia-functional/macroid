@@ -1,7 +1,7 @@
 language: scala
 scala:
   - 2.10.4
-  - 2.11.0-RC4
+  - 2.11.0
 before_install:
   - wget http://dl.google.com/android/android-sdk_r22.6-linux.tgz
   - tar xzf android-sdk_r22.6-linux.tgz

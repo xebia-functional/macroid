@@ -13,7 +13,7 @@ object CheckUi extends WartTraverser {
           u.error(stat.pos, s"This statement returns an Ui action, but does not actually perform it. Call the `run` method, wrap it in `runUi`, or combine it with other Ui actions.")
     }
 
-    new Traverser {
+    new u.Traverser {
       override def traverse(tree: Tree) {
         tree match {
           case Block(statements, _) ⇒

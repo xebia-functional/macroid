@@ -21,7 +21,7 @@ private[macroid] object SnailScheduler {
 private[macroid] trait BasicSnails {
   import SnailScheduler._
 
-  /** A delay to be inserted somewhere between ~@>s and ~>s */
+  /** A delay to be inserted somewhere between <@~s and <~s */
   def delay(millis: Long) = Snail[View](x ⇒ Future(())(snailSchedulerEc(millis)))
 
   /** A snail that waits for a given future to finish */

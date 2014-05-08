@@ -14,6 +14,11 @@ scalacOptions ++= Seq("-feature", "-deprecation")
 
 crossScalaVersions := Seq("2.10.4", "2.11.0")
 
+scalacOptions in (Compile, doc) ++= Seq(
+  "-sourcepath", baseDirectory.value.getAbsolutePath,
+  "-doc-source-url", "https://github.com/macroid/macroid/tree/master€{FILE_PATH}.scala"
+)
+
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
   "Typesafe" at "http://repo.typesafe.com/typesafe/releases/",

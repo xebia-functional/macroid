@@ -94,21 +94,14 @@ import macroid.akkafragments.AkkaFragment
 class MyFragment extends Fragment with AkkaFragment {
   // find the actor for this fragment
   // which we created in the Activity
-  lazy val actor = actorSystem.actorSelection("/user/actor1")
-
+  // if this fragment does not have a dedicated actor,
+  // set to `None`
+  lazy val actor = Some(actorSystem.actorSelection("/user/actor1"))
+  
   ...
-
-  override def onStart() {
-    super.onStart()
-    // attach the fragment to the actor
-    attach(actor)
-  }
-
-  override def onStop() {
-    super.onStop()
-    // detach the fragment from the actor
-    detach(actor)
-  }
+  // `AkkaFragment` uses “stackable trait” pattern
+  // (http://www.artima.com/scalazine/articles/stackable_trait_pattern.html)
+  // to override `onStart` and `onStop` with attaching and detaching of the actor
 }
 ```
 

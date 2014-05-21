@@ -2,7 +2,7 @@
 
 This project contains some glue to setup message-passing between Android Fragments using [Akka](http://akka.io).
 
-It has no dependencies baked in — you have to add your version of Akka yourself (see below).
+You have to add your version of Akka yourself (see below).
 
 ### How to use
 
@@ -12,7 +12,7 @@ Add to your `bulid.sbt`:
 libraryDependencies ++= Seq(
   // this library
   // right now you have to `publish-local` it yourself
-  "org.macroid" %% "akka-fragments" % "1.0.0-SNAPSHOT",
+  "org.macroid" %% "macroid-akka-fragments" % "1.0.0-SNAPSHOT",
   // akka, if not included before
   "com.typesafe.akka" %% "akka-actor" % "2.2.3"
 )
@@ -52,6 +52,8 @@ class MyActivity extends Activity with AkkaActivity {
 }
 ```
 
+Do not forget to call `actorSystem.shutdown()` when the activity is finished.
+
 Now the idea is that we create an actor per each fragment. The actors will live as long as the activity lives.
 The fragments, on the other hand, come and go, as they normally do. Thus our actors can be “attached” and “detached”
 from the user interface they control.
@@ -60,6 +62,7 @@ Here is a fragment actor:
 
 ```scala
 import macroid.akkafragments.FragmentActor
+import macroid.util.Ui
 
 object MyActor {
   // this is a common Akka pattern: http://doc.akka.io/docs/akka/snapshot/scala/actors.html
@@ -77,10 +80,11 @@ class MyActor extends FragmentActor[MyFragment] {
     
     // we can use `withUi`, which will provide us
     // with the currently attached fragment, if any
-    // the code inside `withUi` runs on the UI thread
-    case MyOtherMessage ⇒ withUi { fragment ⇒
+    case MyOtherMessage ⇒ withUi(fragment ⇒ Ui {
+      // code run on the Ui thread
+      // more about Ui at http://macroid.github.io/guide/UiActions.html
       ...
-    }
+    })
   }
 }
 ```
@@ -108,6 +112,6 @@ class MyFragment extends Fragment with AkkaFragment {
 There is also an Android-compatible Akka logger. To use it, add to your `src/main/resources/application.conf`:
 ```javascript
 akka {
-  loggers = ["org.macroid.akkafragments.AkkaAndroidLogger"]
+  loggers = ["macroid.akkafragments.AkkaAndroidLogger"]
 }
 ```

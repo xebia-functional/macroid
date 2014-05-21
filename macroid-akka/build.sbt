@@ -1,8 +1,8 @@
-name := "akka-fragments"
+name := "macroid-akka-fragments"
 
 description := "Some helpers to attach Akka Actors to Android Fragments"
 
-homepage := Some(url("http://github.com/stanch/akka-fragments"))
+homepage := Some(url("http://github.com/macroid/macroid-akka-fragments"))
 
 organization := "org.macroid"
 

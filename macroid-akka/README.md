@@ -31,7 +31,7 @@ proguardOptions ++= Seq(
   "-keep class akka.actor.LocalActorRefProvider$SystemGuardian { *; }",
   "-keep class akka.dispatch.UnboundedMailbox { *; }",
   "-keep class akka.actor.DefaultSupervisorStrategy { *; }",
-  "-keep class org.macroid.akkafragments.AkkaAndroidLogger { *; }",
+  "-keep class macroid.akkafragments.AkkaAndroidLogger { *; }",
   "-keep class akka.event.Logging$LogExt { *; }"
 )
 ```
@@ -39,7 +39,7 @@ proguardOptions ++= Seq(
 Add to your `Activity`:
 
 ```scala
-import org.macroid.akkafragments.AkkaActivity
+import macroid.akkafragments.AkkaActivity
 
 class MyActivity extends Activity with AkkaActivity {
   // define actor system name
@@ -59,7 +59,7 @@ from the user interface they control.
 Here is a fragment actor:
 
 ```scala
-import org.macroid.akkafragments.FragmentActor
+import macroid.akkafragments.FragmentActor
 
 object MyActor {
   // this is a common Akka pattern: http://doc.akka.io/docs/akka/snapshot/scala/actors.html
@@ -89,7 +89,7 @@ Finally, a fragment:
 
 ```scala
 import android.support.v4.app.Fragment
-import org.macroid.akkafragments.AkkaFragment
+import macroid.akkafragments.AkkaFragment
 
 class MyFragment extends Fragment with AkkaFragment {
   // find the actor for this fragment

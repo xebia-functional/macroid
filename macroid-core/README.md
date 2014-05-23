@@ -6,7 +6,7 @@
 Striving to be focused on one thing (GUI), *Macroid* promotes composability, high-level abstractions and advanced features,
 like functional-reactive programming.
 
-Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 11+`.
+Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 
 * [What does it look like](http://macroid.github.io/Tutorial.html)
 * [How is it different from...](http://macroid.github.io/Differences.html)

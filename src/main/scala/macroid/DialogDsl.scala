@@ -23,6 +23,10 @@ private[macroid] trait DialogBuilding {
     def apply(message: CharSequence)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
       Ui(new AlertDialog.Builder(ctx.get).setMessage(message))
 
+    /** Create a dialog with the specified item list and click handler */
+    def apply(items: Array[CharSequence])(handler: OnClickListener)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
+      Ui(new AlertDialog.Builder(ctx.get).setItems(items, handler))
+
     /** Create a dialog with the specified ListAdapter and click handler */
     def apply(adapter: ListAdapter)(handler: OnClickListener)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
       Ui(new AlertDialog.Builder(ctx.get).setAdapter(adapter, handler))

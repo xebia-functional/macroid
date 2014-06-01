@@ -27,12 +27,8 @@ private[macroid] trait ToastBuilding {
     Ui(Toast.makeText(ctx.get, text, Toast.LENGTH_SHORT))
 
   /** Create a toast with the specified view */
-  def toast(view: ⇒ View)(implicit ctx: AppContext): Ui[Toast] =
-    Ui(new Toast(ctx.get) { setView(view); setDuration(Toast.LENGTH_SHORT) })
-
-  /** Create a toast with the specified view */
   def toast(view: Ui[View])(implicit ctx: AppContext): Ui[Toast] =
-    view.flatMap(v ⇒ toast(v))
+    view.map(v ⇒ new Toast(ctx.get) { setView(v); setDuration(Toast.LENGTH_SHORT) })
 }
 
 object ToastBuilding extends ToastBuilding

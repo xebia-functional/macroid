@@ -1,19 +1,9 @@
 package macroid
 
 import scala.language.higherKinds
-import android.view.View
+import android.view.{ ViewGroup, View }
 import scala.annotation.implicitNotFound
 import macroid.util.{ Ui, Effector }
-
-/** A Tweak is something that mutates a widget */
-case class Tweak[-W <: View](f: W ⇒ Unit) {
-  def apply(w: W) = f(w)
-}
-
-object Tweak {
-  /** A tweak that does nothing */
-  def blank[W <: View] = Tweak[W](x ⇒ ())
-}
 
 @implicitNotFound("Don't know how to tweak ${W} with ${T}. Try importing an instance of CanTweak[${W}, ${T}, ...].") /** A typeclass for 'tweakable' relation */
 trait CanTweak[W, T, R] {
@@ -24,6 +14,11 @@ object CanTweak {
   implicit def `Widget is tweakable with Tweak`[W <: View, T <: Tweak[W]] =
     new CanTweak[W, T, W] {
       def tweak(w: W, t: T) = Ui { t(w); w }
+    }
+
+  implicit def `Layout is tweakable with Transformer`[L <: ViewGroup] =
+    new CanTweak[L, Transformer, L] {
+      def tweak(l: L, t: Transformer) = Ui { t(l); l }
     }
 
   implicit def `Widget is tweakable with Effector`[W <: View, F[+_], T, R](implicit effector: Effector[F], canTweak: CanTweak[W, T, R]) =

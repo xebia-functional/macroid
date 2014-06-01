@@ -18,6 +18,11 @@ class Ui[+A](v: () ⇒ A) {
   def map[B](f: A ⇒ B) = Ui(f(v()))
   def flatMap[B](f: A ⇒ Ui[B]) = Ui(f(v()).get)
 
+  def ~[B](next: Ui[B]) = Ui { v(); next.get }
+  def ~~[B, C](next: Ui[B])(implicit evidence: A <:< Future[C]) = Ui {
+    evidence(v()) mapUi (_ ⇒ next.get)
+  }
+
   /** Run the code on the UI thread */
   def run = if (Ui.uiThread == Thread.currentThread) {
     Try(v()) match {

@@ -6,7 +6,6 @@ private[macroid] trait LayoutDsl
   with FragmentBuilding
   with Tweaking
   with Snailing
-  with Transforming
 
 object LayoutDsl extends LayoutDsl
 

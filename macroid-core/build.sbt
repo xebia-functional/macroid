@@ -12,7 +12,7 @@ scalaVersion := "2.10.4"
 
 scalacOptions ++= Seq("-feature", "-deprecation")
 
-crossScalaVersions := Seq("2.10.4", "2.11.0")
+crossScalaVersions := Seq("2.10.4", "2.11.1")
 
 scalacOptions in (Compile, doc) ++= Seq(
   "-sourcepath", baseDirectory.value.getAbsolutePath,

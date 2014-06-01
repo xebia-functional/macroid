@@ -21,3 +21,7 @@ private[macroid] trait Logging {
 }
 
 object Logging extends Logging
+
+trait AutoLogTag {
+  implicit lazy val logTag = LogTag(getClass.getSimpleName)
+}

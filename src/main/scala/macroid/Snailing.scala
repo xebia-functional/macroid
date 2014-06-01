@@ -5,17 +5,7 @@ import android.view.View
 import scala.annotation.implicitNotFound
 import scala.async.Async._
 import scala.concurrent.{ ExecutionContext, Future }
-import macroid.util.{ AfterFuture, UiThreadExecutionContext, Ui }
-
-/** A snail mutates the view slowly (e.g. animation) */
-case class Snail[-W <: View](f: W ⇒ Future[Unit]) {
-  def apply(w: W) = f(w)
-}
-
-object Snail {
-  /** A snail that does nothing */
-  def blank[W <: View] = Snail[W] { x ⇒ Future.successful(()) }
-}
+import macroid.util.{ UiThreadExecutionContext, Ui }
 
 @implicitNotFound("Don't know how to snail ${W} with ${S}. Try importing an instance of CanSnail[${W}, ${S}, ...]")
 trait CanSnail[W, S, R] {
@@ -113,7 +103,7 @@ private[macroid] trait Snailing {
   /** Snailing operator */
   implicit class SnailingOps[W](w: W) {
     /** Apply a snail */
-    def <@~[T, R](t: T)(implicit canSnail: CanSnail[W, T, R]): Ui[Future[R]] = canSnail.snail(w, t)
+    def <~~[T, R](t: T)(implicit canSnail: CanSnail[W, T, R]): Ui[Future[R]] = canSnail.snail(w, t)
   }
 }
 

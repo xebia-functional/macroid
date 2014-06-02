@@ -20,6 +20,11 @@ object CanSnail {
       def snail(w: W, s: S) = Ui { s(w).map(_ ⇒ w) }
     }
 
+  implicit def `Widget is snailable with Future[Tweak]`[W <: View, T <: Tweak[W]](implicit ec: ExecutionContext) =
+    new CanSnail[W, Future[T], W] {
+      def snail(w: W, ft: Future[T]) = Ui { ft mapUi { t ⇒ t(w); w } }
+    }
+
   implicit def `Widget is snailable with Option`[W <: View, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]) =
     new CanSnail[W, Option[S], W] {
       def snail(w: W, o: Option[S]) = o.fold(Ui(Future.successful(w))) { s ⇒

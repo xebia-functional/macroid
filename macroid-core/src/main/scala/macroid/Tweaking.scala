@@ -16,6 +16,11 @@ object CanTweak {
       def tweak(w: W, t: T) = Ui { t(w); w }
     }
 
+  implicit def `Widget is tweakable with Snail`[W <: View, S <: Snail[W]] =
+    new CanTweak[W, S, W] {
+      def tweak(w: W, s: S) = Ui { s(w); w }
+    }
+
   implicit def `Layout is tweakable with Transformer`[L <: ViewGroup] =
     new CanTweak[L, Transformer, L] {
       def tweak(l: L, t: Transformer) = Ui { t(l); l }

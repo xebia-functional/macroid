@@ -76,30 +76,8 @@ object CanSnail {
     }
 }
 
-/** This trait defines snails, snailing operator (~@>) and its generalizations */
+/** This trait defines the snailing operator (<~~) */
 private[macroid] trait Snailing {
-  import UiThreading._
-
-  /** Combining tweaks with snails */
-  implicit class TweakSnailAddition[W <: View](t: Tweak[W]) {
-    /** Combine (sequence) with a snail */
-    def +@[W1 <: W](other: Snail[W1]) = Snail[W1] { x ⇒ t(x); other(x) }
-  }
-
-  /** Combining snails */
-  implicit class SnailAddition[W <: View](s: Snail[W]) {
-    /** Combine (sequence) with a tweak */
-    def @+[W1 <: W](other: Tweak[W1]) = Snail[W1] { x ⇒
-      // make sure to keep the UI thread
-      s(x).mapUi(_ ⇒ other(x))
-    }
-    /** Combine (sequence) with another snail */
-    def @+@[W1 <: W](other: Snail[W1]) = Snail[W1] { x ⇒
-      // make sure to keep the UI thread
-      s(x).flatMapUi(_ ⇒ other(x))
-    }
-  }
-
   /** Snailing operator */
   implicit class SnailingOps[W](w: W) {
     /** Apply a snail */

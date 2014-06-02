@@ -37,14 +37,8 @@ object CanTweak {
     }
 }
 
-/** This trait defines tweaking operations */
+/** This trait defines the tweaking operator (<~) */
 private[macroid] trait Tweaking {
-  /** Combining tweaks */
-  implicit class TweakAddition[W <: View](t: Tweak[W]) {
-    /** Combine (sequence) with another tweak */
-    def +[W1 <: W](other: Tweak[W1]) = Tweak[W1] { x ⇒ t(x); other(x) }
-  }
-
   /** Tweaking operator */
   implicit class TweakingOps[W](w: W) {
     /** Apply a tweak */

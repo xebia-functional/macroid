@@ -3,12 +3,9 @@ package macroid
 import scala.language.dynamics
 import scala.language.experimental.macros
 import android.view.{ ViewGroup, View }
-import android.widget.{ ProgressBar, LinearLayout, TextView }
+import android.widget.{ LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
-import macroid.util.{ Ui, AfterFuture }
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.annotation.implicitNotFound
-import scala.util.control.NonFatal
+import macroid.util.Ui
 
 private[macroid] trait BasicTweaks {
   import BasicTweakMacros._
@@ -86,29 +83,6 @@ private[macroid] trait TextTweaks {
   }
 }
 
-private[macroid] trait ProgressTweaks extends VisibilityTweaks {
-  import Tweaking._
-  import UiThreading._
-
-  /** Show this progress bar with indeterminate progress and hide it once `future` is done */
-  def showProgress(future: Future[Any])(implicit ec: ExecutionContext) = Tweak[ProgressBar] { x ⇒
-    x.setIndeterminate(true)
-    (x <~ show <~ AfterFuture(future, hide)).run
-  }
-  /** Show this progress bar with determinate progress and hide it once all futures are done */
-  def showProgress(futures: Seq[Future[Any]])(implicit ec: ExecutionContext) = Tweak[ProgressBar] { x ⇒
-    val length = futures.length
-    x.setIndeterminate(false)
-    x.setProgress(0)
-    x.setMax(length)
-    (x <~ show).run
-    futures.foreach(f ⇒ f.recover { case NonFatal(_) ⇒ }.foreachUi { _ ⇒
-      x.incrementProgressBy(1)
-      if (x.getProgress == x.getMax - 1) (x <~ hide).run
-    })
-  }
-}
-
 private[macroid] trait EventTweaks {
   import EventTweakMacros._
 
@@ -131,7 +105,6 @@ private[macroid] trait Tweaks
   with PaddingTweaks
   with LayoutTweaks
   with TextTweaks
-  with ProgressTweaks
   with EventTweaks
 
 object Tweaks extends Tweaks

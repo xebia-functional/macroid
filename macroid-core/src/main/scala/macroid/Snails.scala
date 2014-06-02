@@ -6,9 +6,8 @@ import scala.concurrent.{ Future, Promise, ExecutionContext }
 import android.view.animation.Animation.AnimationListener
 import scala.util.Success
 import android.widget.ProgressBar
-import scala.util.control.NonFatal
-import macroid.util.AfterFuture
 import java.util.concurrent.{ TimeUnit, Executors }
+import scala.util.control.NonFatal
 
 private[macroid] object SnailScheduler {
   val scheduler = Executors.newScheduledThreadPool(1)
@@ -18,6 +17,11 @@ private[macroid] object SnailScheduler {
   }
 }
 
+private[macroid] object AfterFuture {
+  def apply[A](f: Future[A])(implicit ec: ExecutionContext) =
+    f.map(_ ⇒ ()) recover { case NonFatal(_) ⇒ () }
+}
+
 private[macroid] trait BasicSnails {
   import SnailScheduler._
 
@@ -25,7 +29,7 @@ private[macroid] trait BasicSnails {
   def delay(millis: Long) = Snail[View](x ⇒ Future(())(snailSchedulerEc(millis)))
 
   /** A snail that waits for a given future to finish */
-  def wait(f: Future[Any])(implicit ec: ExecutionContext) = Snail[View](x ⇒ AfterFuture(f, ()))
+  def wait(f: Future[Any])(implicit ec: ExecutionContext) = Snail[View](x ⇒ AfterFuture(f))
 }
 
 private[macroid] trait ProgressSnails extends BasicSnails with VisibilityTweaks {
@@ -33,15 +37,15 @@ private[macroid] trait ProgressSnails extends BasicSnails with VisibilityTweaks 
 
   /** Show this progress bar with indeterminate progress and hide it once `future` is done */
   def waitProgress(future: Future[Any])(implicit ec: ExecutionContext): Snail[ProgressBar] =
-    Tweak[ProgressBar] { x ⇒ x.setIndeterminate(true) } + show ++ wait(future) + hide
+    Tweak[ProgressBar](_.setIndeterminate(true)) + show ++ wait(future) + hide
 
-  /** Show this progress bar with determinate progress and hide it once all futures are done */
+  /** Show this progress bar with determinate progress and hide it once all `futures` are done */
   def waitProgress(futures: List[Future[Any]])(implicit ec: ExecutionContext): Snail[ProgressBar] =
     Tweak[ProgressBar] { x ⇒
       x.setIndeterminate(false)
       x.setMax(futures.length)
       x.setProgress(0)
-      futures.foreach(f ⇒ f.recover { case NonFatal(_) ⇒ }.foreachUi(_ ⇒ x.incrementProgressBy(1)))
+      futures.foreach(f ⇒ AfterFuture(f).foreachUi(_ ⇒ x.incrementProgressBy(1)))
     } + show ++ wait(Future.sequence(futures)) + hide
 }
 

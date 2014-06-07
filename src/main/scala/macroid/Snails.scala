@@ -64,9 +64,9 @@ private[macroid] trait AnimationSnails extends VisibilityTweaks {
   }
 
   /** Fade in this view */
-  def fadeIn(millis: Long)(implicit ec: ExecutionContext) = show ++ anim(new AlphaAnimation(0, 1), duration = millis)
+  def fadeIn(millis: Long) = show ++ anim(new AlphaAnimation(0, 1), duration = millis)
   /** Fade out this view */
-  def fadeOut(millis: Long)(implicit ec: ExecutionContext) = anim(new AlphaAnimation(1, 0), duration = millis) + hide
+  def fadeOut(millis: Long) = anim(new AlphaAnimation(1, 0), duration = millis) + hide
 }
 
 private[macroid] trait Snails

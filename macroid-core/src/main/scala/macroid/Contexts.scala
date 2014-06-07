@@ -19,7 +19,7 @@ object ActivityContext {
   def apply(activity: Activity) = new ActivityContext(WeakReference(activity))
 }
 
-@implicitNotFound("Could not find `FragmentManagerContext[${F}, ${M}]`. If you are inside Activity or Fragment, extend Contexts[Activity] or Contexts[Fragment], otherwise pass an instance of `FragmentManagerContext` from outside.") /** FragmentManager context */
+@implicitNotFound("Could not find `FragmentManagerContext[${F}, ${M}]`. If you are inside Activity or Fragment, extend Contexts[Activity] or Contexts[Fragment], otherwise pass an instance of `FragmentManagerContext` from outside. Please note that for support fragments you need to extends Contexts[FragmentActivity]") /** FragmentManager context */
 case class FragmentManagerContext[-F, M](manager: M)(implicit val fragmentApi: FragmentApi[F, M, _]) {
   def get = manager
 }

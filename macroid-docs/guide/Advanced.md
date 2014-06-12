@@ -79,9 +79,9 @@ But we can use it in tweaking right now!
 textView <~ futureCaption.map(text)
 ```
 
-## Functional-reactive programming
+## Functional reactive programming
 
-Using a functional-reactive library like [scala.rx](https://github.com/lihaoyi/scala.rx), we can go even further:
+Using a functional reactive library like [scala.rx](https://github.com/lihaoyi/scala.rx), we can go even further:
 
 ```scala
 // create a reactive variable

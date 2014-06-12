@@ -1,5 +1,5 @@
 {
-    "output": ".",
+    "output": "./tmp",
     "generator": "site",
     "title": "Macroid",
     "description": "Macroid documentation",

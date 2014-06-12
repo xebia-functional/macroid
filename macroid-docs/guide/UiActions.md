@@ -92,7 +92,7 @@ UI actions can be composed in several ways.
   ```
 
 * Using the `~~` operator (in case of `Ui[Future]`).
-  See [Snailing workflows](Snails.html#Snailing-workflows) for more details, or
+  See [Snailing workflows](Snails.html#snailing-workflows) for more details, or
   [Understanding operators](Operators.html), if you are confused.
 
 * Using `Ui.sequence` (the sequence type is preserved)
@@ -146,3 +146,22 @@ the UI action will not be run and the compiler will normally not help you. Don�
 You can either enable `-Xlint`, under which non-`Unit` statements produce warnings, or use *Macroid*’s custom linter
 written with [Wartremover](https://github.com/typelevel/wartremover), which will produce a compile error.
 For instructions refer to the [installation](../Installation.html) section.
+
+## Low-level threading utilities
+
+*Macroid* also offers several low-level threading utilities:
+
+* `macroid.util.UiThreadExecutionContext` allows to run futures on the UI thread.
+You probably wouldn’t need to use this directly.
+* `UiFuture` extension class provides `mapUi`, `flatMapUi` and other `xxxUi` methods, where the supplied function will be called on the UI thread:
+
+  ```scala
+  import macroid.UiThreading._
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  Future {
+    ... // happens on background thread
+  } mapUi { x ⇒
+    ... // happens on the UI thread
+  }
+  ```

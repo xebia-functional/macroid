@@ -23,3 +23,13 @@ Or implicitly:
 implicit val logTag = LogTag("TAG")
 logV"foo, $message"()
 ```
+
+Finally, the tag can be derived from the class name:
+
+```scala
+import macroid.AutoLogTag
+
+class MyActivity extends ... with AutoLogTag {
+  // there is now an implicit LogTag("MyActivity")
+}
+```

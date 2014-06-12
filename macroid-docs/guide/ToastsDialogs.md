@@ -31,6 +31,7 @@ The dialog API is also similar to [tweaking](Tweaks.html#tweaking) and consists 
 * `dialog(message: CharSequence)`
 * `dialog(view: Ui[View])`
 * `dialog(adapter: ListAdapter)`
+* `dialog(items: Array[CharSequence])(handler: OnClickListener)`
 
 It is also possible to provide a dialog theme:
 

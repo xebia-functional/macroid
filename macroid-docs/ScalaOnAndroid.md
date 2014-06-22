@@ -3,6 +3,14 @@
 Writing your Android project in [Scala](http://scala-lang.org/) is becoming smoother and smoother.
 This is a short guide that will help you get started.
 
+## The Android SDK
+
+The SDK can be downloaded from the [Android website](http://developer.android.com/sdk/index.html).
+You will also need to configure `ANDROID_SDK_HOME` environment variable to point to the installation.
+
+To use the bundled libraries, such as the support library, make sure you install the following items:
+![SDK manager screenshot](SDK-manager.png)
+
 ## The build system
 
 The most important part of the equation is the build system (even in mainland Android your are likely to use one anyway).
@@ -32,7 +40,17 @@ be reconfigured for that purpose: go to Run → Edit Configurations →
 (select a configuration) → Before launch → (click +) → SBT → (type `android:run` or `android:start`,
 depending on the plugin you use).
 
+## Alternative approaches
+
+* Both Intellij IDEA / Android Studio and Scala IDE for Eclipse can be used without a build system.
+In case of Scala IDE, the [AndroidProguardScala plugin](https://github.com/banshee/AndroidProguardScala) is
+necessary. This approach however is not recommended, as it lacks automatic dependency management and
+is tied to a particular IDE.
+
+* [Gradle](http://www.gradle.org/), the now-standard Android build system, can be used as well. You will
+need [gradle-android-scala-plugin](https://github.com/saturday06/gradle-android-scala-plugin).
+
 ## Useful resources
 
-* When in doubt, don’t hesitate to use the [mailing list](https://groups.google.com/forum/#!forum/scala-on-android).
-* See the [talks](Talks.html) section, as I (briefly) cover the matter in those talks.
+* When in doubt, don’t hesitate to use the [Scala-on-Android mailing list](https://groups.google.com/forum/#!forum/scala-on-android).
+* See the [talks](Talks.html) section, as I also cover the matter in those talks.

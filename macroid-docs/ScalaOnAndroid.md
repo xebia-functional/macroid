@@ -13,7 +13,7 @@ To use the bundled libraries, such as the support library, make sure you install
 
 ## The build system
 
-The most important part of the equation is the build system (even in mainland Android your are likely to use one anyway).
+The most important part of the equation is the build system (even in mainland Android you are likely to use one anyway).
 After configuring the build you will be able to compile and *run the project from the command line* and *generate IDE project
 files automatically*.
 

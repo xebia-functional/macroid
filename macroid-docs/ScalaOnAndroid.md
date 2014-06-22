@@ -37,8 +37,15 @@ create IDE project files.
 
 Inside IDEA, you can use the sbt console to run the project. Alternatively, the “run” button could
 be reconfigured for that purpose: go to Run → Edit Configurations →
-(select a configuration) → Before launch → (click +) → SBT → (type `android:run` or `android:start`,
-depending on the plugin you use).
+(select a configuration) → Before launch. If you are using *pfn/android-sdk-plugin*,
+you need to configure it to look like this:
+![before launch](before-launch.png)
+Make sure that the paths to `AndroidManifest.xml` and the `APK`
+are configured properly. Go to Project settings → Modules → (select main module) → Android → Structure/Packaging.
+* Manifest file should be `/path-to-project/src/main/AndroidManifest.xml`:
+  ![manifest path](manifest-path.png)
+* APK path should be `path-to-project/target/android-bin/build_integration/{module name}-BUILD-INTEGRATION.apk`:
+  ![apk path](apk-path.png)
 
 ## Alternative approaches
 

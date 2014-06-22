@@ -8,7 +8,7 @@ This is a short guide that will help you get started.
 The SDK can be downloaded from the [Android website](http://developer.android.com/sdk/index.html).
 You will also need to configure `ANDROID_SDK_HOME` environment variable to point to the installation.
 
-To use the bundled libraries, such as the support library, make sure you install the following items:
+To use the bundled libraries, such as the support library, make sure you install the following items in the SDK manager:
 ![SDK manager screenshot](SDK-manager.png)
 
 ## The build system

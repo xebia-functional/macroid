@@ -3,6 +3,12 @@
 Writing your Android project in [Scala](http://scala-lang.org/) is becoming smoother and smoother.
 This is a short guide that will help you get started.
 
+## Tutorials
+
+If the instructions below are too dry for your taste, check out these tutorials:
+
+* [Android & Scala (part 1)](http://blog.eigengo.com/2014/06/21/android-and-scala/) by [Jan Macháček](https://twitter.com/honzam399)
+
 ## The Android SDK
 
 The SDK can be downloaded from the [Android website](http://developer.android.com/sdk/index.html).

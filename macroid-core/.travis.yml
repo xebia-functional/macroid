@@ -3,8 +3,8 @@ scala:
   - 2.10.4
   - 2.11.1
 before_install:
-  - wget http://dl.google.com/android/android-sdk_r22.6-linux.tgz
-  - tar xzf android-sdk_r22.6-linux.tgz
+  - wget http://dl.google.com/android/android-sdk_r23-linux.tgz
+  - tar xzf android-sdk_r23-linux.tgz
   - export ANDROID_HOME=$PWD/android-sdk-linux
   - export ANDROID_SDK_HOME=$PWD/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools

@@ -11,6 +11,8 @@ import macroid.Tweak
 object TextTweaks {
   type W = TextView
 
+  def color(color: Int) = Tweak[W](_.setTextColor(color))
+
   val bold = Tweak[W](x ⇒ x.setTypeface(x.getTypeface, Typeface.BOLD))
   val italic = Tweak[W](x ⇒ x.setTypeface(x.getTypeface, Typeface.ITALIC))
   val boldItalic = Tweak[W](x ⇒ x.setTypeface(x.getTypeface, Typeface.BOLD_ITALIC))
@@ -28,6 +30,7 @@ object TextTweaks {
 object ImageTweaks {
   type W = ImageView
 
+  def res(resourceId: Int) = Tweak[W](_.setImageResource(resourceId))
   def bitmap(bitmap: Bitmap) = Tweak[W](_.setImageBitmap(bitmap))
   val adjustBounds = Tweak[W](_.setAdjustViewBounds(true))
 }
@@ -44,7 +47,7 @@ object ListTweaks {
 object BgTweaks {
   type W = View
 
-  def res(id: Int) = Tweak[W](_.setBackgroundResource(id))
+  def res(resourceId: Int) = Tweak[W](_.setBackgroundResource(resourceId))
   def color(color: Int) = Tweak[W](_.setBackgroundColor(color))
 }
 

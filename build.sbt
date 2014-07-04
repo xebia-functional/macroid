@@ -41,7 +41,7 @@ libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
 
 libraryDependencies ++= Seq(
   "com.google.android" % "android" % "4.1.1.4" % "provided",
-  "com.android.support" % "support-v13" % "19.0.0",
+  "com.android.support" % "support-v13" % "19.1.0",
   "org.scala-lang.modules" %% "scala-async" % "0.9.1",
   "org.brianmckenna" %% "wartremover" % "0.10",
   "org.scalatest" %% "scalatest" % "2.1.5" % "test"

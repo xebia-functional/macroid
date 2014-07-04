@@ -5,7 +5,7 @@ import scala.concurrent.Future
 import macroid.util.Ui
 
 /** A Tweak is something that mutates a widget */
-case class Tweak[-W <: View](f: W ⇒ Unit) {
+case class Tweak[-W <: View](f: W ⇒ Unit) extends AnyVal {
   def apply(w: W) = f(w)
 
   /** Combine (sequence) with another tweak */
@@ -27,7 +27,7 @@ object Tweak {
 }
 
 /** A snail mutates the view slowly (e.g. animation) */
-case class Snail[-W <: View](f: W ⇒ Future[Unit]) {
+case class Snail[-W <: View](f: W ⇒ Future[Unit]) extends AnyVal {
   import UiThreading._
 
   def apply(w: W) = f(w)
@@ -50,7 +50,7 @@ object Snail {
   def blank[W <: View] = Snail[W](_ ⇒ Future.successful(()))
 }
 
-case class Transformer(f: PartialFunction[View, Ui[Any]]) {
+case class Transformer(f: PartialFunction[View, Ui[Any]]) extends AnyVal {
   def apply(w: View): Unit = {
     f.lift.apply(w).foreach(_.get)
     w match {

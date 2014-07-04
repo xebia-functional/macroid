@@ -4,7 +4,7 @@
 [Some people say](http://www.urbandictionary.com/define.php?term=macroid) it’s also a dead noodle.
 
 Striving to be focused on one thing (GUI), *Macroid* promotes composability, high-level abstractions and advanced features,
-like functional-reactive programming.
+like functional reactive programming.
 
 Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 
@@ -13,7 +13,7 @@ Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 * [Detailed guide](http://macroid.github.io/Guide.html)
 * [Mailing list](https://groups.google.com/forum/#!forum/macroid)
 
-Latest version: `2.0.0-M2` ([changelog](Changelog.md)).
+Latest version: `2.0.0-M2` ([changelog](http://macroid.github.io/Changelog.html)).
 
 For more info head to http://macroid.github.io!
 

@@ -22,8 +22,8 @@ object TextTweaks {
   val mono = Tweak[W](x ⇒ x.setTypeface(Typeface.MONOSPACE, Option(x.getTypeface).map(_.getStyle).getOrElse(Typeface.NORMAL)))
 
   def size(points: Int) = Tweak[W](_.setTextSize(TypedValue.COMPLEX_UNIT_SP, points))
-  val mediumSize = size(18)
-  val largeSize = size(22)
+  val medium = size(18)
+  val large = size(22)
 }
 
 /** Extra tweaks for ImageView */
@@ -60,11 +60,11 @@ object SeekTweaks {
 
 /** Extra layout params */
 object LpTweaks {
-  import macroid.Tweaks._
   type W = View
+  private def lp(w: Int, h: Int) = Tweak[W](_.setLayoutParams(new ViewGroup.LayoutParams(w, h)))
 
-  val matchParent = lp[ViewGroup](MATCH_PARENT, MATCH_PARENT)
-  val wrapContent = lp[ViewGroup](WRAP_CONTENT, WRAP_CONTENT)
-  val matchWidth = lp[ViewGroup](MATCH_PARENT, WRAP_CONTENT)
-  val matchHeight = lp[ViewGroup](WRAP_CONTENT, MATCH_PARENT)
+  val matchParent = lp(MATCH_PARENT, MATCH_PARENT)
+  val wrapContent = lp(WRAP_CONTENT, WRAP_CONTENT)
+  val matchWidth = lp(MATCH_PARENT, WRAP_CONTENT)
+  val matchHeight = lp(WRAP_CONTENT, MATCH_PARENT)
 }

@@ -1,3 +1,10 @@
+import android.Keys._
+import android.Dependencies.aar
+
+android.Plugin.androidBuildAar
+
+platformTarget in Android := "android-19"
+
 name := "macroid"
 
 description := "A Scala GUI DSL for Android"
@@ -20,28 +27,25 @@ scalacOptions in (Compile, doc) ++= Seq(
 )
 
 resolvers ++= Seq(
-  Resolver.sonatypeRepo("releases"),
-  "Typesafe" at "http://repo.typesafe.com/typesafe/releases/",
-  "Android" at (file(System.getenv("ANDROID_SDK_HOME")) / "extras" / "android" / "m2repository").getCanonicalFile.toURI.toString
+  Resolver.sonatypeRepo("releases")
 )
 
 autoCompilerPlugins := true
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-  compilerPlugin("org.scalamacros" % "paradise" % "2.0.0" cross CrossVersion.full)
+  compilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full)
 )
 
 libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
   case Some((2, 10)) ⇒
-    Seq("org.scalamacros" %% "quasiquotes" % "2.0.0")
+    Seq("org.scalamacros" %% "quasiquotes" % "2.0.1")
   case _ ⇒
     Seq()
 })
 
 libraryDependencies ++= Seq(
-  "com.google.android" % "android" % "4.1.1.4" % "provided",
-  "com.android.support" % "support-v13" % "19.1.0",
+  "com.android.support" % "support-v4" % "20.0.0",
   "org.scala-lang.modules" %% "scala-async" % "0.9.1",
   "org.brianmckenna" %% "wartremover" % "0.10",
   "org.scalatest" %% "scalatest" % "2.1.5" % "test"

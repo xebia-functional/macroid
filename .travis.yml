@@ -3,12 +3,14 @@ scala:
   - 2.10.4
   - 2.11.1
 before_install:
+  - sudo apt-get install libc6-i386 lib32z1 lib32stdc++6
   - wget http://dl.google.com/android/android-sdk_r23-linux.tgz
   - tar xzf android-sdk_r23-linux.tgz
   - export ANDROID_HOME=$PWD/android-sdk-linux
   - export ANDROID_SDK_HOME=$PWD/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   - echo yes | android update sdk --filter platform-tools --no-ui
-  - echo yes | android update sdk --filter android-18 --no-ui
+  - echo yes | android update sdk --filter build-tools-20.0.0 --no-ui
+  - echo yes | android update sdk --filter android-19 --no-ui
   - echo yes | android update sdk --filter extra-android-support --no-ui
   - echo yes | android update sdk --filter extra-android-m2repository --no-ui

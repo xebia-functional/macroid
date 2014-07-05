@@ -1,9 +1,11 @@
 import android.Keys._
-import android.Dependencies.aar
 
 android.Plugin.androidBuildAar
 
 platformTarget in Android := "android-19"
+
+// temporary workaround
+publishArtifact in (Compile, packageSrc) := true
 
 name := "macroid"
 
@@ -24,10 +26,6 @@ crossScalaVersions := Seq("2.10.4", "2.11.1")
 scalacOptions in (Compile, doc) ++= Seq(
   "-sourcepath", baseDirectory.value.getAbsolutePath,
   "-doc-source-url", "https://github.com/macroid/macroid/tree/master€{FILE_PATH}.scala"
-)
-
-resolvers ++= Seq(
-  Resolver.sonatypeRepo("releases")
 )
 
 autoCompilerPlugins := true

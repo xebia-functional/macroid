@@ -64,18 +64,18 @@ trait TransformerFillableViewable[A] extends FillableViewable[A] {
 
 trait SlottedFillableViewable[A] extends FillableViewable[A] {
   type Slots
-  def makeSlots(implicit ctx: ActivityContext, appCtx: AppContext): (Ui[W], Slots)
+  def makeSlots(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext): (Ui[W], Slots)
   def fillSlots(slots: Slots, data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[Any]
 
   type W = View
 
   def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = {
-    val (v, s) = makeSlots
+    val (v, s) = makeSlots(viewType)
     v <~ hold(s)
   }
 
   def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view flatMap { v ⇒
-    val (v1, s) = SafeCast[Any, Slots](v.getTag).map(x ⇒ (Ui(v), x)).getOrElse(makeSlots)
+    val (v1, s) = SafeCast[Any, Slots](v.getTag).map(x ⇒ (Ui(v), x)).getOrElse(makeSlots(viewType(data)))
     fillSlots(s, data).flatMap(_ ⇒ v1)
   }
 }

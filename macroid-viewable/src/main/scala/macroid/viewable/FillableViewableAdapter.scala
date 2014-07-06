@@ -24,4 +24,11 @@ object FillableViewableAdapter {
     new FillableViewableAdapter[A]()(ctx, appCtx, fillableViewable) {
       addAll(data: _*)
     }
+
+  def apply[A](data: Seq[A], viewTypeCount: Int, itemViewType: A ⇒ Int)(fillableViewable: FillableViewable[A])(implicit ctx: ActivityContext, appCtx: AppContext) =
+    new FillableViewableAdapter[A]()(ctx, appCtx, fillableViewable) {
+      addAll(data: _*)
+      override def getViewTypeCount = viewTypeCount
+      override def getItemViewType(position: Int) = itemViewType(getItem(position))
+    }
 }

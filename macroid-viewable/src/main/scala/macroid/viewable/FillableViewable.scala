@@ -56,7 +56,7 @@ trait TransformerFillableViewable[A] extends FillableViewable[A] {
   def transformer(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Transformer
 
   type W = ViewGroup
-  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~~ transformer(data)
+  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ transformer(data)
 }
 
 trait SlottedFillableViewable[A] extends FillableViewable[A] {

@@ -4,9 +4,6 @@ android.Plugin.androidBuildAar
 
 platformTarget in Android := "android-19"
 
-// temporary workaround
-publishArtifact in (Compile, packageSrc) := true
-
 name := "macroid"
 
 description := "A Scala GUI DSL for Android"

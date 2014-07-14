@@ -22,7 +22,9 @@ object CanSnail {
 
   implicit def `Widget is snailable with Future[Tweak]`[W <: View, T <: Tweak[W]](implicit ec: ExecutionContext) =
     new CanSnail[W, Future[T], W] {
-      def snail(w: W, ft: Future[T]) = Ui { ft mapUi { t ⇒ t(w); w } }
+      def snail(w: W, ft: Future[T]) = Ui {
+        ft.mapInPlace { t ⇒ t(w); w }(UiThreadExecutionContext)
+      }
     }
 
   implicit def `Widget is snailable with Option`[W <: View, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]) =
@@ -47,13 +49,17 @@ object CanSnail {
   implicit def `Widget is snailable with Future`[W <: View, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]) =
     new CanSnail[W, Future[S], W] {
       // we can call Ui.get, since we are already inside the UI thread
-      def snail(w: W, f: Future[S]) = Ui(f.flatMapUi(s ⇒ canSnail.snail(w, s).get.map(_ ⇒ w)))
+      def snail(w: W, f: Future[S]) = Ui {
+        f.flatMapInPlace(s ⇒ canSnail.snail(w, s).get.map(_ ⇒ w))(UiThreadExecutionContext)
+      }
     }
 
   implicit def `Future is snailable`[W, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]) =
     new CanSnail[Future[W], S, W] {
       // we can call Ui.get, since we are already inside the UI thread
-      def snail(f: Future[W], s: S) = Ui(f.flatMapUi(w ⇒ canSnail.snail(w, s).get.map(_ ⇒ w)))
+      def snail(f: Future[W], s: S) = Ui {
+        f.flatMapInPlace(w ⇒ canSnail.snail(w, s).get.map(_ ⇒ w))(UiThreadExecutionContext)
+      }
     }
 
   implicit def `Widget is snailable with List`[W <: View, S, R](implicit canSnail: CanSnail[W, S, R]) =

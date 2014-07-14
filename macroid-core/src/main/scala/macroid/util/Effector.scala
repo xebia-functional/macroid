@@ -2,6 +2,7 @@ package macroid.util
 
 import scala.language.higherKinds
 import scala.concurrent.{ Future, ExecutionContext }
+import scala.util.Try
 
 trait Effector[F[_]] {
   def foreach[A](fa: F[A])(f: A ⇒ Any): Unit
@@ -16,7 +17,13 @@ object Effector {
     def foreach[A](fa: Option[A])(f: A ⇒ Any) = fa.foreach(f)
   }
 
+  implicit object `Try is Effector` extends Effector[Try] {
+    def foreach[A](fa: Try[A])(f: A ⇒ Any) = fa.foreach(f)
+  }
+
   implicit def `Future is Effector`(implicit ec: ExecutionContext) = new Effector[Future] {
-    def foreach[A](fa: Future[A])(f: A ⇒ Any) = fa.foreach(f)
+    import macroid.UiThreading.InPlaceFuture
+
+    def foreach[A](fa: Future[A])(f: A ⇒ Any) = fa.foreachInPlace(f)
   }
 }

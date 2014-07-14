@@ -1,6 +1,7 @@
 package macroid.contrib
 
 import android.graphics.{ Bitmap, Typeface }
+import android.support.v4.view.{ PagerAdapter, ViewPager }
 import android.util.TypedValue
 import android.view.ViewGroup.LayoutParams._
 import android.view.{ View, ViewGroup }
@@ -40,7 +41,15 @@ object ListTweaks {
   type W = ListView
 
   val noDivider = Tweak[W](_.setDivider(null))
-  def adapter(adapter: ListAdapter) = Tweak[W](_.setAdapter(adapter))
+  def adapter(adapter: ListAdapter) = Tweak[AbsListView](_.setAdapter(adapter))
+}
+
+/** Extra tweaks for ViewPager */
+object PagerTweaks {
+  type W = ViewPager
+
+  def page(index: Int, smoothScroll: Boolean = false) = Tweak[W](_.setCurrentItem(index, smoothScroll))
+  def adapter(adapter: PagerAdapter) = Tweak[W](_.setAdapter(adapter))
 }
 
 /** Extra tweaks for backgrounds */

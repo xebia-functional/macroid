@@ -27,7 +27,7 @@ w[TextView] <~ (display: Option[Tweak[View]])
 (button: Ui[Option[Button]]) <~ (display: Option[Tweak[View]])
 
 // the same with snailing
-buton <@~ fadeOut(300)
+buton <~~ fadeOut(300)
 ```
 
 All this is possible thanks to a typeclass-based design (recommended reading:

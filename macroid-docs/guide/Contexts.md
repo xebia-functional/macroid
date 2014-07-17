@@ -51,11 +51,11 @@ to other methods:
 ```scala
 import macroid.{ AppContext, ActivityContext }
 import macroid.FullDsl._
-import macroid.contrib.ExtraTweaks._
+import macroid.contrib._
 
 def customTweak(implicit appCtx: AppContext) =
   // this one requires AppContext
-  TextSize.large +
+  TextTweaks.large +
   text("foo")
 
 def customLayout(implicit ctx: ActivityContext) =

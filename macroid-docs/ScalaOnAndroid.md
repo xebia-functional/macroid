@@ -65,7 +65,10 @@ are configured properly. Go to Project settings → Modules → (select main mod
 * APK path should be `path-to-project/target/android-bin/build_integration/{module name}-BUILD-INTEGRATION.apk`:
   ![apk path](apk-path.png)
 
-## Additional
+## Additional steps
+
+It is possible to preload Scala standard library on the emulator to reduce build times.
+Here is [a tool](https://github.com/svenwiegand/scala-libs-for-android-emulator) to do that.
 
 ## Useful resources
 

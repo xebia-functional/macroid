@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment
 import com.typesafe.config.ConfigFactory
 import android.app.Activity
 import scala.reflect.ClassTag
-import macroid.util.Ui
+import macroid.Ui
 
 trait AkkaActivity { self: Activity ⇒
   val actorSystemName: String

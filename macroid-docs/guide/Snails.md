@@ -93,5 +93,17 @@ Note the use of `~~` operator: it denotes that we need to wait for completion of
 
 ## Standard snails
 
-A number of standard snails are included. Please refer to the [scaladoc](../api/macroid/Snails$.html).
-Note that all these snails can be imported with `import macroid.FullDsl._`.
+A number of standard snails are included. You can always find them in the [scaladoc](../api/macroid/Snails$.html).
+Note that all these snails can be imported with `import macroid.FullDsl._` or just `import macroid.Snails._`.
+
+A quick rundown:
+
+* Basic snails
+  * `delay` — wait for a given time
+  * `wait` — wait for a given `Future`
+* Progress
+  * `waitProgress` — modify a `ProgressBar` to track a `Future` or a list of `Future`s
+* Animation
+  * `anim` — apply an animation
+  * `fadeIn` — apply a fade-in
+  * `fadeOut` — apply a fade-out

@@ -119,6 +119,8 @@ A quick rundown:
 
 Some extra tweaks are included in the `macroid.contrib` package. You can always find them in the [scaladoc](../api/macroid/contrib/package.html).
 
+*Please feel free to file a pull request with any extra tweaks you find useful. The naming strategy can be observed below.*
+
 A quick rundown:
 
 * `LpTweaks`

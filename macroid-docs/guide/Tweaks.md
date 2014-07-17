@@ -59,8 +59,8 @@ Note that tweaking does not require the widgets to be created with *Macroid* bri
 ## Standard tweaks
 
 A number of standard tweaks are included. Please refer to the [scaladoc](../api/macroid/Tweaks$.html).
-Note that all these tweaks can be imported with `import macroid.FullDsl._`.
+Note that all these tweaks can be imported with `import macroid.FullDsl._` or just `import macroid.Tweaks._`.
 
 ## Extra tweaks
 
-Some extra tweaks are included in the `macroid.contrib` package. Please refer to the [scaladoc](../api/macroid/contrib/ExtraTweaks$.html).
+Some extra tweaks are included in the `macroid.contrib` package. Please refer to the [scaladoc](../api/macroid/contrib/package.html).

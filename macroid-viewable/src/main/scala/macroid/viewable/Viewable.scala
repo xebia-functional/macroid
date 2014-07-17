@@ -5,7 +5,6 @@ import android.widget.TextView
 import macroid._
 import macroid.LayoutBuilding._
 import macroid.Tweaking._
-import macroid.util.Ui
 
 trait Viewable[A] {
   type W <: View

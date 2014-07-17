@@ -1,12 +1,12 @@
 package macroid.viewable
 
-import macroid._
-import macroid.LayoutDsl._
-import macroid.Tweaks._
-import macroid.util.{ SafeCast, Ui }
-import scala.util.Try
 import android.view.{ View, ViewGroup }
 import android.widget.TextView
+import macroid.LayoutDsl._
+import macroid.Tweaks._
+import macroid._
+import macroid.contrib.ListTweaks
+import macroid.util.SafeCast
 
 trait FillableViewable[A] extends Viewable[A] {
   def viewTypeCount = 1
@@ -16,6 +16,11 @@ trait FillableViewable[A] extends Viewable[A] {
   def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
 
   def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fillView(makeView(viewType(data)), data)
+
+  def adapter(implicit ctx: ActivityContext, appCtx: AppContext) = FillableViewableAdapter(this)
+  def adapterTweak(implicit ctx: ActivityContext, appCtx: AppContext) = ListTweaks.adapter(adapter)
+  def adapter(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext) = FillableViewableAdapter(data)(this)
+  def adapterTweak(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext) = ListTweaks.adapter(adapter(data))
 }
 
 object FillableViewable {

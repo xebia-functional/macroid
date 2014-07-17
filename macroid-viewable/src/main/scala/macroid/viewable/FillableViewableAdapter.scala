@@ -3,8 +3,8 @@ package macroid.viewable
 import android.view.{ View, ViewGroup }
 import android.widget.ArrayAdapter
 import macroid.UiThreading._
-import macroid.util.{ SafeCast, Ui }
-import macroid.{ ActivityContext, AppContext }
+import macroid.util.SafeCast
+import macroid.{ ActivityContext, AppContext, Ui }
 
 class FillableViewableAdapter[A](implicit ctx: ActivityContext, appCtx: AppContext, fillableViewable: FillableViewable[A])
   extends ArrayAdapter[A](ctx.get, 0) {

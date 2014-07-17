@@ -73,7 +73,11 @@ A quick rundown:
   * `enable`
   * `disable`
 * Padding
-  * `padding`
+  * `padding` — supports named arguments. Example:
+
+    ```scala
+    w[TextView] <~ padding(top = 8 dp, bottom = 8 dp)
+    ```
 * Layout
   * `layoutParams` / `lp` — works with any layout. Example:
 
@@ -82,11 +86,16 @@ A quick rundown:
     ```
   * `vertical`
   * `horizontal`
-  * `addViews`
+  * `addViews` — add views to a ViewGroup. Example:
+
+    ```scala
+    val views = List("foo", "bar").map(s ⇒ w[TextView] <~ text(s))
+    linearLayout <~ addViews(views, removeOld = true)
+    ```
 * Text/captions
   * `text`
 * Handling events
-  * `On` — works with (almost) any events. Expects an [UI action](UiActions.html) that takes no arguments and returns the same type as the associated listener. Examples:
+  * `On` — works with (almost) any events. Expects a [UI action](UiActions.html) that takes no arguments and returns the same type as the associated listener. Examples:
 
     ```scala
     w[Button] <~ On.click(textView <~ hide)

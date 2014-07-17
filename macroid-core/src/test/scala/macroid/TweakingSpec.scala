@@ -5,7 +5,6 @@ import android.widget.{ LinearLayout, TextView, Button }
 import android.app.Activity
 import LayoutDsl._
 import Tweaks._
-import macroid.util.Ui
 
 class TweakingSpec extends FlatSpec {
   implicit val ctx = ActivityContext(null: Activity)

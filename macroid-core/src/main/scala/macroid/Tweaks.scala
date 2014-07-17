@@ -5,7 +5,6 @@ import scala.language.experimental.macros
 import android.view.{ ViewGroup, View }
 import android.widget.{ LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
-import macroid.util.Ui
 
 private[macroid] trait BasicTweaks {
   import BasicTweakMacros._

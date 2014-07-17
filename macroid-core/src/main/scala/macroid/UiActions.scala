@@ -1,21 +1,13 @@
-package macroid.util
+package macroid
 
-import macroid.UiThreading
-import scala.concurrent.{ ExecutionContext, Future }
-import android.os.{ Handler, Looper }
+import android.os.Looper
+
+import scala.concurrent.Future
 import scala.util.{ Failure, Success, Try }
-
-/** An ExecutionContext associated with the UI thread */
-object UiThreadExecutionContext extends ExecutionContext {
-  private lazy val uiHandler = new Handler(Looper.getMainLooper)
-
-  def reportFailure(t: Throwable) = t.printStackTrace()
-  def execute(runnable: Runnable) = uiHandler.post(runnable)
-}
 
 /** A UI action that can be sent to the UI thread for execution */
 class Ui[+A](v: () ⇒ A) {
-  import UiThreading._
+  import macroid.UiThreading._
 
   /** map combinator */
   def map[B](f: A ⇒ B) = Ui(f(v()))

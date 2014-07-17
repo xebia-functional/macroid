@@ -4,7 +4,7 @@ import scala.language.dynamics
 
 import android.view.View
 import android.app.Activity
-import macroid.util.{ Ui, SafeCast }
+import macroid.util.SafeCast
 import macroid.support.{ Fragment, FragmentApi }
 
 /** A class to generate unique Ids */

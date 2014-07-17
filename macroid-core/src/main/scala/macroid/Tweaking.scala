@@ -3,7 +3,7 @@ package macroid
 import scala.language.higherKinds
 import android.view.{ ViewGroup, View }
 import scala.annotation.implicitNotFound
-import macroid.util.{ Ui, Effector }
+import macroid.util.Effector
 
 @implicitNotFound("Don't know how to tweak ${W} with ${T}. Try importing an instance of CanTweak[${W}, ${T}, ...].") /** A typeclass for 'tweakable' relation */
 trait CanTweak[W, T, R] {

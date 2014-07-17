@@ -5,7 +5,6 @@ import android.view.View
 import scala.annotation.implicitNotFound
 import scala.async.Async._
 import scala.concurrent.{ ExecutionContext, Future }
-import macroid.util.{ UiThreadExecutionContext, Ui }
 
 @implicitNotFound("Don't know how to snail ${W} with ${S}. Try importing an instance of CanSnail[${W}, ${S}, ...]. It is also possible that you are missing an implicit scala.concurrent.ExecutionContext")
 trait CanSnail[W, S, R] {

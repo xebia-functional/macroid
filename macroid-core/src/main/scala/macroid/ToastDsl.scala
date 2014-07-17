@@ -2,7 +2,6 @@ package macroid
 
 import android.widget.Toast
 import android.view.View
-import macroid.util.Ui
 
 case class Loaf(f: Toast ⇒ Unit) {
   def apply(t: Toast) = f(t)

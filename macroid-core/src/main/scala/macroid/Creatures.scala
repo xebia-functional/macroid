@@ -2,7 +2,6 @@ package macroid
 
 import android.view.{ ViewGroup, View }
 import scala.concurrent.Future
-import macroid.util.Ui
 
 /** A Tweak is something that mutates a widget */
 case class Tweak[-W <: View](f: W ⇒ Unit) {

@@ -9,7 +9,7 @@ object CheckUi extends WartTraverser {
     def checkUiStatements(statements: List[Tree]) = statements foreach {
       case LabelDef(_, _, _) ⇒
       case stat ⇒
-        if (stat.tpe != null && stat.tpe <:< typeOf[macroid.util.Ui[_]])
+        if (stat.tpe != null && stat.tpe <:< typeOf[macroid.Ui[_]])
           u.error(stat.pos, s"This statement returns an Ui action, but does not actually perform it. Call the `run` method, wrap it in `runUi`, or combine it with other Ui actions.")
     }
 

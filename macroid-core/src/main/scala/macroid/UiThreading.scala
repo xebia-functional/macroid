@@ -1,8 +1,17 @@
 package macroid
 
+import android.os.{ Looper, Handler }
+
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.{ Failure, Success, Try }
-import macroid.util.{ Ui, UiThreadExecutionContext }
+
+/** An ExecutionContext associated with the UI thread */
+object UiThreadExecutionContext extends ExecutionContext {
+  private lazy val uiHandler = new Handler(Looper.getMainLooper)
+
+  def reportFailure(t: Throwable) = t.printStackTrace()
+  def execute(runnable: Runnable) = uiHandler.post(runnable)
+}
 
 private[macroid] trait UiThreading {
   /** Run UI code on the UI thread */

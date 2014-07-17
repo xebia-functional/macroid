@@ -29,12 +29,12 @@ Of course, we can do much fancier than that! Remember the composability principl
 // AppContext is an Android Context obtained from getApplicationContext
 import macroid.AppContext
 // More tweaks
-import macroid.contrib.ExtraTweaks._
+import macroid.contrib.TextTweaks
 
 // A module with custom tweaks
 object OurTweaks {
   def greeting(greeting: String)(implicit appCtx: AppContext) =
-    TextSize.large +
+    TextTweaks.large +
     text(greeting) +
     hide
 }

@@ -11,6 +11,7 @@ Detailed diff can be found [on GitHub](https://github.com/macroid/macroid/compar
 * **`macroid.util.Ui` is now `macroid.Ui` for consistency with `macroid.Tweak`, `macroid.Snail`, etc**
 * When applying `Future[Tweak[View]]`, completed futures are now handled in-place (inspired by [scala/async#73](https://github.com/scala/async/issues/73))
 * Added `RuleRelativeLayout` to work with `RelativeLayout` [#24](https://github.com/macroid/macroid/issues/24)
+* `TextTweaks.medium` and `TextTweaks.large` no longer affect style/color of the text
 * Many new tweaks were added to `macroid.contrib`
 
 ## Version `2.0.0-M2`

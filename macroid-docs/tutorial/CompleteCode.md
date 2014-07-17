@@ -7,11 +7,12 @@ concept and feature more deeply. In particular, sections on [UI actions](../guid
 
 ```scala
 import macroid._
+import macroid.contrib._
 import macroid.FullDsl._
 
 object OurTweaks {
   def greeting(greeting: String)(implicit appCtx: AppContext) =
-    TextSize.large +
+    TextTweaks.large +
     text(greeting) +
     hide
 

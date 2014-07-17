@@ -12,7 +12,7 @@ UI actions are pieces of code that are supposed to be run on the UI thread.
 A simple UI action can be created like this:
 
 ```scala
-import macroid.util.Ui
+import macroid.Ui
 
 val action = Ui {
   textView.setText("Hi")

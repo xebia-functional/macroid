@@ -27,7 +27,8 @@ However you can also import them one by one (click list items to jump to docs):
 
 There are also some things ouside these modules:
 
-* [`macroid.utils.Ui`](UiActions.html)
+* [`macroid.Ui`](UiActions.html), [`macroid.Tweak`](Tweaks.html),
+  [`macroid.Snail`](Snails.html), [`macroid.Transformer`](Transformers.html)
 * [`macroid.{ AppContext, ActivityContext, Contexts }`](Contexts.html)
 * [`macroid.IdGeneration`](Searching.html#id-and-tag-generation)
 * [`macroid.AutoLogTag`](Logging.html)

@@ -48,8 +48,10 @@ You can add children to an empty layout later by doing
 layout <~ addViews(button, textView, ...)
 ```
 
-Finally, note that bricks return a [UI action](UiActions.html), therefore if you need to use them e.g. in `setContentView`,
-`getUi` is required:
+Finally, note that bricks return a [UI action](UiActions.html), therefore therefore
+if you need to use them e.g. in `setContentView`,
+`getUi` is required. *This also means that `w[Widget]` will
+return a new (different) instance of `Widget` each time you call `getUi(w[Widget])` or `w[Widget].get`*.
 
 ```scala
 override def onCreate(savedInstanceState: Bundle) = {

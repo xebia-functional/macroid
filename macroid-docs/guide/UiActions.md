@@ -37,6 +37,8 @@ Running an action of type `Ui[A]` returns a `Future[A]` (in this case — `Futur
 so that you can monitor its completion. If the action fails,
 you can handle the failure with the standard [Future API](http://docs.scala-lang.org/overviews/core/futures.html).
 
+*Note that UI actions are not memoized, so running an action will recalculate the result each time*.
+
 In some cases you will also want to run it on the current thread (but you have to be 100% sure you are inside
 the UI thread):
 

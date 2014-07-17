@@ -117,4 +117,32 @@ A quick rundown:
 
 ## Extra tweaks
 
-Some extra tweaks are included in the `macroid.contrib` package. Please refer to the [scaladoc](../api/macroid/contrib/package.html).
+Some extra tweaks are included in the `macroid.contrib` package. You can always find them in the [scaladoc](../api/macroid/contrib/package.html).
+
+A quick rundown:
+
+* `LpTweaks`
+  * `matchParent` — same as `lp[ViewGroup](MATCH_PARENT, MATCH_PARENT)`
+  * `wrapContent` — same as `lp[ViewGroup](WRAP_CONTENT, WRAP_CONTENT)`
+  * `matchWidth` — same as `lp[ViewGroup](MATCH_PARENT, WRAP_CONTENT)`
+  * `matchHeight` — same as `lp[ViewGroup](WRAP_CONTENT, MATCH_PARENT)`
+* `BgTweaks`
+  * `res` — sets a background from resources
+  * `color` — sets background to a color
+* `TextTweaks` (for `TextView`)
+  * `color`
+  * `bold`, `italic`, `boldItalic`
+  * `serif`, `sans`, `mono`
+  * `medium`, `large`, `size`
+* `ImageTweaks` (for `ImageView`)
+  * `res` — shows a drawable from resources
+  * `bitmap`
+  * `adjustBounds` — sets `adjustViewBounds` to `true`
+* `ListTweaks` (for `ListView`)
+  * `noDivider` — hides the divider
+  * `adapter` — sets list adapter (works with any `AbsListView`)
+* `PagerTweaks` (for `ViewPager`)
+  * `page` — sets current page
+  * `adapter` — sets pager adapter
+* `SeekTweaks` (for `SeekBar`)
+  * `seek` — sets the cue

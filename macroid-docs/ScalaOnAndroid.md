@@ -5,10 +5,10 @@ This is a short guide that will help you get started.
 
 ## Pros/cons
 
-* + Concise code
-* + Fantastic concurrency support (futures/promises, scala-async, actors, ...)
-* + Advanced DSLs (like Macroid ;) )
-* − Build time (due to ProGuard + dex taking up to 1 minute on big projects)
+* (+) Concise code
+* (+) Fantastic concurrency support (futures/promises, scala-async, actors, ...)
+* (+) Advanced DSLs (like Macroid ;) )
+* (−) Build time (due to ProGuard + dex taking up to 1 minute on big projects)
 
 ## Tutorials
 

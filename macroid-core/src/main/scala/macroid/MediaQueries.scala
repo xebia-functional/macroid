@@ -91,8 +91,8 @@ private[macroid] trait MediaQueries
   with SizeQueries {
 
   implicit class RichOption[A](o: Option[A]) {
-    def |[B >: A](alternative: Option[B]) = o orElse alternative
-    def |[B >: A](default: B) = o getOrElse default
+    def |[B >: A](alternative: ⇒ Option[B]) = o orElse alternative
+    def |[B >: A](default: ⇒ B) = o getOrElse default
   }
 }
 

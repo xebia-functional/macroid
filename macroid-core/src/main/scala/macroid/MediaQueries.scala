@@ -73,6 +73,15 @@ private[macroid] trait SizeQueries extends MediaQueryEssentials {
   def maxHeight(v: Int)(implicit ctx: AppContext) = MediaQuery(displayMetrics.heightPixels <= v)
   /** Same as maxHeight(v) */
   def lowerThan(v: Int)(implicit ctx: AppContext) = maxHeight(v)
+
+  /** Both sides are at least v */
+  def minSide(v: Int)(implicit ctx: AppContext) = minWidth(v) & minHeight(v)
+  /** Same as minSide(v) */
+  def biggerThan(v: Int)(implicit ctx: AppContext) = minSide(v)
+  /** Both sides are at most v */
+  def maxSide(v: Int)(implicit ctx: AppContext) = maxWidth(v) & maxHeight(v)
+  /** Same as maxSide(v) */
+  def smallerThan(v: Int)(implicit ctx: AppContext) = maxSide(v)
 }
 
 private[macroid] trait MediaQueries

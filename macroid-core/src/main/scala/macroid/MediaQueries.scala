@@ -56,31 +56,31 @@ private[macroid] trait DisplayUnits extends MediaQueryEssentials {
 }
 
 private[macroid] trait SizeQueries extends MediaQueryEssentials {
-  /** Width is at least v */
+  /** Width is at least `v` */
   def minWidth(v: Int)(implicit ctx: AppContext) = MediaQuery(displayMetrics.widthPixels >= v)
-  /** Same as minWidth(v) */
+  /** Width is at least `v`(alias for `minWidth`) */
   def widerThan(v: Int)(implicit ctx: AppContext) = minWidth(v)
-  /** Width is at most v */
+  /** Width is at most `v` */
   def maxWidth(v: Int)(implicit ctx: AppContext) = MediaQuery(displayMetrics.widthPixels <= v)
-  /** Same as maxWidth(v) */
+  /** Width is at most `v` (alias for `maxWidth`) */
   def narrowerThan(v: Int)(implicit ctx: AppContext) = maxWidth(v)
 
-  /** Height is at least v */
+  /** Height is at least `v` */
   def minHeight(v: Int)(implicit ctx: AppContext) = MediaQuery(displayMetrics.heightPixels >= v)
-  /** Same as minHeight(v) */
+  /** Height is at least `v` (alias for `minHeight`) */
   def higherThan(v: Int)(implicit ctx: AppContext) = minHeight(v)
-  /** Height is at most v */
+  /** Height is at most `v` */
   def maxHeight(v: Int)(implicit ctx: AppContext) = MediaQuery(displayMetrics.heightPixels <= v)
-  /** Same as maxHeight(v) */
+  /** Height is at most `v` (alias for `maxHeight`) */
   def lowerThan(v: Int)(implicit ctx: AppContext) = maxHeight(v)
 
-  /** Both sides are at least v */
+  /** Both sides are at least `v` */
   def minSide(v: Int)(implicit ctx: AppContext) = minWidth(v) & minHeight(v)
-  /** Same as minSide(v) */
+  /** Both sides are at least `v` (alias for `minSide`) */
   def biggerThan(v: Int)(implicit ctx: AppContext) = minSide(v)
-  /** Both sides are at most v */
+  /** Both sides are at most `v` */
   def maxSide(v: Int)(implicit ctx: AppContext) = maxWidth(v) & maxHeight(v)
-  /** Same as maxSide(v) */
+  /** Both sides are at most `v` (alias for `maxSide`) */
   def smallerThan(v: Int)(implicit ctx: AppContext) = maxSide(v)
 }
 

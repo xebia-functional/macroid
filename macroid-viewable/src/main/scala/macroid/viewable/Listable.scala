@@ -52,7 +52,7 @@ trait PartialListable[A, W <: View] extends AbstractListable[A, W] { self ⇒
         }
 
       def fillView(view: Ui[W], data: A1)(implicit ctx: ActivityContext, appCtx: AppContext) = data match {
-        // inlined toParent[A1]
+        // inlined self.toParent[A1]
         case x: A ⇒ self.fillView(view, x) orElse alternative.fillView(view, data)
         case _ ⇒ alternative.fillView(view, data)
       }

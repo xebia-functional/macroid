@@ -6,8 +6,10 @@ import macroid.UiThreading._
 import macroid.util.SafeCast
 import macroid.{ ActivityContext, AppContext, Ui }
 
-class ListableAdapter[A, W <: View](implicit ctx: ActivityContext, appCtx: AppContext, val listable: Listable[A, W])
+class ListableListAdapter[A, W <: View](data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext, val listable: Listable[A, W])
   extends ArrayAdapter[A](ctx.get, 0) {
+
+  addAll(data: _*)
 
   override def getViewTypeCount = listable.viewTypeCount
   override def getItemViewType(position: Int) = if (0 <= position && position < getCount) {

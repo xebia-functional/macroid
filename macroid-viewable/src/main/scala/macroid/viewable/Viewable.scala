@@ -13,34 +13,34 @@ import scala.reflect.ClassTag
 /** Expresses the fact that *some* of the values of type `A` can be displayed with a widget or layout of type `W` */
 trait PartialViewable[A, +W <: View] { self ⇒
   /** Create the layout for a value of type `A`. Returns None if not defined for this value */
-  def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Option[Ui[W]]
+  def view(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Option[Ui[W]]
 
   /** Map the underlying data type `A` */
   def contraFlatMap[B](f: B ⇒ Option[A]): PartialViewable[B, W] =
     new PartialViewable[B, W] {
-      def layout(data: B)(implicit ctx: ActivityContext, appCtx: AppContext) =
-        f(data).flatMap(self.layout)
+      def view(data: B)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        f(data).flatMap(self.view)
     }
 
   /** Combine with an alternative partial */
   def orElse[W1 >: W <: View](alternative: PartialViewable[A, W1]): PartialViewable[A, W1] =
     new PartialViewable[A, W1] {
-      def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
-        self.layout(data) orElse alternative.layout(data)
+      def view(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        self.view(data) orElse alternative.view(data)
     }
 
   /** Specify a condition to further limit this partial */
   def cond(p: A ⇒ Boolean): PartialViewable[A, W] =
     new PartialViewable[A, W] {
-      def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
-        if (p(data)) self.layout(data) else None
+      def view(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        if (p(data)) self.view(data) else None
     }
 
   /** Make a partial defined for a subset of the provided supertype */
   def toParent[B](implicit classTag: ClassTag[A]): PartialViewable[B, W] =
     new PartialViewable[B, W] {
-      def layout(data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = data match {
-        case x: A ⇒ self.layout(x)
+      def view(data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = data match {
+        case x: A ⇒ self.view(x)
         case _ ⇒ None
       }
     }
@@ -48,8 +48,8 @@ trait PartialViewable[A, +W <: View] { self ⇒
   /** Convert back to total viewable */
   def toTotal: Viewable[A, W] =
     new Viewable[A, W] {
-      def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
-        self.layout(data).get
+      def view(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        self.view(data).get
     }
 }
 
@@ -57,20 +57,20 @@ trait PartialViewable[A, +W <: View] { self ⇒
 @implicitNotFound("Don't know how to display data type ${A}. Try importing an instance of Viewable[${A}, ...]")
 trait Viewable[A, +W <: View] { self ⇒
   /** Create the layout for a value of type `A` */
-  def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
+  def view(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
 
   /** Map the underlying data type `A` */
   def contraMap[B](f: B ⇒ A): Viewable[B, W] =
     new Viewable[B, W] {
-      def layout(data: B)(implicit ctx: ActivityContext, appCtx: AppContext) =
-        self.layout(f(data))
+      def view(data: B)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        self.view(f(data))
     }
 
   /** Convert to partial viewable for composition with alternatives */
   def toPartial: PartialViewable[A, W] =
     new PartialViewable[A, W] {
-      def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
-        Some(self.layout(data))
+      def view(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        Some(self.view(data))
     }
 
   /** Convert to partial viewable based on a condition */
@@ -91,9 +91,9 @@ trait Viewable[A, +W <: View] { self ⇒
 /** A builder to define viewables for a particular data type */
 class ViewableBuilder[A] {
   /** Define a viewable by providing the layout function */
-  def apply[W <: View](lay: A ⇒ Ui[W]): Viewable[A, W] =
+  def apply[W <: View](layout: A ⇒ Ui[W]): Viewable[A, W] =
     new Viewable[A, W] {
-      def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = lay(data)
+      def view(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = layout(data)
     }
 }
 
@@ -104,6 +104,7 @@ object Viewable {
   /** Define a viewable for strings by providing the `TextView` style */
   def text(tweak: Tweak[TextView]): Viewable[String, TextView] =
     new Viewable[String, TextView] {
-      def layout(data: String)(implicit ctx: ActivityContext, appCtx: AppContext) = w[TextView] <~ tweak <~ Tweaks.text(data)
+      def view(data: String)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        w[TextView] <~ tweak <~ Tweaks.text(data)
     }
 }

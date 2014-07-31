@@ -8,7 +8,7 @@ import macroid.UiThreading._
 /** A `PagerAdapter` based on the `Viewable` typeclass */
 class ViewablePagerAdapter[A, +W <: View](data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext, viewable: Viewable[A, W]) extends PagerAdapter {
   override def instantiateItem(container: ViewGroup, position: Int) = {
-    val view = getUi(viewable.layout(data(position)))
+    val view = getUi(viewable.view(data(position)))
     container.addView(view, 0)
     view
   }

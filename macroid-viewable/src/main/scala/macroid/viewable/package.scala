@@ -5,8 +5,8 @@ import android.view.View
 package object viewable {
   implicit class ViewableOps[A](data: A) {
     /** Create layout for this value */
-    def layout[W <: View](implicit ctx: ActivityContext, appCtx: AppContext, viewable: Viewable[A, W]) =
-      viewable.layout(data)
+    def view[W <: View](implicit ctx: ActivityContext, appCtx: AppContext, viewable: Viewable[A, W]) =
+      viewable.view(data)
   }
 
   implicit class PagerAdapterOps[A](data: Seq[A]) {

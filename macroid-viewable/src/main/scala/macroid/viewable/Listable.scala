@@ -184,7 +184,7 @@ class ListableBuilder[A] {
 object Listable {
   implicit def `Listable is Viewable`[A, W <: View](implicit listable: Listable[A, W]): Viewable[A, W] =
     new Viewable[A, W] {
-      def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+      def view(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
         listable.fillView(listable.makeView(listable.viewType(data)), data)
     }
 

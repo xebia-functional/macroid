@@ -6,7 +6,7 @@ import macroid.UiThreading._
 import macroid.util.SafeCast
 import macroid.{ ActivityContext, AppContext, Ui }
 
-class ListableListAdapter[A, W <: View](data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext, val listable: Listable[A, W])
+class ListableListAdapter[A, W <: View](data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext, listable: Listable[A, W])
   extends ArrayAdapter[A](ctx.get, 0) {
 
   addAll(data: _*)

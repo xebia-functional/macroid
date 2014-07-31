@@ -3,24 +3,24 @@ package macroid
 import android.view.View
 
 package object viewable {
-  implicit class ViewableOps[A, W <: View](data: A)(implicit val viewable: Viewable[A, W]) {
-    def layout(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W] =
+  implicit class ViewableOps[A](data: A) {
+    def layout[W <: View](implicit ctx: ActivityContext, appCtx: AppContext, viewable: Viewable[A, W]) =
       viewable.layout(data)
   }
 
-  implicit class PagerAdapterOps[A, W <: View](data: Seq[A])(implicit val viewable: Viewable[A, W]) {
-    def pagerAdapter(implicit ctx: ActivityContext, appCtx: AppContext): ViewablePagerAdapter[A, W] =
+  implicit class PagerAdapterOps[A](data: Seq[A]) {
+    def pagerAdapter[W <: View](implicit ctx: ActivityContext, appCtx: AppContext, viewable: Viewable[A, W]) =
       viewable.pagerAdapter(data)
 
-    def pagerAdapterTweak(implicit ctx: ActivityContext, appCtx: AppContext) =
+    def pagerAdapterTweak[W <: View](implicit ctx: ActivityContext, appCtx: AppContext, viewable: Viewable[A, W]) =
       viewable.pagerAdapterTweak(data)
   }
 
-  implicit class ListAdapterOps[A, W <: View](data: Seq[A])(implicit val listable: Listable[A, W]) {
-    def listAdapter(implicit ctx: ActivityContext, appCtx: AppContext): ListableListAdapter[A, W] =
+  implicit class ListAdapterOps[A](data: Seq[A]) {
+    def listAdapter[W <: View](implicit ctx: ActivityContext, appCtx: AppContext, listable: Listable[A, W]) =
       listable.listAdapter(data)
 
-    def listAdapterTweak(implicit ctx: ActivityContext, appCtx: AppContext) =
+    def listAdapterTweak[W <: View](implicit ctx: ActivityContext, appCtx: AppContext, listable: Listable[A, W]) =
       listable.listAdapterTweak(data)
   }
 }

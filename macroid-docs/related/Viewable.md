@@ -267,3 +267,58 @@ object UserListable extends SlottedListable[User] {
 ```
 
 ## Composing from alternatives
+
+Both *viewables* and *listables* support composition from alternatives — the most
+obvious use-case is joining several layout types in one. Everything below applies to
+both `Viewable` and `Listable`, but we’ll proceed with just `Viewable` for simplicity.
+
+Consider this toy “Macroid Now” example:
+
+```scala
+sealed trait MacroidNowCard
+
+case class Weather(temp: Float) extends MacroidNowCard
+
+case class PhotosNearby(photos: List[URL]) extends MacroidNowCard
+```
+
+Now suppose we have defined these:
+
+```scala
+val weatherViewable: Viewable[Weather, CardView] = ...
+val photosNearbyViewable: Viewable[PhotosNearby, CardView] = ...
+```
+
+How do we define this?
+
+```scala
+val macroidNowViewable: Viewable[MacroidNowCard, CardView] = ???
+```
+
+This is where `PartialViewable` comes into play: it’s a *viewable*,
+which is defined only for a certain subset of the data. *Partial viewables*
+can be combined with the `orElse` operator, much like Scala’s `PartialFunction`s.
+
+A *partial viewable* can be obtained in a few ways:
+
+```scala
+// this will give a PartialViewable[Weather, CardView],
+// which is only defined for really hot days
+weatherViewable.cond(_.temp > 40)
+
+// this will give a PartialViewable[MacroidNowCard, CardView],
+// which is only defined for cards that are instanceOf[Weather]
+weatherViewable.toParent[MacroidNowCard]
+```
+
+The solution is thus to convert both our *viewables* to *partial viewables*,
+combine them, and go back to the normal (or *total*) *viewable*:
+
+```scala
+val macroidNowViewable = {
+  weatherViewable.toParent[MacroidNowCard] orElse
+  photosNearbyViewable.toParent[MacroidNowCard]
+}.toTotal
+```
+
+Finally, keep in mind that `Listable` provides exactly the same API.

@@ -43,7 +43,8 @@ trait PartialListable[A, +W <: View] { self ⇒
         }
 
       def fillView[W2 >: W1 <: View](view: Ui[W2], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
-        self.viewType(data).fold(self.fillView(view, data))(_ ⇒ alternative.fillView(view, data))
+        self.fillView(view, data) orElse
+          alternative.fillView(view, data)
     }
 
   def cond(p: A ⇒ Boolean): PartialListable[A, W] =

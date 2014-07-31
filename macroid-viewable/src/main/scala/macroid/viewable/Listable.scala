@@ -1,16 +1,13 @@
 package macroid.viewable
 
-import macroid.contrib.ListTweaks
-
-import scala.annotation.implicitNotFound
-import scala.language.higherKinds
-
 import android.view.{ View, ViewGroup }
 import android.widget.TextView
 import macroid.LayoutDsl._
 import macroid.Tweaks._
 import macroid._
+import macroid.contrib.ListTweaks
 
+import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
 
 /**

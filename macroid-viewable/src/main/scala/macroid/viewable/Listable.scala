@@ -151,6 +151,36 @@ trait Listable[A, W <: View] { self ⇒
     ListTweaks.adapter(listAdapter(data))
 }
 
+/** A builder to define listables for a particular data type */
+class ListableBuilder[A] {
+  /** Define a listable by providing the make and fill functions */
+  def apply[W <: View](make: ⇒ Ui[W])(fill: Ui[W] ⇒ A ⇒ Ui[W]): Listable[A, W] =
+    new Listable[A, W] {
+      val viewTypeCount = 1
+      def viewType(data: A) = 0
+      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = make
+      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(view)(data)
+    }
+
+  /** Define a listable by providing the make function and a tweak to fill the layout with data */
+  def tw[W <: View](make: ⇒ Ui[W])(fill: A ⇒ Tweak[W]): Listable[A, W] =
+    new Listable[A, W] {
+      val viewTypeCount = 1
+      def viewType(data: A) = 0
+      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = make
+      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ fill(data)
+    }
+
+  /** Define a listable by providing the make function and a transformer to fill the layout with data */
+  def tr[W <: ViewGroup](make: ⇒ Ui[W])(fill: A ⇒ Transformer): Listable[A, W] =
+    new Listable[A, W] {
+      val viewTypeCount = 1
+      def viewType(data: A) = 0
+      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = make
+      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ fill(data)
+    }
+}
+
 object Listable {
   implicit def `Listable is Viewable`[A, W <: View](implicit listable: Listable[A, W]): Viewable[A, W] =
     new Viewable[A, W] {
@@ -158,14 +188,8 @@ object Listable {
         listable.fillView(listable.makeView(listable.viewType(data)), data)
     }
 
-  /** Define a listable by providing the make and fill functions */
-  def apply[A, W <: View](make: ⇒ Ui[W])(fill: Ui[W] ⇒ A ⇒ Ui[W]): Listable[A, W] =
-    new Listable[A, W] {
-      val viewTypeCount = 1
-      def viewType(data: A) = 0
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = make
-      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(view)(data)
-    }
+  /** Build a listable for a particular data type */
+  def apply[A] = new ListableBuilder[A]
 
   /** Define a listable for strings by providing the `TextView` style */
   def text(tweak: Tweak[TextView]): Listable[String, TextView] =
@@ -178,24 +202,6 @@ object Listable {
 
   /** An alias for SlottedListable */
   type Slotted[A] = SlottedListable[A]
-
-  /** Define a listable by providing the make function and a tweak to fill the layout with data */
-  def tw[A, W <: View](make: ⇒ Ui[W])(fill: A ⇒ Tweak[W]): Listable[A, W] =
-    new Listable[A, W] {
-      val viewTypeCount = 1
-      def viewType(data: A) = 0
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = make
-      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ fill(data)
-    }
-
-  /** Define a listable by providing the make function and a transformer to fill the layout with data */
-  def tr[A, W <: ViewGroup](make: ⇒ Ui[W])(fill: A ⇒ Transformer): Listable[A, W] =
-    new Listable[A, W] {
-      val viewTypeCount = 1
-      def viewType(data: A) = 0
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = make
-      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ fill(data)
-    }
 
   /** Wrap an existing listable into some *outer* layout */
   def wrap[A, W <: View, W1 <: View](x: Listable[A, W])(wrapper: Ui[W] ⇒ Ui[W1]): SlottedListable[A] =

@@ -88,12 +88,18 @@ trait Viewable[A, +W <: View] { self ⇒
     PagerTweaks.adapter(pagerAdapter(data))
 }
 
-object Viewable {
+/** A builder to define viewables for a particular data type */
+class ViewableBuilder[A] {
   /** Define a viewable by providing the layout function */
-  def apply[A, W <: View](lay: A ⇒ Ui[W]): Viewable[A, W] =
+  def apply[W <: View](lay: A ⇒ Ui[W]): Viewable[A, W] =
     new Viewable[A, W] {
       def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = lay(data)
     }
+}
+
+object Viewable {
+  /** Build a viewable for a particular data type */
+  def apply[A] = new ViewableBuilder[A]
 
   /** Define a viewable for strings by providing the `TextView` style */
   def text(tweak: Tweak[TextView]): Viewable[String, TextView] =

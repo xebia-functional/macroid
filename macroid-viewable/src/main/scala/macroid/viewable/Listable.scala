@@ -142,6 +142,13 @@ trait Listable[A, W <: View] { self ⇒
   /** Convert to partial listable defined for a subset of a supertype */
   def toParent[B](implicit classTagA: ClassTag[A], classTagW: ClassTag[W]): PartialListable[B, W] = toPartial.toParent[B]
 
+  /** Convert to a viewable */
+  def toViewable: Viewable[A, W] =
+    new Viewable[A, W] {
+      def view(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        fillView(makeView(viewType(data)), data)
+    }
+
   /** An adapter to use with a `ListView` */
   def listAdapter(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext): ListableListAdapter[A, W] =
     new ListableListAdapter[A, W](data)(ctx, appCtx, this)
@@ -182,12 +189,6 @@ class ListableBuilder[A] {
 }
 
 object Listable {
-  implicit def `Listable is Viewable`[A, W <: View](implicit listable: Listable[A, W]): Viewable[A, W] =
-    new Viewable[A, W] {
-      def view(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
-        listable.fillView(listable.makeView(listable.viewType(data)), data)
-    }
-
   /** Build a listable for a particular data type */
   def apply[A] = new ListableBuilder[A]
 

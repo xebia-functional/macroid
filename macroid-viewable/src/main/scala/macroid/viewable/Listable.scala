@@ -169,7 +169,7 @@ object Listable {
 
       def makeSlots(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = {
         val slots = new Slots
-        val view = x.makeView(viewType) <~ wire(slots.x)
+        val view = wrapper(x.makeView(viewType) <~ wire(slots.x))
         (view, slots)
       }
 

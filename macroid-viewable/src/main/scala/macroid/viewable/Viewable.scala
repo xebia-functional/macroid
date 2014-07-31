@@ -25,13 +25,10 @@ trait PartialViewable[A, +W <: View] extends AbstractViewable[A, W] { self ⇒
         f(data).flatMap(self.layout)
     }
 
-  def orElse[A1 >: A, W1 >: W <: View](alternative: PartialViewable[A1, W1])(implicit classTag: ClassTag[A]): PartialViewable[A1, W1] =
-    new PartialViewable[A1, W1] {
-      def layout(data: A1)(implicit ctx: ActivityContext, appCtx: AppContext) = data match {
-        // inlined self.toParent[A1]
-        case x: A ⇒ self.layout(x) orElse alternative.layout(data)
-        case _ ⇒ alternative.layout(data)
-      }
+  def orElse[W1 >: W <: View](alternative: PartialViewable[A, W1]): PartialViewable[A, W1] =
+    new PartialViewable[A, W1] {
+      def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        self.layout(data) orElse alternative.layout(data)
     }
 
   def cond(p: A ⇒ Boolean): PartialViewable[A, W] =

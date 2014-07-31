@@ -11,37 +11,29 @@ import macroid._
 
 import scala.reflect.ClassTag
 
-private[viewable] trait AbstractListable[A, W <: View] {
-  protected type R[+X]
-
+trait PartialListable[A, +W <: View] { self ⇒
   def viewTypeCount: Int
-  def viewType(data: A): R[Int]
+  def viewType(data: A): Option[Int]
 
   def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
-  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext): R[Ui[W]]
-}
-
-trait PartialListable[A, W <: View] extends AbstractListable[A, W] { self ⇒
-  protected final type R[+X] = Option[X]
+  def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Option[Ui[W1]]
 
   def contraFlatMap[B](f: B ⇒ Option[A]): PartialListable[B, W] = new PartialListable[B, W] {
     def viewTypeCount = self.viewTypeCount
     def viewType(data: B) = f(data).flatMap(self.viewType)
     def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-    def fillView(view: Ui[W], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = f(data).flatMap(self.fillView(view, _))
+    def fillView[W1 >: W <: View](view: Ui[W1], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = f(data).flatMap(self.fillView(view, _))
   }
 
-  def orElse[A1 >: A, W1 >: W <: View](alternative: PartialListable[A1, W1])(implicit classTagA: ClassTag[A], classTagW: ClassTag[W]): PartialListable[A1, W1] =
-    new PartialListable[A1, W1] {
+  def orElse[W1 >: W <: View](alternative: PartialListable[A, W1]): PartialListable[A, W1] =
+    new PartialListable[A, W1] {
       def viewTypeCount =
         self.viewTypeCount +
           alternative.viewTypeCount
 
-      def viewType(data: A1) = data match {
-        // inlined self.toParent[A1]
-        case x: A ⇒ self.viewType(x) orElse alternative.viewType(data).map(_ + self.viewTypeCount)
-        case _ ⇒ alternative.viewType(data).map(_ + self.viewTypeCount)
-      }
+      def viewType(data: A) =
+        self.viewType(data) orElse
+          alternative.viewType(data).map(_ + self.viewTypeCount)
 
       def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) =
         if (viewType < self.viewTypeCount) {
@@ -50,11 +42,8 @@ trait PartialListable[A, W <: View] extends AbstractListable[A, W] { self ⇒
           alternative.makeView(viewType - self.viewTypeCount)
         }
 
-      def fillView(view: Ui[W1], data: A1)(implicit ctx: ActivityContext, appCtx: AppContext) = (view, data) match {
-        // inlined self.toParent[A1]
-        case (x: Ui[W], y: A) ⇒ self.fillView(x, y) orElse alternative.fillView(view, data)
-        case _ ⇒ alternative.fillView(view, data)
-      }
+      def fillView[W2 >: W1 <: View](view: Ui[W2], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        self.viewType(data).fold(self.fillView(view, data))(_ ⇒ alternative.fillView(view, data))
     }
 
   def cond(p: A ⇒ Boolean): PartialListable[A, W] =
@@ -63,7 +52,7 @@ trait PartialListable[A, W <: View] extends AbstractListable[A, W] { self ⇒
       def viewType(data: A) =
         if (p(data)) self.viewType(data) else None
       def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+      def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
         if (p(data)) self.fillView(view, data) else None
     }
 
@@ -75,23 +64,27 @@ trait PartialListable[A, W <: View] extends AbstractListable[A, W] { self ⇒
         case _ ⇒ None
       }
       def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-      def fillView(view: Ui[W], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = data match {
+      def fillView[W1 >: W <: View](view: Ui[W1], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = data match {
         case x: A ⇒ self.fillView(view, x)
         case _ ⇒ None
       }
     }
 
-  def toTotal: Listable[A, W] =
-    new Listable[A, W] {
+  def toTotal[W1 >: W <: View]: Listable[A, W1] =
+    new Listable[A, W1] {
       def viewTypeCount = self.viewTypeCount
       def viewType(data: A) = self.viewType(data).get
       def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = self.fillView(view, data).get
+      def fillView(view: Ui[W1], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = self.fillView(view, data).get
     }
 }
 
-trait Listable[A, W <: View] extends AbstractListable[A, W] { self ⇒
-  protected final type R[+X] = X
+trait Listable[A, W <: View] { self ⇒
+  def viewTypeCount: Int
+  def viewType(data: A): Int
+
+  def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
+  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
 
   def contraMap[B](f: B ⇒ A): Listable[B, W] =
     new Listable[B, W] {
@@ -101,16 +94,19 @@ trait Listable[A, W <: View] extends AbstractListable[A, W] { self ⇒
       def fillView(view: Ui[W], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = self.fillView(view, f(data))
     }
 
-  def toPartial: PartialListable[A, W] =
+  def toPartial(implicit classTag: ClassTag[W]): PartialListable[A, W] =
     new PartialListable[A, W] {
       def viewTypeCount = self.viewTypeCount
       def viewType(data: A) = Some(self.viewType(data))
       def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = Some(self.fillView(view, data))
+      def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view match {
+        case x: Ui[W] ⇒ Some(self.fillView(x, data))
+        case _ ⇒ None
+      }
     }
 
-  def cond(p: A ⇒ Boolean): PartialListable[A, W] = toPartial.cond(p)
-  def toParent[B](implicit evidence: ClassTag[A]): PartialListable[B, W] = toPartial.toParent[B]
+  def cond(p: A ⇒ Boolean)(implicit classTag: ClassTag[W]): PartialListable[A, W] = toPartial.cond(p)
+  def toParent[B](implicit classTagA: ClassTag[A], classTagW: ClassTag[W]): PartialListable[B, W] = toPartial.toParent[B]
 
   def listAdapter(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext): ListableListAdapter[A, W] =
     new ListableListAdapter[A, W](data)(ctx, appCtx, this)

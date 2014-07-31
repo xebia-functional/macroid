@@ -11,13 +11,8 @@ import macroid.Tweaking._
 
 import scala.reflect.ClassTag
 
-private[viewable] trait AbstractViewable[A, +W <: View] {
-  protected type R[+X]
-  def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): R[Ui[W]]
-}
-
-trait PartialViewable[A, +W <: View] extends AbstractViewable[A, W] { self ⇒
-  protected final type R[+X] = Option[X]
+trait PartialViewable[A, +W <: View] { self ⇒
+  def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Option[Ui[W]]
 
   def contraFlatMap[B](f: B ⇒ Option[A]): PartialViewable[B, W] =
     new PartialViewable[B, W] {
@@ -52,8 +47,8 @@ trait PartialViewable[A, +W <: View] extends AbstractViewable[A, W] { self ⇒
     }
 }
 
-trait Viewable[A, +W <: View] extends AbstractViewable[A, W] { self ⇒
-  protected final type R[+X] = X
+trait Viewable[A, +W <: View] { self ⇒
+  def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
 
   def contraMap[B](f: B ⇒ A): Viewable[B, W] =
     new Viewable[B, W] {

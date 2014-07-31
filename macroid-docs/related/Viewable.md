@@ -241,7 +241,7 @@ but in true *Macroid* style. Let’s jump straight to the code:
 ```scala
 case class User(name: String, picture: Bitmap)
 
-object UserListable extends SlottedViewable[User] {
+object UserListable extends SlottedListable[User] {
   // our ViewHolder
   class Slots {
     var name = slot[TextView]

@@ -7,6 +7,7 @@ import scala.language.higherKinds
 import android.view.{ View, ViewGroup }
 import android.widget.TextView
 import macroid.LayoutDsl._
+import macroid.Tweaks._
 import macroid._
 
 import scala.reflect.ClassTag
@@ -155,5 +156,54 @@ object Listable {
       def viewType(data: A) = 0
       def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = make
       def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ fill(data)
+    }
+
+  def wrap[A, W <: View, W1 <: View](x: Listable[A, W])(wrapper: Ui[W] ⇒ Ui[W1]): SlottedListable[A] =
+    new SlottedListable[A] {
+      class Slots {
+        var x = slot[W]
+      }
+
+      override val viewTypeCount = x.viewTypeCount
+      override def viewType(data: A) = x.viewType(data)
+
+      def makeSlots(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = {
+        val slots = new Slots
+        val view = x.makeView(viewType) <~ wire(slots.x)
+        (view, slots)
+      }
+
+      def fillSlots(slots: Slots, data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        slots.x.fold(Ui.nop)(z ⇒ x.fillView(Ui(z), data) ~ Ui.nop)
+    }
+
+  def combine[A1, A2, W1 <: View, W2 <: View](
+    x: Listable[A1, W1], y: Listable[A2, W2])(
+      glue: (Ui[W1], Ui[W2]) ⇒ Ui[View]): SlottedListable[(A1, A2)] =
+    new SlottedListable[(A1, A2)] {
+      class Slots {
+        var x = slot[W1]
+        var y = slot[W2]
+      }
+
+      override val viewTypeCount =
+        x.viewTypeCount * y.viewTypeCount
+
+      override def viewType(data: (A1, A2)) =
+        x.viewType(data._1) * y.viewTypeCount + y.viewType(data._2)
+
+      def makeSlots(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = {
+        val slots = new Slots
+        val (xType, yType) = (viewType / y.viewTypeCount, viewType % y.viewTypeCount)
+        val view = glue(
+          x.makeView(xType) <~ wire(slots.x),
+          y.makeView(yType) <~ wire(slots.y)
+        )
+        (view, slots)
+      }
+
+      def fillSlots(slots: Slots, data: (A1, A2))(implicit ctx: ActivityContext, appCtx: AppContext) =
+        slots.x.fold(Ui.nop)(z ⇒ x.fillView(Ui(z), data._1) ~ Ui.nop) ~
+          slots.y.fold(Ui.nop)(z ⇒ y.fillView(Ui(z), data._2) ~ Ui.nop)
     }
 }

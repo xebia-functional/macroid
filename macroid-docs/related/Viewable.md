@@ -95,10 +95,10 @@ case class User(name: String)
 
 def userListable(implicit ctx: ActivityContext, appCtx: AppContext): Listable[User, TextView] =
   Listable[User] {
-    // create layout
+    // create the layout
     w[TextView] <~ TextSize.large
   } { view ⇒ user ⇒
-    // full it with data
+    // fill it with data
     view <~ text(user.name)
   }
 ```

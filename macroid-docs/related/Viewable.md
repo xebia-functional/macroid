@@ -1,9 +1,10 @@
 # Macroid-Viewable
 
-This library provides typeclasses to convert data to Android layouts. It offers two advantages:
+This library provides typeclasses to convert data to Android layouts. It offers three advantages:
 
-* A clear and reusable way to declare how your data should be displayed
+* A clear way to declare how your data should be displayed
 * Boilerplate-free `ListAdapter`s and `PagerAdapter`s
+* *Macroid*’s trademark emphasis on composability
 
 ## Installation
 

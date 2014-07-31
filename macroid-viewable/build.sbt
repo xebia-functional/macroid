@@ -12,7 +12,7 @@ homepage := Some(url("http://github.com/macroid/macroid-viewable"))
 
 organization := "org.macroid"
 
-version := "2.0.0-SNAPSHOT"
+version := "2.0.0-M3"
 
 scalaVersion := "2.10.4"
 

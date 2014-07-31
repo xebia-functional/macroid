@@ -1,5 +1,7 @@
 package macroid.viewable
 
+import macroid.contrib.ListTweaks
+
 import scala.language.higherKinds
 
 import android.view.{ View, ViewGroup }
@@ -22,9 +24,6 @@ private[viewable] trait AbstractListable[A, W <: View] {
 trait PartialListable[A, W <: View] extends AbstractListable[A, W] { self ⇒
   protected final type R[+X] = Option[X]
 
-  def layout(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
-    viewType(data).flatMap(t ⇒ fillView(makeView(t), data))
-
   def contraFlatMap[B](f: B ⇒ Option[A]): PartialListable[B, W] = new PartialListable[B, W] {
     def viewTypeCount = self.viewTypeCount
     def viewType(data: B) = f(data).flatMap(self.viewType)
@@ -32,8 +31,8 @@ trait PartialListable[A, W <: View] extends AbstractListable[A, W] { self ⇒
     def fillView(view: Ui[W], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = f(data).flatMap(self.fillView(view, _))
   }
 
-  def orElse[A1 >: A](alternative: PartialListable[A1, W])(implicit classTag: ClassTag[A]): PartialListable[A1, W] =
-    new PartialListable[A1, W] {
+  def orElse[A1 >: A, W1 >: W <: View](alternative: PartialListable[A1, W1])(implicit classTagA: ClassTag[A], classTagW: ClassTag[W]): PartialListable[A1, W1] =
+    new PartialListable[A1, W1] {
       def viewTypeCount =
         self.viewTypeCount +
           alternative.viewTypeCount
@@ -51,9 +50,9 @@ trait PartialListable[A, W <: View] extends AbstractListable[A, W] { self ⇒
           alternative.makeView(viewType - self.viewTypeCount)
         }
 
-      def fillView(view: Ui[W], data: A1)(implicit ctx: ActivityContext, appCtx: AppContext) = data match {
+      def fillView(view: Ui[W1], data: A1)(implicit ctx: ActivityContext, appCtx: AppContext) = (view, data) match {
         // inlined self.toParent[A1]
-        case x: A ⇒ self.fillView(view, x) orElse alternative.fillView(view, data)
+        case (x: Ui[W], y: A) ⇒ self.fillView(x, y) orElse alternative.fillView(view, data)
         case _ ⇒ alternative.fillView(view, data)
       }
     }
@@ -112,6 +111,12 @@ trait Listable[A, W <: View] extends AbstractListable[A, W] { self ⇒
 
   def cond(p: A ⇒ Boolean): PartialListable[A, W] = toPartial.cond(p)
   def toParent[B](implicit evidence: ClassTag[A]): PartialListable[B, W] = toPartial.toParent[B]
+
+  def listAdapter(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext): ListableListAdapter[A, W] =
+    new ListableListAdapter[A, W](data)(ctx, appCtx, this)
+
+  def listAdapterTweak(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext) =
+    ListTweaks.adapter(listAdapter(data))
 }
 
 object Listable {
@@ -121,7 +126,7 @@ object Listable {
         listable.fillView(listable.makeView(listable.viewType(data)), data)
     }
 
-  def apply[A, W <: View](make: Ui[W])(fill: Ui[W] ⇒ A ⇒ Ui[W]): Listable[A, W] =
+  def apply[A, W <: View](make: ⇒ Ui[W])(fill: Ui[W] ⇒ A ⇒ Ui[W]): Listable[A, W] =
     new Listable[A, W] {
       val viewTypeCount = 1
       def viewType(data: A) = 0
@@ -139,7 +144,7 @@ object Listable {
 
   type Slotted[A] = SlottedListable[A]
 
-  def tw[A, W <: View](make: Ui[W])(fill: A ⇒ Tweak[W]): Listable[A, W] =
+  def tw[A, W <: View](make: ⇒ Ui[W])(fill: A ⇒ Tweak[W]): Listable[A, W] =
     new Listable[A, W] {
       val viewTypeCount = 1
       def viewType(data: A) = 0
@@ -147,7 +152,7 @@ object Listable {
       def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ fill(data)
     }
 
-  def tr[A, W <: ViewGroup](make: Ui[W])(fill: A ⇒ Transformer): Listable[A, W] =
+  def tr[A, W <: ViewGroup](make: ⇒ Ui[W])(fill: A ⇒ Transformer): Listable[A, W] =
     new Listable[A, W] {
       val viewTypeCount = 1
       def viewType(data: A) = 0

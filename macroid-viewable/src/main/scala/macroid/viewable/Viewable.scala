@@ -1,5 +1,7 @@
 package macroid.viewable
 
+import macroid.contrib.PagerTweaks
+
 import scala.language.higherKinds
 import android.view.View
 import android.widget.TextView
@@ -70,6 +72,12 @@ trait Viewable[A, +W <: View] extends AbstractViewable[A, W] { self ⇒
 
   def cond(p: A ⇒ Boolean): PartialViewable[A, W] = toPartial.cond(p)
   def toParent[B](implicit evidence: ClassTag[A]): PartialViewable[B, W] = toPartial.toParent[B]
+
+  def pagerAdapter(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext): ViewablePagerAdapter[A, W] =
+    new ViewablePagerAdapter[A, W](data)(ctx, appCtx, this)
+
+  def pagerAdapterTweak(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext) =
+    PagerTweaks.adapter(pagerAdapter(data))
 }
 
 object Viewable {

@@ -2,6 +2,7 @@ package macroid.viewable
 
 import macroid.contrib.ListTweaks
 
+import scala.annotation.implicitNotFound
 import scala.language.higherKinds
 
 import android.view.{ View, ViewGroup }
@@ -12,13 +13,25 @@ import macroid._
 
 import scala.reflect.ClassTag
 
+/**
+ * Expresses the fact that *some* of the values of type `A` can be displayed with a widget or layout of type `W` in two steps:
+ * 1) creating the layout
+ * 2) filling the layout
+ */
 trait PartialListable[A, +W <: View] { self ⇒
+  /** Supported number of different layout types */
   def viewTypeCount: Int
+
+  /** Layout type for a specific value, or None if not defined for this value */
   def viewType(data: A): Option[Int]
 
+  /** Create the layout */
   def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
+
+  /** Fill the layout with data. Returns None if not defined for this value */
   def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Option[Ui[W1]]
 
+  /** Map the underlying data type `A` */
   def contraFlatMap[B](f: B ⇒ Option[A]): PartialListable[B, W] = new PartialListable[B, W] {
     def viewTypeCount = self.viewTypeCount
     def viewType(data: B) = f(data).flatMap(self.viewType)
@@ -26,6 +39,7 @@ trait PartialListable[A, +W <: View] { self ⇒
     def fillView[W1 >: W <: View](view: Ui[W1], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = f(data).flatMap(self.fillView(view, _))
   }
 
+  /** Combine with an alternative partial */
   def orElse[W1 >: W <: View](alternative: PartialListable[A, W1]): PartialListable[A, W1] =
     new PartialListable[A, W1] {
       def viewTypeCount =
@@ -48,6 +62,7 @@ trait PartialListable[A, +W <: View] { self ⇒
           alternative.fillView(view, data)
     }
 
+  /** Specify a condition to further limit this partial */
   def cond(p: A ⇒ Boolean): PartialListable[A, W] =
     new PartialListable[A, W] {
       def viewTypeCount = self.viewTypeCount
@@ -58,6 +73,7 @@ trait PartialListable[A, +W <: View] { self ⇒
         if (p(data)) self.fillView(view, data) else None
     }
 
+  /** Make a partial defined for a subset of the provided supertype */
   def toParent[B](implicit classTag: ClassTag[A]): PartialListable[B, W] =
     new PartialListable[B, W] {
       def viewTypeCount = self.viewTypeCount
@@ -72,6 +88,7 @@ trait PartialListable[A, +W <: View] { self ⇒
       }
     }
 
+  /** Convert back to total listable */
   def toTotal[W1 >: W <: View]: Listable[A, W1] =
     new Listable[A, W1] {
       def viewTypeCount = self.viewTypeCount
@@ -81,13 +98,27 @@ trait PartialListable[A, +W <: View] { self ⇒
     }
 }
 
+/**
+ * Expresses the fact that data type `A` can be displayed with a widget or layout of type `W` in two steps:
+ * 1) creating the layout
+ * 2) filling the layout
+ * Therefore suitable for use in `ListAdapter`s
+ */
+@implicitNotFound("Don't know how to display data type ${A} in a list. Try importing an instance of Listable[${A}, ...]")
 trait Listable[A, W <: View] { self ⇒
+  /** Supported number of different layout types */
   def viewTypeCount: Int
+
+  /** Layout type for a specific value */
   def viewType(data: A): Int
 
+  /** Create the layout */
   def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
+
+  /** Fill the layout with data. Will be always called with layouts created by `makeView` using `viewType(data)` */
   def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
 
+  /** Map the underlying data type `A` */
   def contraMap[B](f: B ⇒ A): Listable[B, W] =
     new Listable[B, W] {
       def viewTypeCount = self.viewTypeCount
@@ -96,6 +127,7 @@ trait Listable[A, W <: View] { self ⇒
       def fillView(view: Ui[W], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = self.fillView(view, f(data))
     }
 
+  /** Convert to partial listable for composition with alternatives */
   def toPartial(implicit classTag: ClassTag[W]): PartialListable[A, W] =
     new PartialListable[A, W] {
       def viewTypeCount = self.viewTypeCount
@@ -107,12 +139,17 @@ trait Listable[A, W <: View] { self ⇒
       }
     }
 
+  /** Convert to partial listable based on a condition */
   def cond(p: A ⇒ Boolean)(implicit classTag: ClassTag[W]): PartialListable[A, W] = toPartial.cond(p)
+
+  /** Convert to partial listable defined for a subset of a supertype */
   def toParent[B](implicit classTagA: ClassTag[A], classTagW: ClassTag[W]): PartialListable[B, W] = toPartial.toParent[B]
 
+  /** An adapter to use with a `ListView` */
   def listAdapter(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext): ListableListAdapter[A, W] =
     new ListableListAdapter[A, W](data)(ctx, appCtx, this)
 
+  /** A tweak to set the adapter of a `ListView` */
   def listAdapterTweak(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext) =
     ListTweaks.adapter(listAdapter(data))
 }
@@ -124,6 +161,7 @@ object Listable {
         listable.fillView(listable.makeView(listable.viewType(data)), data)
     }
 
+  /** Define a listable by providing the make and fill functions */
   def apply[A, W <: View](make: ⇒ Ui[W])(fill: Ui[W] ⇒ A ⇒ Ui[W]): Listable[A, W] =
     new Listable[A, W] {
       val viewTypeCount = 1
@@ -132,6 +170,7 @@ object Listable {
       def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(view)(data)
     }
 
+  /** Define a listable for strings by providing the `TextView` style */
   def text(tweak: Tweak[TextView]): Listable[String, TextView] =
     new Listable[String, TextView] {
       val viewTypeCount = 1
@@ -140,8 +179,10 @@ object Listable {
       def fillView(view: Ui[TextView], data: String)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ Tweaks.text(data)
     }
 
+  /** An alias for SlottedListable */
   type Slotted[A] = SlottedListable[A]
 
+  /** Define a listable by providing the make function and a tweak to fill the layout with data */
   def tw[A, W <: View](make: ⇒ Ui[W])(fill: A ⇒ Tweak[W]): Listable[A, W] =
     new Listable[A, W] {
       val viewTypeCount = 1
@@ -150,6 +191,7 @@ object Listable {
       def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ fill(data)
     }
 
+  /** Define a listable by providing the make function and a transformer to fill the layout with data */
   def tr[A, W <: ViewGroup](make: ⇒ Ui[W])(fill: A ⇒ Transformer): Listable[A, W] =
     new Listable[A, W] {
       val viewTypeCount = 1
@@ -158,6 +200,7 @@ object Listable {
       def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ fill(data)
     }
 
+  /** Wrap an existing listable into some *outer* layout */
   def wrap[A, W <: View, W1 <: View](x: Listable[A, W])(wrapper: Ui[W] ⇒ Ui[W1]): SlottedListable[A] =
     new SlottedListable[A] {
       class Slots {
@@ -177,6 +220,7 @@ object Listable {
         slots.x.fold(Ui.nop)(z ⇒ x.fillView(Ui(z), data) ~ Ui.nop)
     }
 
+  /** Combine two listables into a bigger *outer* layout */
   def combine[A1, A2, W1 <: View, W2 <: View](
     x: Listable[A1, W1], y: Listable[A2, W2])(
       glue: (Ui[W1], Ui[W2]) ⇒ Ui[View]): SlottedListable[(A1, A2)] =

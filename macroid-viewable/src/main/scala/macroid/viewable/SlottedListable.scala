@@ -11,6 +11,9 @@ trait SlottedListable[A] extends Listable[A, View] {
   def makeSlots(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext): (Ui[View], Slots)
   def fillSlots(slots: Slots, data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[Any]
 
+  override def viewTypeCount = 1
+  override def viewType(data: A) = 0
+
   def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = {
     val (v, s) = makeSlots(viewType)
     v <~ hold(s)

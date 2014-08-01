@@ -6,7 +6,7 @@ You have to add your version of Akka yourself (see below).
 
 ### How to use
 
-Add to your `bulid.sbt`:
+Assuming you already have *Macroid* `2.0.0-M3` installed, add this line to your `build.sbt`:
 
 ```scala
 libraryDependencies ++= Seq(

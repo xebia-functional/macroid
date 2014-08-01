@@ -11,8 +11,8 @@ Add to your `bulid.sbt`:
 ```scala
 libraryDependencies ++= Seq(
   // this library
-  // right now you have to `publish-local` it yourself
-  "org.macroid" %% "macroid-akka-fragments" % "2.0.0-M3",
+  aar("org.macroid" %% "macroid-akka-fragments" % "2.0.0-M3"),
+
   // akka, if not included before
   "com.typesafe.akka" %% "akka-actor" % "2.3.3"
 )

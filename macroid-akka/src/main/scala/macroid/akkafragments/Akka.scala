@@ -27,13 +27,13 @@ trait AkkaFragment extends Fragment {
 
   abstract override def onStop() = {
     super.onStop()
-    actor.foreach(_ ! FragmentActor.DetachUi)
+    actor.foreach(_ ! FragmentActor.DetachUi(this))
   }
 }
 
 object FragmentActor {
   case class AttachUi[F <: Fragment](fragment: F)
-  case object DetachUi
+  case class DetachUi[F <: Fragment](fragment: F)
 }
 
 abstract class FragmentActor[F <: Fragment: ClassTag] extends Actor {
@@ -47,7 +47,7 @@ abstract class FragmentActor[F <: Fragment: ClassTag] extends Actor {
 
   def receiveUi: PartialFunction[Any, Any] = {
     case a @ AttachUi(f: F) ⇒ attachedUi = Some(f); a
-    case d @ DetachUi ⇒ attachedUi = None; d
+    case d @ DetachUi(f: F) if Some(f)==attachedUi ⇒ attachedUi = None; d
     case x ⇒ x
   }
 }

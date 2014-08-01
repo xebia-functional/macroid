@@ -3,9 +3,10 @@ package macroid
 import scala.language.experimental.macros
 import scala.language.implicitConversions
 import scala.language.postfixOps
-import android.widget.FrameLayout
 import scala.reflect.macros.{ Context ⇒ MacroContext }
+
 import android.os.Bundle
+import macroid.contrib.Layouts.RootFrameLayout
 import macroid.support.Fragment
 
 /** A fragment builder proxy */
@@ -28,7 +29,9 @@ case class FragmentBuilder[F](constructor: Ui[F], arguments: Bundle)(implicit ct
       f.getOrElse {
         managerCtx.fragmentApi.addFragment(managerCtx.get, id, tag, factory.get)
       }
-      new FrameLayout(ctx.get) { setId(id) }
+      new RootFrameLayout(ctx.get) {
+        setId(id)
+      }
     }
   }
 }

@@ -1,6 +1,8 @@
 package macroid.contrib
 
-import android.widget.{ GridLayout, LinearLayout, RelativeLayout }
+import android.view.View
+import android.view.ViewGroup.LayoutParams
+import android.widget.{ FrameLayout, GridLayout, LinearLayout, RelativeLayout }
 import android.content.Context
 
 object Layouts {
@@ -23,6 +25,14 @@ object Layouts {
         case Rule(verb, -1) ⇒ addRule(verb)
         case Rule(verb, anchor) ⇒ addRule(verb, anchor)
       }
+    }
+  }
+
+  /** A FrameLayout that does not expose its children’s ids */
+  class RootFrameLayout(ctx: Context) extends FrameLayout(ctx) {
+    override def addView(child: View, index: Int, params: LayoutParams) = {
+      child.getClass.getMethod("setIsRootNamespace", classOf[Boolean]).invoke(child, Boolean.box(true))
+      super.addView(child, index, params)
     }
   }
 }

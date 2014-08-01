@@ -31,6 +31,7 @@
 * [Talks](Talks.md)
 * [Related libraries](Related.md)
     * [Viewable](related/Viewable.md)
+    * [Akka Fragments](related/AkkaFragments.md)
 * [Mailing list](https://groups.google.com/forum/#!forum/macroid)
 * [Changelog](Changelog.md)
 * [Scaladoc](api/macroid/package.html)

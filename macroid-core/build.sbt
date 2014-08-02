@@ -25,7 +25,7 @@ scalacOptions in (Compile, doc) ++= Seq(
   "-doc-source-url", "https://github.com/macroid/macroid/tree/master€{FILE_PATH}.scala"
 )
 
-unmanagedSourceDirectories in Test := Seq(file("src/test/scala"))
+unmanagedSourceDirectories in Test := Seq(baseDirectory.value / "src" / "test" / "scala")
 
 autoCompilerPlugins := true
 

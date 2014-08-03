@@ -112,13 +112,13 @@ import macroid.viewable._
 userListable.listAdapter(User("Terry"), User("Graham"))
 
 // or
-User("Terry"), User("Graham").listAdapter
+List(User("Terry"), User("Graham")).listAdapter
 
 // create a tweak for ListAdapter
 userListable.listAdapterTweak(User("Terry"), User("Graham"))
 
 // or
-User("Terry"), User("Graham").listAdapter
+List(User("Terry"), User("Graham")).listAdapter
 ```
 
 `Listable` does not inherit from `Viewable` directly, because they have different variance in the `W` parameter, but

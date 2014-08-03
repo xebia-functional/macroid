@@ -118,7 +118,7 @@ List(User("Terry"), User("Graham")).listAdapter
 userListable.listAdapterTweak(User("Terry"), User("Graham"))
 
 // or
-List(User("Terry"), User("Graham")).listAdapter
+List(User("Terry"), User("Graham")).listAdapterTweak
 ```
 
 `Listable` does not inherit from `Viewable` directly, because they have different variance in the `W` parameter, but

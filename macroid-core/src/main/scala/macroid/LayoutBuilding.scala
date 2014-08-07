@@ -9,11 +9,21 @@ private[macroid] trait LayoutBuilding {
   import LayoutBuildingMacros._
 
   /** Define a widget */
+  def widget[W <: View](implicit ctx: ActivityContext): Ui[W] = macro widgetImpl[W]
+
+  /** Define a widget (an alias for `widget`) */
   def w[W <: View](implicit ctx: ActivityContext): Ui[W] = macro widgetImpl[W]
+
   /** Define a widget, supplying additional arguments */
+  def widget[W <: View](args: Any*)(implicit ctx: ActivityContext): Ui[W] = macro widgetArgImpl[W]
+
+  /** Define a widget, supplying additional arguments (an alias for `widget`) */
   def w[W <: View](args: Any*)(implicit ctx: ActivityContext): Ui[W] = macro widgetArgImpl[W]
 
   /** Define a layout */
+  def layout[L <: ViewGroup](children: Ui[View]*)(implicit ctx: ActivityContext): Ui[L] = macro layoutUiImpl[L]
+
+  /** Define a layout (an alias for `layout`) */
   def l[L <: ViewGroup](children: Ui[View]*)(implicit ctx: ActivityContext): Ui[L] = macro layoutUiImpl[L]
 
   /** Define a slot */

@@ -42,11 +42,24 @@ private[macroid] trait FragmentBuilding extends Bundles {
   /**
    * Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
    */
+  def fragment[F](implicit ctx: ActivityContext, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentImpl[F]
+
+  /**
+   * Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
+   * (This is an alias for `fragment`.)
+   */
   def f[F](implicit ctx: ActivityContext, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentImpl[F]
 
   /**
    * Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
    * Without arguments, newInstance() is called, and if that fails, class constructor is used.
+   */
+  def fragment[F](newInstanceArgs: Any*)(implicit ctx: ActivityContext, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentArgImpl[F]
+
+  /**
+   * Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
+   * Without arguments, newInstance() is called, and if that fails, class constructor is used.
+   * (This is an alias for `fragment`.)
    */
   def f[F](newInstanceArgs: Any*)(implicit ctx: ActivityContext, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentArgImpl[F]
 }

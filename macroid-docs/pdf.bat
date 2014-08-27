@@ -1,0 +1,1 @@
+call node_modules\.bin\gitbook build --output=./pdf --format=ebook

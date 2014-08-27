@@ -1,6 +1,5 @@
 {
-    "output": "./tmp",
-    "generator": "site",
+	"extension": "pdf",
     "title": "Macroid",
     "description": "Macroid documentation",
     "github": "macroid/macroid",

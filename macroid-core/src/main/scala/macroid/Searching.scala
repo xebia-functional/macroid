@@ -15,11 +15,11 @@ class IdGen(start: Int) extends Dynamic {
   private val lock = new Object
 
   def selectDynamic(tag: String) = lock synchronized {
-    ids.get(tag) getOrElse {
+    ids.getOrElse(tag, {
       counter += 1
       ids += tag → counter
       counter
-    }
+    })
   }
 }
 

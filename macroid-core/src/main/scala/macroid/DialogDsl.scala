@@ -14,21 +14,24 @@ case class Phrase(f: AlertDialog.Builder ⇒ Unit) {
 private[macroid] trait DialogBuilding {
   /** A helper class to provide different ways of building a dialog */
   class DialogBuilder[A](theme: Option[Int]) {
+    private def builder(implicit ctx: ActivityContext) =
+      theme.fold(new AlertDialog.Builder(ctx.get))(t ⇒ new AlertDialog.Builder(ctx.get, t))
+
     /** Create a dialog with the specified view */
     def apply(view: Ui[View])(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
-      view.map(v ⇒ new AlertDialog.Builder(ctx.get).setView(v))
+      view.map(v ⇒ builder.setView(v))
 
     /** Create a dialog with the specified message */
     def apply(message: CharSequence)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
-      Ui(new AlertDialog.Builder(ctx.get).setMessage(message))
+      Ui(builder.setMessage(message))
 
     /** Create a dialog with the specified item list and click handler */
     def apply(items: Array[CharSequence])(handler: OnClickListener)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
-      Ui(new AlertDialog.Builder(ctx.get).setItems(items, handler))
+      Ui(builder.setItems(items, handler))
 
     /** Create a dialog with the specified ListAdapter and click handler */
     def apply(adapter: ListAdapter)(handler: OnClickListener)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
-      Ui(new AlertDialog.Builder(ctx.get).setAdapter(adapter, handler))
+      Ui(builder.setAdapter(adapter, handler))
   }
 
   /** Create a dialog with the default theme */

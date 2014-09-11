@@ -124,6 +124,16 @@ trait Listable[A, W <: View] { self ⇒
       def fillView(view: Ui[W], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = self.fillView(view, f(data))
     }
 
+  /** Add extra fillView function */
+  def addFillView(fill: (Ui[W], A) ⇒ Ui[W]) =
+    new Listable[A, W] {
+      def viewTypeCount = self.viewTypeCount
+      def viewType(data: A) = self.viewType(data)
+      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
+      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+        fill(self.fillView(view, data), data)
+    }
+
   /** Convert to partial listable for composition with alternatives */
   def toPartial(implicit classTag: ClassTag[W]): PartialListable[A, W] =
     new PartialListable[A, W] {

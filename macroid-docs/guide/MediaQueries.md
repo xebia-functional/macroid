@@ -15,7 +15,7 @@ widerThan(100 dp) ? text("foobar") | text("bar")
 The key aspect here is that the `?` operator returns an `Option`, which
 is defined only if the query condition holds:
 `widerThan(100 dp) ? text("foobar")` will contain either `Some(text("foobar"))` or
-`None`. We than use the `|` operator to provide an alternative.
+`None`. We then use the `|` operator to provide an alternative.
 
 ## Units
 

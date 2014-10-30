@@ -237,7 +237,8 @@ def timedPictureListable =
 
 `SlottedListable` implements the well-known
 [holder pattern](http://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder),
-but in true *Macroid* style. Let’s jump straight to the code:
+but in true *Macroid* style. It’s often what you want to use when the list element has two or more widgets.
+Let’s jump straight to the code:
 
 ```scala
 case class User(name: String, picture: Bitmap)
@@ -248,6 +249,8 @@ object UserListable extends SlottedListable[User] {
     var name = slot[TextView]
     var picture = slot[ImageView]
   }
+  
+  // now we just need to implement two abstract methods of SlottedListable:
 
   // make and wire the slots
   def makeSlots(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = {

@@ -264,8 +264,8 @@ object UserListable extends SlottedListable[User] {
 
   // fill the slots
   def fillSlots(slots: Slots, data: User)(implicit ctx: ActivityContext, appCtx: AppContext) = {
-    (slots.name <~ data.name) ~
-    (slots.picture) <~ data.picture)
+    (slots.name <~ text(data.name)) ~
+    (slots.picture <~ data.picture)
   }
 }
 ```

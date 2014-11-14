@@ -24,7 +24,7 @@ runUi {
 
 runUi {
   // `gravity` should be self-evident
-  toast("XY") <~ gravity(Gravity.CENTER, xOffset = 3 dp)
+  toast("XY") <~ gravity(Gravity.CENTER, xOffset = 3 dp) <~ fry
 }
 ```
 

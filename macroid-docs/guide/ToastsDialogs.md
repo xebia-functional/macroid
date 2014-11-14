@@ -12,14 +12,20 @@ The toast API is similar to [tweaking](Tweaks.html#tweaking) and consists of `to
 The loafs are as follows:
 
 ```scala
-// `fry` shows the toast
-toast("Foo") <~ fry
+runUi {
+  // `fry` shows the toast
+  toast("Foo") <~ fry
+}
 
-// `long` makes the toast long
-toast("Foooo") <~ long <~ fry
+runUi {
+  // `long` makes the toast long
+  toast("Foooo") <~ long <~ fry
+}
 
-// `gravity` should be self-evident
-toast("XY") <~ gravity(Gravity.CENTER, xOffset = 3 dp)
+runUi {
+  // `gravity` should be self-evident
+  toast("XY") <~ gravity(Gravity.CENTER, xOffset = 3 dp)
+}
 ```
 
 Note that all the lines above return [UI actions](UiAction.html).
@@ -36,14 +42,19 @@ The dialog API is also similar to [tweaking](Tweaks.html#tweaking) and consists 
 It is also possible to provide a dialog theme:
 
 ```scala
-dialog(themeId)("I’m a message")
+runUi {
+  dialog(themeId)("I’m a message")
+}
 ```
 
 The phrases can be discovered via the [scaladoc](../api/macroid/Phrases$.html), here are some examples:
 
 ```scala
-// `speak` shows the dialog
-dialog("Please fasten your seat belts") <~ title("Warning") <~ speak
+runUi {
+  dialog("Please fasten your seat belts") <~
+    title("Warning") <~
+    speak // this shows the dialog
+}
 ```
 
 Finally, two implicit conversions to `Dialog.OnClickListener` are awailable:
@@ -54,8 +65,10 @@ Finally, two implicit conversions to `Dialog.OnClickListener` are awailable:
 Example:
 
 ```scala
-dialog("Are you sure") <~
-  positiveYes(textView <~ show) <~
-  negativeNo(textView <~ hide) <~
-  speak
+runUi {
+  dialog("Are you sure") <~
+    positiveYes(textView <~ show) <~
+    negativeNo(textView <~ hide) <~
+    speak
+}
 ```

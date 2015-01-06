@@ -1,7 +1,9 @@
 package macroid.contrib
 
+import android.net.Uri
 import android.graphics.{ Bitmap, Typeface }
 import android.support.v4.view.{ PagerAdapter, ViewPager }
+import android.text.InputType
 import android.util.TypedValue
 import android.view.ViewGroup.LayoutParams._
 import android.view.{ View, ViewGroup }
@@ -22,6 +24,10 @@ object TextTweaks {
   val sans = Tweak[W](x ⇒ x.setTypeface(Typeface.SANS_SERIF, Option(x.getTypeface).map(_.getStyle).getOrElse(Typeface.NORMAL)))
   val mono = Tweak[W](x ⇒ x.setTypeface(Typeface.MONOSPACE, Option(x.getTypeface).map(_.getStyle).getOrElse(Typeface.NORMAL)))
 
+  val numeric = Tweak[W](x ⇒ x.setInputType(InputType.TYPE_CLASS_NUMBER))
+  val date = Tweak[W](x ⇒ x.setInputType(InputType.TYPE_CLASS_DATETIME))
+  val phone = Tweak[W](x ⇒ x.setInputType(InputType.TYPE_CLASS_PHONE))
+
   def size(points: Int) = Tweak[W](_.setTextSize(TypedValue.COMPLEX_UNIT_SP, points))
   val medium = size(18)
   val large = size(22)
@@ -33,6 +39,7 @@ object ImageTweaks {
 
   def res(resourceId: Int) = Tweak[W](_.setImageResource(resourceId))
   def bitmap(bitmap: Bitmap) = Tweak[W](_.setImageBitmap(bitmap))
+  def uri(uri: Uri) = Tweak[W](_.setImageURI(uri))
   val adjustBounds = Tweak[W](_.setAdjustViewBounds(true))
 }
 

@@ -2,7 +2,7 @@ import android.Keys._
 
 android.Plugin.androidBuildAar
 
-platformTarget in Android := "android-19"
+platformTarget in Android := "android-21"
 
 name := "macroid-akka-fragments"
 

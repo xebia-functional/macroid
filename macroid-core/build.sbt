@@ -2,13 +2,13 @@ import android.Keys._
 
 android.Plugin.androidBuildAar
 
-platformTarget in Android := "android-19"
+platformTarget in Android := "android-21"
 
 name := "macroid"
 
 description := "A Scala GUI DSL for Android"
 
-homepage := Some(url("http://github.com/macroid/macroid"))
+homepage := Some(url("http://macroid.github.io"))
 
 organization := "org.macroid"
 
@@ -42,8 +42,8 @@ libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
 })
 
 libraryDependencies ++= Seq(
-  "com.android.support" % "support-v4" % "20.0.0",
-  "org.scala-lang.modules" %% "scala-async" % "0.9.1",
+  "com.android.support" % "support-v4" % "21.0.3",
+  "org.scala-lang.modules" %% "scala-async" % "0.9.2",
   "org.brianmckenna" %% "wartremover" % "0.10",
   "org.scalatest" %% "scalatest" % "2.1.5" % "test"
 )

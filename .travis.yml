@@ -5,13 +5,13 @@ scala:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install libc6-i386 lib32z1 lib32stdc++6
-  - wget http://dl.google.com/android/android-sdk_r23-linux.tgz
-  - tar xzf android-sdk_r23-linux.tgz
+  - wget http://dl.google.com/android/android-sdk_r24-linux.tgz
+  - tar xf android-sdk_r24-linux.tgz
   - export ANDROID_HOME=$PWD/android-sdk-linux
   - export ANDROID_SDK_HOME=$PWD/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   - echo yes | android update sdk --filter platform-tools --no-ui
-  - echo yes | android update sdk --filter build-tools-20.0.0 --no-ui
-  - echo yes | android update sdk --filter android-19 --no-ui
+  - echo yes | android update sdk --filter build-tools-21.1.2 --no-ui
+  - echo yes | android update sdk --filter android-21 --no-ui
   - echo yes | android update sdk --filter extra-android-support --no-ui
   - echo yes | android update sdk --filter extra-android-m2repository --no-ui

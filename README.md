@@ -1,4 +1,4 @@
-### *Macroid* — a Scala GUI DSL for Android [![Build Status](https://travis-ci.org/macroid/macroid.png?branch=master)](https://travis-ci.org/macroid/macroid) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Macroid-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1529)
+### *Macroid* — a Scala GUI DSL for Android [![Build Status](https://travis-ci.org/macroid/macroid.png?branch=master)](https://travis-ci.org/macroid/macroid) [![Codacy Badge](https://www.codacy.com/project/badge/fb3d939567d04686bfb23da3a22b9de9)](https://www.codacy.com/public/nickstanch/macroid) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Macroid-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1529)
 
 *Macroid* is the most badass modular functional user interface creation language for Android, implemented with Scala macros.
 [Some people say](http://www.urbandictionary.com/define.php?term=macroid) it’s also a dead noodle.

@@ -1,4 +1,9 @@
 target/
+node_modules/
 .idea
 .idea_modules
 local-*
+*.log
+_book
+.bookignore
+.grunt/

@@ -2,6 +2,7 @@ package macroid
 
 import scala.language.dynamics
 import scala.language.experimental.macros
+import android.text.Html
 import android.view.{ ViewGroup, View }
 import android.widget.{ LinearLayout, TextView }
 import scala.reflect.macros.{ Context ⇒ MacroContext }
@@ -80,6 +81,8 @@ private[macroid] trait TextTweaks {
     case Right(t) ⇒ Tweak[TextView](_.setText(t))
     case Left(t) ⇒ Tweak[TextView](_.setText(t))
   }
+
+  def html(html: String) = Tweak[TextView](_.setText(Html.fromHtml(html)))
 }
 
 private[macroid] trait EventTweaks {

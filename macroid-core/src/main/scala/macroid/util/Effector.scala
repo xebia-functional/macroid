@@ -4,13 +4,14 @@ import scala.language.higherKinds
 import scala.concurrent.{ Future, ExecutionContext }
 import scala.util.Try
 
-trait Effector[F[_]] {
+trait Effector[-F[_]] {
   def foreach[A](fa: F[A])(f: A ⇒ Any): Unit
 }
 
 object Effector {
-  implicit object `List is Effector` extends Effector[List] {
-    def foreach[A](fa: List[A])(f: A ⇒ Any) = fa.foreach(f)
+
+  implicit object `TraversableOnce is Effector` extends Effector[TraversableOnce] {
+    override def foreach[A](fa: TraversableOnce[A])(f: A ⇒ Any): Unit = fa.foreach(f)
   }
 
   implicit object `Option is Effector` extends Effector[Option] {

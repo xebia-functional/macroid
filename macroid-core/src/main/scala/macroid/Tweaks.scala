@@ -82,6 +82,16 @@ private[macroid] trait TextTweaks {
     case Left(t) ⇒ Tweak[TextView](_.setText(t))
   }
 
+  /** Set hint */
+  def hint(hint: CharSequence) = Tweak[TextView](_.setHint(hint))
+  /** Set hint */
+  def hint(hint: Int) = Tweak[TextView](_.setHint(hint))
+  /** Set hint */
+  def hint(hint: Either[Int, CharSequence]) = hint match {
+    case Right(t) ⇒ Tweak[TextView](_.setHint(t))
+    case Left(t) ⇒ Tweak[TextView](_.setHint(t))
+  }
+
   def html(html: String) = Tweak[TextView](_.setText(Html.fromHtml(html)))
 }
 

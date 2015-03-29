@@ -16,10 +16,10 @@ class Ui[+A](v: () ⇒ A) {
   def flatMap[B](f: A ⇒ Ui[B]) = Ui(f(v()).get)
 
   /** Combine (sequence) with another UI action */
-  def ~[B](next: Ui[B]) = Ui { v(); next.get }
+  def ~[B](next: ⇒ Ui[B]) = Ui { v(); next.get }
 
   /** Wait until this action is finished and combine (sequence) it with another one */
-  def ~~[B, C](next: Ui[B])(implicit evidence: A <:< Future[C]) = Ui {
+  def ~~[B, C](next: ⇒ Ui[B])(implicit evidence: A <:< Future[C]) = Ui {
     evidence(v()) mapUi (_ ⇒ next.get)
   }
 

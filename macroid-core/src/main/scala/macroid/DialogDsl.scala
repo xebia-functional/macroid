@@ -44,7 +44,7 @@ private[macroid] trait DialogBuilding {
 object DialogBuilding extends DialogBuilding
 
 private[macroid] trait DialogImplicits {
-  implicit def unit2OnClickListener(f: Ui[Any]) = new OnClickListener {
+  implicit def unit2OnClickListener(f: ⇒ Ui[Any]) = new OnClickListener {
     def onClick(dialog: DialogInterface, which: Int): Unit = f.get
   }
 

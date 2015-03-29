@@ -34,13 +34,13 @@ case class Snail[-W <: View](f: W ⇒ Future[Unit]) {
   /** Combine (sequence) with another snail */
   def ++[W1 <: W](that: Snail[W1]): Snail[W1] = Snail { x ⇒
     // make sure to keep the UI thread
-    this(x).flatMapUi(_ ⇒ that(x))
+    this(x).flatMapUi(_ ⇒ Ui(that(x)))
   }
 
   /** Combine (sequence) with a tweak */
   def +[W1 <: W](that: Tweak[W1]): Snail[W1] = Snail { x ⇒
     // make sure to keep the UI thread
-    this(x).mapUi(_ ⇒ that(x))
+    this(x).mapUi(_ ⇒ Ui(that(x)))
   }
 }
 

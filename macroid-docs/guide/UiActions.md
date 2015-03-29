@@ -119,6 +119,22 @@ UI actions can be composed in several ways.
   }
   ```
 
+## Usage with Futures
+
+The `UiFuture` extension class provides `mapUi`, `flatMapUi` and other `xxxUi` methods,
+which allow to use UI actions as callbacks for `Future`s:
+
+  ```scala
+  import macroid.UiThreading._
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  Future {
+    ...                       // happens on background thread
+  } mapUi { x ⇒
+    Ui(actionBar.setTitle(x)) // happens on the UI thread
+  }
+  ```
+
 ## Best practices
 
 Since the UI thread has to be cherished, it is a good practice to demarkate the parts of
@@ -151,19 +167,5 @@ For instructions refer to the [installation](../Installation.html) section.
 
 ## Low-level threading utilities
 
-*Macroid* also offers several low-level threading utilities:
-
-* `macroid.util.UiThreadExecutionContext` allows to run futures on the UI thread.
+*Macroid* also provides `macroid.util.UiThreadExecutionContext`, which allows to run futures on the UI thread.
 You probably wouldn’t need to use this directly.
-* `UiFuture` extension class provides `mapUi`, `flatMapUi` and other `xxxUi` methods, where the supplied function will be called on the UI thread:
-
-  ```scala
-  import macroid.UiThreading._
-  import scala.concurrent.ExecutionContext.Implicits.global
-
-  Future {
-    ... // happens on background thread
-  } mapUi { x ⇒
-    ... // happens on the UI thread
-  }
-  ```

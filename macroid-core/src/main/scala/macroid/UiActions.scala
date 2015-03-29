@@ -20,7 +20,7 @@ class Ui[+A](v: () ⇒ A) {
 
   /** Wait until this action is finished and combine (sequence) it with another one */
   def ~~[B, C](next: ⇒ Ui[B])(implicit evidence: A <:< Future[C]) = Ui {
-    evidence(v()) mapUi (_ ⇒ next.get)
+    evidence(v()) mapUi (_ ⇒ next)
   }
 
   /** Run the action on the UI thread */
@@ -34,7 +34,7 @@ class Ui[+A](v: () ⇒ A) {
   }
 
   /** Run the action on the UI thread, flattening the Future it returns */
-  def flatRun[B](implicit evidence: A <:< Future[B]) = Future.successful(()).flatMapUi(_ ⇒ evidence(v()))
+  def flatRun[B](implicit evidence: A <:< Future[B]) = Future.successful(()).flatMapUi(_ ⇒ Ui(evidence(v())))
 
   /** Get the result of executing the action on the current (hopefully, UI!) thread */
   def get = v()

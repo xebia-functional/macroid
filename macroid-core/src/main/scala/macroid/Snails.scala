@@ -45,7 +45,7 @@ private[macroid] trait ProgressSnails extends BasicSnails with VisibilityTweaks 
       x.setIndeterminate(false)
       x.setMax(futures.length)
       x.setProgress(0)
-      futures.foreach(f ⇒ AfterFuture(f).foreachUi(_ ⇒ x.incrementProgressBy(1)))
+      futures.foreach(f ⇒ AfterFuture(f).foreachUi(_ ⇒ Ui(x.incrementProgressBy(1))))
     } + show ++ wait(Future.sequence(futures)) + hide
 }
 

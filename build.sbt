@@ -7,7 +7,8 @@ val commonSettings = android.Plugin.androidBuildAar ++ Seq(
 
   scalaVersion := "2.10.5",
   crossScalaVersions := Seq("2.10.5", "2.11.6"),
-  scalacOptions ++= Seq("-feature", "-deprecation"),
+  javacOptions ++= Seq("-source", "1.7", "-target", "1.7"),
+  scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7"),
 
   libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.5" % "test"
 )

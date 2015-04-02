@@ -20,9 +20,18 @@ object TextTweaks {
   val italic = Tweak[W](x ⇒ x.setTypeface(x.getTypeface, Typeface.ITALIC))
   val boldItalic = Tweak[W](x ⇒ x.setTypeface(x.getTypeface, Typeface.BOLD_ITALIC))
 
-  val serif = Tweak[W](x ⇒ x.setTypeface(Typeface.SERIF, Option(x.getTypeface).map(_.getStyle).getOrElse(Typeface.NORMAL)))
-  val sans = Tweak[W](x ⇒ x.setTypeface(Typeface.SANS_SERIF, Option(x.getTypeface).map(_.getStyle).getOrElse(Typeface.NORMAL)))
-  val mono = Tweak[W](x ⇒ x.setTypeface(Typeface.MONOSPACE, Option(x.getTypeface).map(_.getStyle).getOrElse(Typeface.NORMAL)))
+  val serif = Tweak[W](x ⇒ x.setTypeface(Typeface.SERIF, typefaceStyle(x)))
+  val sans = Tweak[W](x ⇒ x.setTypeface(Typeface.SANS_SERIF, typefaceStyle(x)))
+  val mono = Tweak[W](x ⇒ x.setTypeface(Typeface.MONOSPACE, typefaceStyle(x)))
+
+  /** Set a typeface with the given name
+   *
+   * Example:
+   * {{
+   * w[TextView] <~ typeface("sans-serif-light")
+   * }}
+   */
+  def typeface(name: String) = Tweak[W](x ⇒ x.setTypeface(Typeface.create(name, 0), typefaceStyle(x)))
 
   val numeric = Tweak[W](x ⇒ x.setInputType(InputType.TYPE_CLASS_NUMBER))
   val date = Tweak[W](x ⇒ x.setInputType(InputType.TYPE_CLASS_DATETIME))
@@ -31,6 +40,8 @@ object TextTweaks {
   def size(points: Int) = Tweak[W](_.setTextSize(TypedValue.COMPLEX_UNIT_SP, points))
   val medium = size(18)
   val large = size(22)
+
+  private def typefaceStyle(x: W) = Option(x.getTypeface).map(_.getStyle).getOrElse(Typeface.NORMAL)
 }
 
 /** Extra tweaks for ImageView */

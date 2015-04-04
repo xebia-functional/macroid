@@ -7,3 +7,4 @@ local-*
 _book
 .bookignore
 .grunt/
+proguard-sbt.txt

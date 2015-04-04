@@ -1,4 +1,4 @@
-package macroid.akkafragments
+package macroid.akka
 
 import akka.actor.{ ActorSelection, ActorSystem, Actor }
 import android.support.v4.app.Fragment

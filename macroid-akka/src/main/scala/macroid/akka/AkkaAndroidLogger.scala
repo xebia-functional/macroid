@@ -1,4 +1,4 @@
-package macroid.akkafragments
+package macroid.akka
 
 import akka.actor.Actor
 import akka.event.Logging._

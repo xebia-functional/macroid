@@ -1,20 +1,20 @@
-## Akka Fragments
+## Akka Integration
 
-This library contains some glue to setup message-passing between Android Fragments using [Akka](http://akka.io).
+This module contains some glue to setup message-passing between Android Fragments using [Akka](http://akka.io).
 
 You have to add your version of Akka yourself (see below).
 
 ### How to use
 
-Assuming you already have *Macroid* `2.0.0-M3` installed, add this line to your `build.sbt`:
+Assuming you already have *Macroid* `2.0.0-M4` installed, add this line to your `build.sbt`:
 
 ```scala
 libraryDependencies ++= Seq(
   // this library
-  aar("org.macroid" %% "macroid-akka-fragments" % "2.0.0-M3"),
+  aar("org.macroid" %% "macroid-akka" % "2.0.0-M4"),
 
   // akka, if not included before
-  "com.typesafe.akka" %% "akka-actor" % "2.3.3"
+  "com.typesafe.akka" %% "akka-actor" % "2.3.9"
 )
 
 // Proguard rules
@@ -31,7 +31,7 @@ proguardOptions ++= Seq(
   "-keep class akka.actor.LocalActorRefProvider$SystemGuardian { *; }",
   "-keep class akka.dispatch.UnboundedMailbox { *; }",
   "-keep class akka.actor.DefaultSupervisorStrategy { *; }",
-  "-keep class macroid.akkafragments.AkkaAndroidLogger { *; }",
+  "-keep class macroid.akka.AkkaAndroidLogger { *; }",
   "-keep class akka.event.Logging$LogExt { *; }"
 )
 ```
@@ -39,7 +39,7 @@ proguardOptions ++= Seq(
 Add to your `Activity`:
 
 ```scala
-import macroid.akkafragments.AkkaActivity
+import macroid.akka.AkkaActivity
 
 class MyActivity extends Activity with AkkaActivity {
   // define actor system name
@@ -61,7 +61,7 @@ from the user interface they control.
 Here is a fragment actor:
 
 ```scala
-import macroid.akkafragments.FragmentActor
+import macroid.akka.FragmentActor
 import macroid.util.Ui
 
 object MyActor {
@@ -98,7 +98,7 @@ Finally, a fragment:
 
 ```scala
 import android.support.v4.app.Fragment
-import macroid.akkafragments.AkkaFragment
+import macroid.akka.AkkaFragment
 
 class MyFragment extends Fragment with AkkaFragment {
   // find the actor for this fragment
@@ -117,6 +117,6 @@ class MyFragment extends Fragment with AkkaFragment {
 There is also an Android-compatible Akka logger. To use it, add to your `src/main/resources/application.conf`:
 ```javascript
 akka {
-  loggers = ["macroid.akkafragments.AkkaAndroidLogger"]
+  loggers = ["macroid.akka.AkkaAndroidLogger"]
 }
 ```

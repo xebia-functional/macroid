@@ -59,9 +59,9 @@ lazy val akka = (project in file("macroid-akka"))
   .settings(
     name := "macroid-akka",
     description := "Helpers to attach Akka Actors to Android Fragments",
-    homepage := Some(url("http://macroid.github.io/related/AkkaFragments.html")),
+    homepage := Some(url("http://macroid.github.io/related/Akka.html")),
 
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.3" % "provided"
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.9" % "provided"
   )
   .dependsOn(core)
 

@@ -4,8 +4,8 @@
 
 ## What are they
 
-* `l[LayoutClass](child1, ...)` represents a layout, such as `LinearLayout`, `FrameLayout`, `ScrollView`, etc (in fact, any `ViewGroup`);
-* `w[WidgetClass]` represents a widget, such as `Button`, `TextView`, `ImageView`, etc (in fact, any `View`).
+* `layout[LayoutClass](child1, ...)` (aliased as `l` for short) represents a layout, such as `LinearLayout`, `FrameLayout`, `ScrollView`, etc (in fact, any `ViewGroup`);
+* `widget[WidgetClass]` (aliased as `w` for short) represents a widget, such as `Button`, `TextView`, `ImageView`, etc (in fact, any `View`).
 
 ## Usage
 

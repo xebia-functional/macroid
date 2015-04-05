@@ -8,7 +8,7 @@ like functional reactive programming.
 
 Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 
-Latest version: `2.0.0-M3` ([installation](http://macroid.github.io/Installation.html) | [changelog](http://macroid.github.io/Changelog.html)).
+Latest version: `2.0.0-M4` ([installation](http://macroid.github.io/Installation.html) | [changelog](http://macroid.github.io/Changelog.html)).
 
 License: [MIT](http://opensource.org/licenses/MIT).
 

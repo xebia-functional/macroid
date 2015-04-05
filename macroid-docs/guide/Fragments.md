@@ -36,7 +36,7 @@ class MyFragment extends Fragment with Contexts[Fragment] {
 
 ## The `f` word
 
-*Macroid* provides an `f` brick, which is somewhat similar to the [`l` and `w` bricks](Bricks.html):
+*Macroid* provides an `fragment` (alised as `f` for short) brick, which is somewhat similar to the [`l` and `w` bricks](Bricks.html):
 
 ```scala
 f[MapFragment]

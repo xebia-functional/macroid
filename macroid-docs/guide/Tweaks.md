@@ -94,6 +94,7 @@ A quick rundown:
     ```
 * Text/captions
   * `text`
+  * `hint`
 * Handling events
   * `On` — works with (almost) any events. Expects a [UI action](UiActions.html) that takes no arguments and returns the same type as the associated listener. Examples:
 
@@ -134,7 +135,7 @@ A quick rundown:
 * `TextTweaks` (for `TextView`)
   * `color`
   * `bold`, `italic`, `boldItalic`
-  * `serif`, `sans`, `mono`
+  * `serif`, `sans`, `mono`, `typeface`
   * `medium`, `large`, `size`
 * `ImageTweaks` (for `ImageView`)
   * `res` — shows a drawable from resources

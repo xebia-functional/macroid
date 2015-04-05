@@ -50,7 +50,7 @@ lazy val viewable = (project in file("macroid-viewable"))
   .settings(
     name := "macroid-viewable",
     description := "Typeclasses to turn data into Android layouts",
-    homepage := Some(url("http://macroid.github.io/related/Viewable.html"))
+    homepage := Some(url("http://macroid.github.io/modules/Viewable.html"))
   )
   .dependsOn(core)
 
@@ -59,7 +59,7 @@ lazy val akka = (project in file("macroid-akka"))
   .settings(
     name := "macroid-akka",
     description := "Helpers to attach Akka Actors to Android Fragments",
-    homepage := Some(url("http://macroid.github.io/related/Akka.html")),
+    homepage := Some(url("http://macroid.github.io/modules/Akka.html")),
 
     libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.9" % "provided"
   )

@@ -36,7 +36,7 @@ Now that we see the flexibility under the hood, let’s find out what else works
 
 ## Lists
 
-A widget can be tweaked with a list of tweaks:
+A widget can be tweaked with a list (or any `TraversableOnce`) of tweaks:
 
 ```scala
 textView <~ List(show, text("Hi"))

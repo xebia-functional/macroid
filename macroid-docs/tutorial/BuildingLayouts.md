@@ -2,8 +2,8 @@
 
 *Macroid* comes with concise and easy to use layout [bricks](../guide/Bricks.html):
 
-* Layouts: `l[LinearLayout](...)`
-* Widgets: `w[TextView](...)`
+* Layouts: `layout[LinearLayout](...)` (or just `l[LinearLayout](...)`)
+* Widgets: `widget[TextView](...)` (or just `w[TextWidget]`)
 
 Our example layout for this tutorial will consist of a button
 that displays a text box with a greeting. The first sketch looks like this:

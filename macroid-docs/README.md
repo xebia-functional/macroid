@@ -8,7 +8,7 @@ like functional reactive programming.
 
 Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 
-Latest version: `2.0.0-M3` ([installation](Installation.html) | [changelog](Changelog.md)).
+Latest version: `2.0.0-M4` ([installation](Installation.html) | [changelog](Changelog.md)).
 
 * [What does it look like](Tutorial.html)
 * [How is it different from...](Differences.html)

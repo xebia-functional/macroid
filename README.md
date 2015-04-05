@@ -19,3 +19,29 @@ License: [MIT](http://opensource.org/licenses/MIT).
 
 For more info head to http://macroid.github.io!
 
+#### Contributing
+
+All contributions are welcome (and encouraged)!
+
+##### Commit messages
+
+*Macroid*’s commit message structure is [inspired by the Spray project](http://spray.io/project-info/contributing/#git-commit-messages). The message has the following format:
+```
+[=|+|!] [core|viewable|akka|docs|all]: <Actual message>.
+```
+* `=` means there are no API changes
+* `+` means added funtionality
+* `!` means breaking changes (source or binary)
+
+Example:
+```
+! core: Receive UI actions in mapUi & co (fix #48)
+
+mapUi, flatMapUi, ... now operate on UI actions, rather than simple thunks.
+For example, the new type signature for mapUi is (A ⇒ Ui[B]) ⇒ Future[B].
+```
+Following this convention greatly simplifies writing the changelogs.
+
+##### Documentation
+
+Although this is not crucial, updating the docs under `macroid-docs` together with the code changes might save some time in the future, and thus is highly appreciated. It can be done in the same commit.

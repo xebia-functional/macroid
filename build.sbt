@@ -1,8 +1,8 @@
-val commonSettings = android.Plugin.androidBuildAar ++ Seq(
+val commonSettings = androidBuildAar ++ bintrayPublishSettings ++ Seq(
   platformTarget in Android := "android-21",
 
   organization := "org.macroid",
-  version := "2.0.0-SNAPSHOT",
+  version := "2.0.0-M4",
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
 
   scalaVersion := "2.10.5",
@@ -68,6 +68,8 @@ lazy val akka = (project in file("macroid-akka"))
 lazy val root = (project in file("."))
   .aggregate(core, viewable, akka)
   .settings(
+    publish := (),
+    publishLocal := (),
     scalacOptions in (Compile, doc) ++= Seq(
       "-sourcepath", baseDirectory.value.getAbsolutePath,
       "-doc-source-url", "https://github.com/macroid/macroid/tree/master€{FILE_PATH}.scala"

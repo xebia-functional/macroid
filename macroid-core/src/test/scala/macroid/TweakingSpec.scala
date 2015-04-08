@@ -5,6 +5,7 @@ import android.widget.{ LinearLayout, TextView, Button }
 import android.app.Activity
 import LayoutDsl._
 import Tweaks._
+import contrib._
 
 class TweakingSpec extends FlatSpec {
   implicit val ctx = ActivityContext(null: Activity)
@@ -54,6 +55,18 @@ class TweakingSpec extends FlatSpec {
         w[TextView] <~ lp[LinearLayout](0, 0, 1.0f)
       )
       val z = lp[LinearLayout](0, 0, 1.0f)
+    }
+  }
+
+  "TextTweaks.allCaps" should "be invokeable without parenthesis" in {
+    def foo = {
+      w[TextView] <~ TextTweaks.allCaps
+    }
+  }
+
+  it should "allow an optional value" in {
+    def foo = {
+      w[TextView] <~ TextTweaks.allCaps(false)
     }
   }
 }

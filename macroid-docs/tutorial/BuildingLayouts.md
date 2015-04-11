@@ -46,24 +46,24 @@ Unlike Android XML,
 we can declare the widgets wherever we want and stack them together as needed:
 
 ```scala
-// ActivityContext is an Android Context obtained from an Activity
-import macroid.ActivityContext
+// ContextWrapper is a safer Context wrapper
+import macroid.ContextWrapper
 
 // A module with layouts
 object OurLayouts {
-  def layout1(implicit ctx: ActivityContext) =
+  def layout1(implicit ctx: ContextWrapper) =
     l[LinearLayout](
       w[TextView],
       w[ImageView],
       w[Button]
     )
 
-  def layout2(implicit ctx: ActivityContext) =
+  def layout2(implicit ctx: ContextWrapper) =
     l[FrameLayout](
       w[ProgressBar]
     )
 
-  def layout3(implicit ctx: ActivityContext) =
+  def layout3(implicit ctx: ContextWrapper) =
     l[FrameLayout](
       layout1,
       layout2

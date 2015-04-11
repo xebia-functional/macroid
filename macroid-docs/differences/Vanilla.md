@@ -62,12 +62,10 @@ val futureText = Future {
 myTextView <~ futureText
 ```
 
-## Safer implicit contexts
+## Safer implicit context
 
-*Macroid* distinguishes between `AppContext` and `ActivityContext`, which are obtained and passed separately.
-The former is stored as-is, since it is safe, while the latter is stored as a `WeakReference`. This helps avoid some
-well-known problems: [memory leaks](http://stackoverflow.com/questions/3346080/android-references-to-a-context-and-memory-leaks),
-[uncertainty about which one to use](http://stackoverflow.com/questions/987072/using-application-context-everywhere?rq=1).
+*Macroid* uses `WeakReference`s to store `Context`s other than `Application`. This helps to automatically avoid
+[memory leaks](http://stackoverflow.com/questions/3346080/android-references-to-a-context-and-memory-leaks).
 
 ## Safer threading
 

@@ -11,12 +11,12 @@ import macroid.contrib._
 import macroid.FullDsl._
 
 object OurTweaks {
-  def greeting(greeting: String)(implicit appCtx: AppContext) =
+  def greeting(greeting: String)(implicit ctx: ContextWrapper) =
     TextTweaks.large +
     text(greeting) +
     hide
 
-  def orient(implicit appCtx: AppContext) =
+  def orient(implicit ctx: ContextWrapper) =
     landscape ? horizontal | vertical
 }
 

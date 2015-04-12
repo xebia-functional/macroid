@@ -3,8 +3,7 @@
 *Macroid* is the most badass modular functional user interface creation language for Android, implemented with Scala macros.
 [Some people say](http://www.urbandictionary.com/define.php?term=macroid) it’s also a dead noodle.
 
-Striving to be focused on one thing (GUI), *Macroid* promotes composability, high-level abstractions and advanced features,
-like functional reactive programming.
+Striving to be focused on one thing (GUI), *Macroid* promotes composability and high-level abstractions.
 
 Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 

@@ -5,6 +5,4 @@ node_modules/
 local-*
 *.log
 _book
-.bookignore
-.grunt/
 proguard-sbt.txt

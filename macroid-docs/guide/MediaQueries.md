@@ -61,5 +61,5 @@ def adaptiveCaption(implicit appCtx: AppContext) =
 
 ## Standard media queries
 
-A number of standard media queries are included. Please refer to the [scaladoc](../api/macroid/MediaQueries$.html).
+A number of standard media queries are included. Please refer to the [scaladoc](../api/core/macroid/MediaQueries$.html).
 Note that all these media queries can be imported with `import macroid.FullDsl._`.

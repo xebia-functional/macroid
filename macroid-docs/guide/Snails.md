@@ -93,7 +93,7 @@ Note the use of `~~` operator: it denotes that we need to wait for completion of
 
 ## Standard snails
 
-A number of standard snails are included. You can always find them in the [scaladoc](../api/macroid/Snails$.html).
+A number of standard snails are included. You can always find them in the [scaladoc](../api/core/macroid/Snails$.html).
 Note that all these snails can be imported with `import macroid.FullDsl._` or just `import macroid.Snails._`.
 
 A quick rundown:

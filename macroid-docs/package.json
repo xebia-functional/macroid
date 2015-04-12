@@ -3,7 +3,6 @@
   "private": true,
   "devDependencies": {
     "grunt": "~0.4.5",
-    "grunt-gh-pages": "~0.10.0",
     "grunt-gitbook": "~0.5.6",
     "gitbook-plugin-disqus": "0.0.1",
     "gitbook-plugin-ga": "~0.2.1"

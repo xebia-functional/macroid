@@ -14,7 +14,7 @@ Note that commit history has been rewritten to include references to the relevan
 ### Core
 
 * **`mapUi`, `flatMapUi`, etc now receive UI actions**
-* **IDs inside fragments are now hidde from outer search [#31](https://github.com/macroid/macroid/issues/31)**
+* **IDs inside fragments are now hidden from outer search [#31](https://github.com/macroid/macroid/issues/31)**
 * **Fixed wrongfully eager evaluation of `RichOption#|`, `Ui#~` and dialog event handlers**
 * `FragmentApi` is now contravariant in `A` [#33](https://github.com/macroid/macroid/issues/33)
 * Fixed unused dialog `theme` parameter

@@ -33,4 +33,7 @@
 * [Talks](Talks.md)
 * [Mailing list](https://groups.google.com/forum/#!forum/macroid)
 * [Changelog](Changelog.md)
-* [Scaladoc](api/macroid/package.html)
+* [Scaladoc](api/)
+    * [macroid](api/core/macroid/package.html)
+    * [macroid-viewable](api/viewable/macroid/viewable/package.html)
+    * [macroid-akka](api/akka/macroid/akka/package.html)

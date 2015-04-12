@@ -23,7 +23,6 @@ However you can also import them one by one (click list items to jump to docs):
   * `macroid.ToastDsl`
   * `macroid.DialogDsl`, `macroid.Phrases`
   * [`macroid.MediaQueries`](MediaQueries.html)
-  * [`macroid.Logging`](Logging.html)
 
 There are also some things ouside these modules:
 
@@ -31,4 +30,3 @@ There are also some things ouside these modules:
   [`macroid.Snail`](Snails.html), [`macroid.Transformer`](Transformers.html)
 * [`macroid.{ AppContext, ActivityContext, Contexts }`](Contexts.html)
 * [`macroid.IdGeneration`](Searching.html#id-and-tag-generation)
-* [`macroid.AutoLogTag`](Logging.html)

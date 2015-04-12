@@ -20,7 +20,6 @@
     * [Fragments](guide/Fragments.md)
     * [Searching](guide/Searching.md)
     * [Toasts and dialogs](guide/ToastsDialogs.md)
-    * [Logging](guide/Logging.md)
     * [Advanced techniques](guide/Advanced.md)
     * [Imports](guide/Imports.md)
 * [Modules](Modules.md)

@@ -118,6 +118,7 @@ private[macroid] trait Tweaks
   with LayoutTweaks
   with TextTweaks
   with EventTweaks
+  with MultiEventTweaks
 
 object Tweaks extends Tweaks
 

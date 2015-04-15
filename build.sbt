@@ -1,5 +1,6 @@
 val commonSettings = androidBuildAar ++ bintrayPublishSettings ++ Seq(
   platformTarget in Android := "android-21",
+  typedResources := false,
 
   organization := "org.macroid",
   version := "2.0.0-M4",

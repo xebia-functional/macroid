@@ -47,7 +47,7 @@ runUi {
 }
 ```
 
-The phrases can be discovered via the [scaladoc](../api/macroid/Phrases$.html), here are some examples:
+The phrases can be discovered via the [scaladoc](../api/core/macroid/Phrases$.html), here are some examples:
 
 ```scala
 runUi {

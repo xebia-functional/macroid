@@ -27,9 +27,9 @@ object TextTweaks {
   /** Set a typeface with the given name
    *
    * Example:
-   * {{
+   * {{{
    * w[TextView] <~ typeface("sans-serif-light")
-   * }}
+   * }}}
    */
   def typeface(name: String) = Tweak[W](x ⇒ x.setTypeface(Typeface.create(name, 0), typefaceStyle(x)))
 

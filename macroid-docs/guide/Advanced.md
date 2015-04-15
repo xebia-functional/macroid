@@ -118,13 +118,13 @@ The respective helper declarations have been cut from *Macroid* with the intenti
 If you want to use tweaking with your own container types, like `AdvancedFuture` or `CrazyOption`, there are
 two ways of going about it:
 
-* Provide an instance of a [`macroid.util.Effector` typeclass](../api/macroid/util/Effector.html),<br>
+* Provide an instance of a [`macroid.util.Effector` typeclass](../api/core/macroid/util/Effector.html),<br>
   which requires just a `foreach` method;
-* Specify a [`macroid.CanTweak[W, T, R]` functional dependency](../api/macroid/CanTweak.html),<br>
+* Specify a [`macroid.CanTweak[W, T, R]` functional dependency](../api/core/macroid/CanTweak.html),<br>
   which allows to tweak `W` with `T` and get an `Ui[R]` as a result (see the sources for examples).
 
 Extending snailing offers only the latter option:
 
-* Specify a [`macroid.CanSnail[W, T, R]` functional dependency](../api/macroid/CanSnail.html),<br>
+* Specify a [`macroid.CanSnail[W, T, R]` functional dependency](../api/core/macroid/CanSnail.html),<br>
   which allows to snail `W` with `T` and get an `Ui[Future[R]]` as a result (see the sources for examples).
 

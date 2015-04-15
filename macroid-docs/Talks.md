@@ -4,7 +4,6 @@
 
 * Event: https://codebits.eu/intra/s/proposal/455
 * Slides: http://stanch.github.io/codebits2014/
-* Video: Coming soon!
 
 ## 3<sup>rd</sup> Fun(Lx) meetup
 

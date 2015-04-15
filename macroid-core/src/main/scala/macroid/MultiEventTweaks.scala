@@ -102,12 +102,8 @@ object MultiEventTweakMacros {
 
     val listener = setter.paramss(0)(0).typeSignature
     val handlerOnMethodTupleSequence = handlers map { h =>
-      val (name, typ) = h.tree.children.head match {
-        case ValDef(_, n, tpt, _) => (n, tpt)
-      }
-
-      val eventName = name match {
-        case TermName(tn: String) => tn
+      val (eventName, typ) = h.tree.children.head match {
+        case ValDef(_, name, tpt, _) => (name.toString, tpt)
       }
 
       val handlerType = typ.toString() match {
@@ -127,13 +123,15 @@ object MultiEventTweakMacros {
       (h, on, handlerType)
     }
 
-    val pendingMembersToOverride = listener.members filter (m => m.isAbstract && m.isMethod) toSet
+    val pendingMembersToOverride = listener.members filter (m => m.isMethod
+        && m.name.toString.startsWith("on")) toSet
+
     val newSet = if (pendingMembersToOverride.nonEmpty) {
       val specifiedMembers = handlerOnMethodTupleSequence map (t => t._2) toSet
       val notImplemented = pendingMembersToOverride.asInstanceOf[Set[MethodSymbol]] diff specifiedMembers
 
       val defaultHandlers = notImplemented map { m =>
-        val defaultHandler = c.Expr[Nothing](q"(${m.name}: macroid.MultiEventTweakMacros.UnitFuncEvent) => macroid.Ui")
+        val defaultHandler = c.Expr[Nothing](q"(${m.name.toTermName}: macroid.MultiEventTweakMacros.UnitFuncEvent) => macroid.Ui")
 
         (defaultHandler, m, HUnitFunc)
       }

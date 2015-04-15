@@ -1,14 +1,12 @@
 package macroid
 
-import android.widget.SeekBar
-import macroid.MultiEventTweakMacros._
-import org.scalatest.{WordSpec, FlatSpec}
-import android.widget._
-import android.view.View
 import android.app.Activity
-import LayoutDsl._
-import Tweaks._
-import contrib._
+import android.view.View
+import android.widget.{SeekBar, _}
+import macroid.LayoutDsl._
+import macroid.MultiEventTweakMacros._
+import macroid.Tweaks._
+import org.scalatest.FlatSpec
 
 class MultiEventTweaksSpec extends FlatSpec {
   implicit val ctx = ActivityContext(null: Activity)

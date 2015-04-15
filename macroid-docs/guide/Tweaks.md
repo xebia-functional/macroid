@@ -115,6 +115,69 @@ A quick rundown:
         ...
       }
     ```
+  * `BoolOn` — works for the events which must return a `Boolean` value and you want to specify explicitly. Example:
+
+
+         w[Button] <~ BoolOn.longClick({
+            (textView <~ show))
+            true
+         }
+         w[TextView] <~ BoolOn.LongClick({
+             val base = 1
+             val res = base * base
+             val resultUi = Ui {
+               res
+             } ~ Ui(true)
+             resultUi.get
+           })
+         // If you don't specify the boolean value, it will return false:
+         w[Button] <~ BoolOn.longClick({
+            (textView <~ show))
+         }
+       
+  * `MultiOn` — works for the event listeners with several methods to override. 
+  
+     It mus be used as follows:
+  
+     `MultiOn.ListenerName[W](Handlers*)`
+    
+     * _ListenerName_ must matches with the ListenerName without the prefix and the sufix. For instance: `OnSeekBarChangeListener` would be `SeekBarChange`.
+     * _Handlers_ Handlers would be all the methods to override separated by commas if more than one is listed.
+     * Each *handler* follows this structure:
+     
+     `methodToOverride: EventType => body`
+      
+      * _methodToOverride_: the listener method which could be overriden in order to response to certain behavior.
+      * _EventType_: `UnitEvent`, `UnitFuncEvent` and `BoolEvent` are the posible values.
+  
+     Example for the `SeekBar` widget: 
+
+
+        w[SeekBar] <~ MultiOn.SeekBarChange[SeekBar](
+          (onProgressChanged: UnitFuncEvent) =>
+            (view: SeekBar, progress: Int, fromUser: Boolean) => {
+              val current = progress + 1
+              Ui(println(s"Current Progress is $current"))
+            },
+          (onStartTrackingTouch: UnitFuncEvent) =>
+            (seekBar: SeekBar) => {
+              val current = seekBar.getProgress
+              Ui(println(s"Starting tracking touch, current Progress is $current"))
+            },
+          (onStopTrackingTouch: UnitFuncEvent) =>
+            (seekBar: SeekBar) => {
+              val current = seekBar.getProgress
+              Ui(println(s"Stopping tracking touch, current Progress is $current"))
+            }
+         )
+         // It isn't necessary implement all the methods, only whatever you need:
+         w[SeekBar] <~ MultiOn.SeekBarChange[SeekBar](
+           (onProgressChanged: UnitFuncEvent) =>
+             (view: SeekBar, progress: Int, fromUser: Boolean) => {
+               val current = progress + 1
+               Ui(println(s"Current Progress is $current"))
+             }
+         )
 
 ## Extra tweaks
 

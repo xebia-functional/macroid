@@ -10,6 +10,16 @@ private[macroid] trait MultiEventTweaks {
 
   import MultiEventTweakMacros._
 
+  type UnitHandler = String
+
+  type FuncHandler = String
+
+  sealed trait HandlerType
+
+  case object HUnit extends HandlerType
+
+  case object HUnitFunc extends HandlerType
+
   object UnitOn extends Dynamic {
     def applyDynamic[W <: View](event: String)(handler: Any): Tweak[W] = macro onUnitImpl[W]
   }
@@ -18,37 +28,23 @@ private[macroid] trait MultiEventTweaks {
     def applyDynamic[W <: View](event: String)(handler: Any): Tweak[W] = macro onUnitFuncImpl[W]
   }
 
-  object BoolOn extends Dynamic {
-    def applyDynamic[W <: View](event: String)(handler: Any): Tweak[W] = macro onBoolImpl[W]
-  }
-
   object MultiOn extends Dynamic {
     def applyDynamic[W <: View](event: String)(handlers: (String => Any)*): Tweak[W] = macro onMultipleFuncImpl[W]
   }
 }
 
-object MultiEventTweakMacros {
+object MultiEventTweaks extends MultiEventTweaks
 
-  type UnitEvent = String
-  
-  type UnitFuncEvent = String
+private object MultiEventTweakMacros {
 
-  type BoolEvent = String
-
-  sealed trait HandlerType
-
-  case object HUnit extends HandlerType
-
-  case object HUnitFunc extends HandlerType
-
-  case object HBool extends HandlerType
+  import MultiEventTweaks._
 
   def onUnitImpl[W <: View : c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handler: c.Expr[Any]) = {
     import c.universe._
 
     val Expr(Literal(Constant(e: String))) = event
 
-    onMultipleFuncImpl(c)(event)(c.Expr[UnitEvent => Any](q"(${newTermName(s"on${e.capitalize}")}: UnitEvent) => $handler"))
+    onMultipleFuncImpl(c)(event)(c.Expr[UnitHandler => Any](q"(${newTermName(s"on${e.capitalize}")}: UnitHandler) => $handler"))
   }
 
   def onUnitFuncImpl[W <: View : c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handler: c.Expr[Any]) = {
@@ -56,15 +52,7 @@ object MultiEventTweakMacros {
 
     val Expr(Literal(Constant(e: String))) = event
 
-    onMultipleFuncImpl(c)(event)(c.Expr[UnitFuncEvent => Any](q"(${newTermName(s"on${e.capitalize}")}: UnitFuncEvent) => $handler"))
-  }
-
-  def onBoolImpl[W <: View : c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handler: c.Expr[Any]) = {
-    import c.universe._
-
-    val Expr(Literal(Constant(e: String))) = event
-
-    onMultipleFuncImpl(c)(event)(c.Expr[BoolEvent => Any](q"(${newTermName(s"on${e.capitalize}")}: BoolEvent) => $handler"))
+    onMultipleFuncImpl(c)(event)(c.Expr[FuncHandler => Any](q"(${newTermName(s"on${e.capitalize}")}: FuncHandler) => $handler"))
   }
 
   def onMultipleFuncImpl[W <: View : c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handlers: (c.Expr[String => Any])*) = {
@@ -107,9 +95,8 @@ object MultiEventTweakMacros {
       }
 
       val handlerType = typ.toString() match {
-        case s: String if s.endsWith("UnitEvent") => HUnit
-        case s: String if s.endsWith("UnitFuncEvent") => HUnitFunc
-        case s: String if s.endsWith("BoolEvent") => HBool
+        case s: String if s.endsWith("UnitHandler") => HUnit
+        case s: String if s.endsWith("FuncHandler") => HUnitFunc
       }
 
       val on = scala.util.Try {
@@ -131,7 +118,7 @@ object MultiEventTweakMacros {
       val notImplemented = pendingMembersToOverride.asInstanceOf[Set[MethodSymbol]] diff specifiedMembers
 
       val defaultHandlers = notImplemented map { m =>
-        val defaultHandler = c.Expr[Nothing](q"(${m.name.toTermName}: macroid.MultiEventTweakMacros.UnitFuncEvent) => macroid.Ui")
+        val defaultHandler = c.Expr[Nothing](q"(${m.name.toTermName}: macroid.MultiEventTweakMacros.UnitFuncEvent) => _root_.macroid.Ui")
 
         (defaultHandler, m, HUnitFunc)
       }
@@ -152,26 +139,8 @@ object MultiEventTweakMacros {
     val impl = handlerType match {
       case HUnit => q"$f.get"
       case HUnitFunc => q"$f(..$argIdents).get"
-      case HBool =>
-        val lastBodyLineOfCode = f.tree.children.lastOption
-
-        lastBodyLineOfCode match {
-          case Some(Literal(Constant(b: Boolean))) =>
-            val children = f.tree.children.dropRight(1)
-            val newF = c.Expr[Any](q"{..$children}")
-            q"($newF ~ macroid.Ui { $b }).get"
-          case Some(q"$someValue.get") =>
-            q"$f"
-          case None =>
-            val newF = c.Expr[Any](q"{macroid.Ui.nop}")
-            q"($newF ~ macroid.Ui { false }).get"
-          case _ =>
-            c.abort(c.enclosingPosition, s"The ${on.name.toTermName} handler must returns a boolean. You must end it with " +
-                s"true or false values, or doing something like this if you want return `true`: \n" +
-                s"val yourUiCode = dummyAnim(circle, color) ~ Ui { true }\n" +
-                s"yourUiCode.get\n")
-        }
     }
     q"override def ${on.name.toTermName}(..$params) = $impl"
   }
 }
+

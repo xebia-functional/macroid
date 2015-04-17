@@ -4,7 +4,6 @@ import android.app.Activity
 import android.view.View
 import android.widget.{SeekBar, _}
 import macroid.LayoutDsl._
-import macroid.MultiEventTweakMacros._
 import macroid.Tweaks._
 import org.scalatest.FlatSpec
 
@@ -50,49 +49,33 @@ class MultiEventTweaksSpec extends FlatSpec {
     }
   }
 
-  "Tweaking with BoolOn" should "work with widgets and tweaks" in {
+  "Tweaking with Handlers which return a Boolean" should "work fine as well" in {
     def foo = {
-      val action = Ui(println("Hmm..."))
-      w[Button] <~ BoolOn.longClick(action) <~ text("Hi") <~ id(2) <~ text("Hey") <~ BoolOn.LongClick(action)
+      val action = Ui(true)
+      w[Button] <~ UnitOn.longClick(action) <~ text("Hi") <~ id(2) <~ text("Hey") <~ UnitOn.longClick(action)
     }
   }
 
   it should "work with more complex handlers returning true" in {
     def foo = {
-      w[TextView] <~ BoolOn.LongClick({
+      w[TextView] <~ UnitOn.longClick({
         val base = 1
         val res = base * base
         Ui {
           res
-        }
-        true
+        } ~ Ui(true)
       })
     }
   }
 
   it should "work with more complex handlers returning false" in {
     def foo = {
-      w[TextView] <~ BoolOn.LongClick({
+      w[TextView] <~ UnitOn.longClick({
         val base = 1
         val res = base * base
         Ui {
           res
-        }
-        false
-      })
-    }
-  }
-
-  it should "work with more complex handlers returning boolean UI at the end" in {
-    def foo = {
-      w[TextView] <~ BoolOn.LongClick({
-        val base = 1
-        val res = base * base
-        val resultUi = Ui {
-          res
-        } ~ Ui(true)
-
-        resultUi.get
+        } ~ Ui(false)
       })
     }
   }
@@ -100,11 +83,15 @@ class MultiEventTweaksSpec extends FlatSpec {
   "Tweaking with MultiOn" should "work widgets and tweaks for single event listeners" in {
     def foo = {
       val action = Ui(println("Hmm..."))
-      w[Button] <~ MultiOn.click[View](
-        (onClick: UnitEvent) => action) <~ text("Hi") <~ id(2) <~ text("Hey") <~ MultiOn.click[View](
-        (onClick: UnitFuncEvent) => {
-          (view: View) => action
-        })
+      w[Button] <~ text("Hi") <~ id(2) <~ text("Hey") <~
+          MultiOn.click[View](
+            (onClick: UnitHandler) => action
+          ) <~
+          MultiOn.click[View](
+            (onClick: FuncHandler) => {
+              (view: View) => action
+            }
+          )
     }
   }
 
@@ -118,19 +105,17 @@ class MultiEventTweaksSpec extends FlatSpec {
         }
       }
       w[TextView] <~ MultiOn.click[View](
-        (onClick: UnitEvent) => action) <~ MultiOn.LongClick[View](
-        (onLongClick: BoolEvent) => {
-          val tempVal = action ~ Ui(true)
-          tempVal.get
+        (onClick: UnitHandler) => action) <~ MultiOn.longClick[View](
+        (onLongClick: UnitHandler) => {
+          action ~ Ui(true)
         })
     }
   }
 
-  it should "work with multi-listeners view widget like SeekBar with default implementations " +
-      "for onStartTrackingTouch and onStopTrackingTouch" in {
+  it should "work with multi-listeners with default implementations" in {
     def foo = {
       w[SeekBar] <~ MultiOn.SeekBarChange[SeekBar](
-        (onProgressChanged: UnitFuncEvent) =>
+        (onProgressChanged: FuncHandler) =>
           (view: SeekBar, progress: Int, fromUser: Boolean) => {
             val current = progress + 1
 
@@ -140,17 +125,16 @@ class MultiEventTweaksSpec extends FlatSpec {
     }
   }
 
-  it should "work with multi-listeners view widget like SeekBar with default implementation " +
-      "for onProgressChanged" in {
+  it should "work with multi-listeners with default implementations. Another example." in {
     def foo = {
       w[SeekBar] <~ MultiOn.SeekBarChange[SeekBar](
-        (onStartTrackingTouch: UnitFuncEvent) =>
+        (onStartTrackingTouch: FuncHandler) =>
           (seekBar: SeekBar) => {
             val current = seekBar.getProgress
 
             Ui(println(s"Current Progress is $current"))
           },
-        (onStopTrackingTouch: UnitFuncEvent) =>
+        (onStopTrackingTouch: FuncHandler) =>
           (seekBar: SeekBar) => {
             val current = seekBar.getProgress
 
@@ -160,22 +144,22 @@ class MultiEventTweaksSpec extends FlatSpec {
     }
   }
 
-  it should "work with multi-listeners view widget like SeekBar with the three listener overrides" in {
+  it should "work with multi-listeners without default implementations" in {
     def foo = {
       w[SeekBar] <~ MultiOn.SeekBarChange[SeekBar](
-        (onProgressChanged: UnitFuncEvent) =>
+        (onProgressChanged: FuncHandler) =>
           (view: SeekBar, progress: Int, fromUser: Boolean) => {
             val current = progress + 1
 
             Ui(println(s"Current Progress is $current"))
           },
-        (onStartTrackingTouch: UnitFuncEvent) =>
+        (onStartTrackingTouch: FuncHandler) =>
           (seekBar: SeekBar) => {
             val current = seekBar.getProgress
 
             Ui(println(s"Current Progress is $current"))
           },
-        (onStopTrackingTouch: UnitFuncEvent) =>
+        (onStopTrackingTouch: FuncHandler) =>
           (seekBar: SeekBar) => {
             val current = seekBar.getProgress
 

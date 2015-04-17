@@ -134,17 +134,17 @@ A quick rundown:
 
     ```scala
     w[SeekBar] <~ MultiOn.SeekBarChange[SeekBar](
-      (onProgressChanged: UnitFuncEvent) =>
+      (onProgressChanged: FuncHandler) =>
         (view: SeekBar, progress: Int, fromUser: Boolean) => {
           val current = progress + 1
           Ui(println(s"Current Progress is $current"))
         },
-      (onStartTrackingTouch: UnitFuncEvent) =>
+      (onStartTrackingTouch: FuncHandler) =>
         (seekBar: SeekBar) => {
           val current = seekBar.getProgress
           Ui(println(s"Starting tracking touch, current Progress is $current"))
         },
-      (onStopTrackingTouch: UnitFuncEvent) =>
+      (onStopTrackingTouch: FuncHandler) =>
         (seekBar: SeekBar) => {
           val current = seekBar.getProgress
           Ui(println(s"Stopping tracking touch, current Progress is $current"))
@@ -152,7 +152,7 @@ A quick rundown:
      )
      // It isn’t necessary to implement all the methods, only whatever you need:
      w[SeekBar] <~ MultiOn.SeekBarChange[SeekBar](
-       (onProgressChanged: UnitFuncEvent) =>
+       (onProgressChanged: FuncHandler) =>
          (view: SeekBar, progress: Int, fromUser: Boolean) => {
            val current = progress + 1
            Ui(println(s"Current Progress is $current"))

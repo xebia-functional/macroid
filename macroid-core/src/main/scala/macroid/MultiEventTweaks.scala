@@ -118,7 +118,7 @@ private object MultiEventTweakMacros {
       val notImplemented = pendingMembersToOverride.asInstanceOf[Set[MethodSymbol]] diff specifiedMembers
 
       val defaultHandlers = notImplemented map { m =>
-        val defaultHandler = c.Expr[Nothing](q"(${m.name.toTermName}: macroid.MultiEventTweakMacros.UnitFuncEvent) => _root_.macroid.Ui")
+        val defaultHandler = c.Expr[Nothing](q"(${m.name.toTermName}: FuncHandler) => _root_.macroid.Ui")
 
         (defaultHandler, m, HUnitFunc)
       }

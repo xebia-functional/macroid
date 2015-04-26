@@ -29,4 +29,3 @@ There are also some things ouside these modules:
 * [`macroid.Ui`](UiActions.html), [`macroid.Tweak`](Tweaks.html),
   [`macroid.Snail`](Snails.html), [`macroid.Transformer`](Transformers.html)
 * [`macroid.{ ContextWrapper, Contexts }`](Contexts.html)
-* [`macroid.IdGeneration`](Searching.html#id-and-tag-generation)

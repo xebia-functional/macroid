@@ -50,32 +50,33 @@ This may be addressed in future versions of *Macroid*.
 Creating your widget ids in code might not be very rewarding. *Macroid* offers an elegant solution
 using Scala’s [`Dynamic` feature](http://docs.scala-lang.org/sips/completed/type-dynamic.html).
 
-Once you mix in `IdGeneration`, `Id.something` will generate a new id for you:
+First, create a global id generator. You can specify the starting id:
 
 ```scala
-import macroid.IdGeneration
+import macroid.IdGenerator
 
-// mix in IdGeneration
-class MyActivity extends Activity with Contexts[Activity] with IdGeneration {
-  ...
-  // Id.button creates a new id
-  w[Button] <~ id(Id.button)
+object Id extends IdGenerator(start = 1000)
+```
 
-  // once created, the id stays the same
-  assert(Id.button == Id.button)
-  ...
-}
+Now `Id.something` will generate a new id for you:
+
+```scala
+// Id.button creates a new id
+w[Button] <~ id(Id.button)
+
+// once created, the id stays the same
+assert(Id.button == Id.button)
 ```
 
 Sometimes you also need fragment tags, which are plain strings.
-For symmetry, `IdGeneration` adds `Tag.something`, which simply returns `"something"`:
+For symmetry, *Macroid* includes a `Tag` singleton:
 
 ```scala
-class MyActivity extends Activity with Contexts[Activity] with IdGeneration {
-  ...
-  f[MapFragment].framed(Id.map, Tag.map)
-  ...
-}
+// Doesn’t this look better than just "map"?
+f[MapFragment].framed(Id.map, Tag.map)
+
+// tags are just strings
+assert(Tag.map == "map")
 ```
 
 ## `find` and `findFrag`
@@ -97,7 +98,7 @@ fragment.find[ViewClass](id)
 For example:
 
 ```scala
-class MyActivity extends Activity with Contexts[Activity] with IdGeneration {
+class MyActivity extends Activity with Contexts[Activity] {
   ...
   w[Button] <~ id(Id.button)
   ...
@@ -123,7 +124,7 @@ Be aware that it will only be able to find fragment in ```onStart``` and later s
 For example:
 
 ```scala
-class MyActivity extends Activity with Contexts[Activity] with IdGeneration {
+class MyActivity extends Activity with Contexts[Activity] {
   override def onCreate(savedInstanceState: Bundle) = {
     ...
     f[MapFragment].framed(Id.map, Tag.map)

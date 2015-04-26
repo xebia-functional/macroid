@@ -7,9 +7,18 @@ import android.app.Activity
 import macroid.util.SafeCast
 import macroid.support.{ Fragment, FragmentApi }
 
-/** A class to generate unique Ids */
-class IdGen(start: Int) extends Dynamic {
-  private var ids = Map[String, Int]()
+/** A class to generate unique ids
+  * The recommended usage is to create a singleton for the entire app:
+  * {{{
+  *   object Id extends IdGen(1000)
+  *   ...
+  *   w[Button] <~ id(Id.button)
+  * }}}
+  *
+  * @param start  The starting id.
+  */
+class IdGenerator(start: Int) extends Dynamic {
+  private var ids = Map.empty[String, Int]
   private var counter = start
 
   private val lock = new Object
@@ -23,14 +32,9 @@ class IdGen(start: Int) extends Dynamic {
   }
 }
 
-/** A toy class to allow more descriptive syntax for tags (Tag.foo instead of "foo") */
-class TagGen extends Dynamic {
+/** A toy singleton to allow more descriptive syntax for tags (Tag.foo instead of "foo") */
+object Tag extends Dynamic {
   def selectDynamic(tag: String) = tag
-}
-
-trait IdGeneration {
-  val Id = new IdGen(1000)
-  val Tag = new TagGen
 }
 
 trait CanFindViews[-X] {

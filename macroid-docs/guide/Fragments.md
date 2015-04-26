@@ -70,7 +70,7 @@ f[FragmentClass].pass(...).factory
 ```
 
 Finally, here is a way to insert the fragment directly into the layout (it will be assigned a tag
-and wrapped into a `FrameLayout`). Note that for this to work, you need to [mix `IdGeneration`](Searching.html#id-and-tag-generation)
+and wrapped into a `FrameLayout`). Note that for this to work, you need to [create an id generator](Searching.html#id-and-tag-generation)
 into your activity or parent fragment.
 
 ```scala

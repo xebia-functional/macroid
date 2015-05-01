@@ -6,19 +6,19 @@ import scala.annotation.implicitNotFound
 import macroid.util.Effector
 
 @implicitNotFound("Don't know how to tweak ${W} with ${T}. Try importing an instance of CanTweak[${W}, ${T}, ...].") /** A typeclass for 'tweakable' relation */
-trait CanTweak[W, T, R] {
+trait CanTweak[W, -T, R] {
   def tweak(w: W, t: T): Ui[R]
 }
 
 object CanTweak {
-  implicit def `Widget is tweakable with Tweak`[W <: View, T <: Tweak[W]]: CanTweak[W, T, W] =
-    new CanTweak[W, T, W] {
-      def tweak(w: W, t: T) = t(w).withResult(w)
+  implicit def `Widget is tweakable with Tweak`[W <: View]: CanTweak[W, Tweak[W], W] =
+    new CanTweak[W, Tweak[W], W] {
+      def tweak(w: W, t: Tweak[W]) = t(w).withResult(w)
     }
 
-  implicit def `Widget is tweakable with Snail`[W <: View, S <: Snail[W]]: CanTweak[W, S, W] =
-    new CanTweak[W, S, W] {
-      def tweak(w: W, s: S) = s(w).withResult(w)
+  implicit def `Widget is tweakable with Snail`[W <: View]: CanTweak[W, Snail[W], W] =
+    new CanTweak[W, Snail[W], W] {
+      def tweak(w: W, s: Snail[W]) = s(w).withResult(w)
     }
 
   implicit def `Layout is tweakable with Transformer`[L <: ViewGroup]: CanTweak[L, Transformer, L] =

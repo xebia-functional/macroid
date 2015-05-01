@@ -70,3 +70,16 @@ object Transformer {
     }
   }
 }
+
+/** An Excerpt is something that gets a property out of a widget */
+case class Excerpt[-W <: View, +R](f: W ⇒ R) {
+  def apply(w: W) = Ui(f(w))
+
+  /** map combinator */
+  def map[R1](g: R ⇒ R1) = Excerpt(f andThen g)
+
+  /** Combine (tuple) with another excerpt */
+  def +[W1 <: W, R1](that: Excerpt[W1, R1]) = Excerpt[W1, (R, R1)] { x ⇒
+    (this.f(x), that.f(x))
+  }
+}

@@ -7,19 +7,19 @@ import scala.async.Async._
 import scala.concurrent.{ ExecutionContext, Future }
 
 @implicitNotFound("Don't know how to snail ${W} with ${S}. Try importing an instance of CanSnail[${W}, ${S}, ...]. It is also possible that you are missing an implicit scala.concurrent.ExecutionContext")
-trait CanSnail[W, S, R] {
+trait CanSnail[W, -S, R] {
   def snail(w: W, s: S): Ui[Future[R]]
 }
 
 object CanSnail {
-  implicit def `Widget is snailable with Snail`[W <: View, S <: Snail[W]](implicit ec: ExecutionContext): CanSnail[W, S, W] =
-    new CanSnail[W, S, W] {
-      def snail(w: W, s: S) = s(w).withResultAsync(w)
+  implicit def `Widget is snailable with Snail`[W <: View](implicit ec: ExecutionContext): CanSnail[W, Snail[W], W] =
+    new CanSnail[W, Snail[W], W] {
+      def snail(w: W, s: Snail[W]) = s(w).withResultAsync(w)
     }
 
-  implicit def `Widget is snailable with Future[Tweak]`[W <: View, T <: Tweak[W]](implicit ec: ExecutionContext): CanSnail[W, Future[T], W] =
-    new CanSnail[W, Future[T], W] {
-      def snail(w: W, ft: Future[T]) = Ui {
+  implicit def `Widget is snailable with Future[Tweak]`[W <: View]: CanSnail[W, Future[Tweak[W]], W] =
+    new CanSnail[W, Future[Tweak[W]], W] {
+      def snail(w: W, ft: Future[Tweak[W]]) = Ui {
         ft.mapUi(t ⇒ t(w).withResult(w))
       }
     }

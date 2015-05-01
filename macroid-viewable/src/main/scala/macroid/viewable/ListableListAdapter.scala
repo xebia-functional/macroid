@@ -4,11 +4,11 @@ import android.view.{ View, ViewGroup }
 import android.widget.ArrayAdapter
 import macroid.UiThreading._
 import macroid.util.SafeCast
-import macroid.{ ActivityContext, AppContext, Ui }
+import macroid.{ContextWrapper, Ui}
 
 /** A `ListAdapter` based on the `Listable` typeclass */
-class ListableListAdapter[A, W <: View](data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext, listable: Listable[A, W])
-  extends ArrayAdapter[A](ctx.get, 0) {
+class ListableListAdapter[A, W <: View](data: Seq[A])(implicit ctx: ContextWrapper, listable: Listable[A, W])
+  extends ArrayAdapter[A](ctx.getOriginal, 0) {
 
   addAll(data: _*)
 

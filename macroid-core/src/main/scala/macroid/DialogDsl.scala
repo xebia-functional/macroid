@@ -14,23 +14,23 @@ case class Phrase(f: AlertDialog.Builder ⇒ Unit) {
 private[macroid] trait DialogBuilding {
   /** A helper class to provide different ways of building a dialog */
   class DialogBuilder[A](theme: Option[Int]) {
-    private def builder(implicit ctx: ActivityContext) =
-      theme.fold(new AlertDialog.Builder(ctx.get))(t ⇒ new AlertDialog.Builder(ctx.get, t))
+    private def builder(implicit ctx: ContextWrapper) =
+      theme.fold(new AlertDialog.Builder(ctx.getOriginal))(t ⇒ new AlertDialog.Builder(ctx.getOriginal, t))
 
     /** Create a dialog with the specified view */
-    def apply(view: Ui[View])(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
+    def apply(view: Ui[View])(implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
       view.map(v ⇒ builder.setView(v))
 
     /** Create a dialog with the specified message */
-    def apply(message: CharSequence)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
+    def apply(message: CharSequence)(implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
       Ui(builder.setMessage(message))
 
     /** Create a dialog with the specified item list and click handler */
-    def apply(items: Array[CharSequence])(handler: OnClickListener)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
+    def apply(items: Array[CharSequence])(handler: OnClickListener)(implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
       Ui(builder.setItems(items, handler))
 
     /** Create a dialog with the specified ListAdapter and click handler */
-    def apply(adapter: ListAdapter)(handler: OnClickListener)(implicit ctx: ActivityContext): Ui[AlertDialog.Builder] =
+    def apply(adapter: ListAdapter)(handler: OnClickListener)(implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
       Ui(builder.setAdapter(adapter, handler))
   }
 

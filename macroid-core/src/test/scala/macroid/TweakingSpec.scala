@@ -2,13 +2,12 @@ package macroid
 
 import org.scalatest.FlatSpec
 import android.widget.{ LinearLayout, TextView, Button }
-import android.app.Activity
 import LayoutDsl._
 import Tweaks._
 import contrib._
 
 class TweakingSpec extends FlatSpec {
-  implicit val ctx = ActivityContext(null: Activity)
+  implicit val ctx: ContextWrapper = null
 
   "Tweaking" should "work with widgets and tweaks" in {
     def foo = {
@@ -58,7 +57,7 @@ class TweakingSpec extends FlatSpec {
     }
   }
 
-  "TextTweaks.allCaps" should "be invokeable without parenthesis" in {
+  "TextTweaks.allCaps" should "be invokeable without parentheses" in {
     def foo = {
       w[TextView] <~ TextTweaks.allCaps
     }

@@ -23,7 +23,7 @@ import macroid.viewable.Viewable
 
 case class User(name: String)
 
-def userViewable(implicit ctx: ActivityContext, appCtx: AppContext): Viewable[User, TextView] =
+def userViewable(implicit ctx: ContextWrapper): Viewable[User, TextView] =
   Viewable[User] { user ⇒
     w[TextView] <~ TextTweaks.large <~ text(user.name)
   }
@@ -93,7 +93,7 @@ import macroid.viewable.Listable
 
 case class User(name: String)
 
-def userListable(implicit ctx: ActivityContext, appCtx: AppContext): Listable[User, TextView] =
+def userListable(implicit ctx: ContextWrapper): Listable[User, TextView] =
   Listable[User] {
     // create the layout
     w[TextView] <~ TextTweaks.large
@@ -169,7 +169,7 @@ The “fill view” step in *listables* can be defined with a tweak:
 ```scala
 case class User(name: String, age: Int)
 
-def userListable(implicit ctx: ActivityContext, appCtx: AppContext) =
+def userListable(implicit ctx: ContextWrapper) =
   Listable[User].tw {
     // create layout
     w[TextView]
@@ -185,7 +185,7 @@ Similarly, the same “fill view” step in *listables* can be defined with a tr
 ```scala
 case class User(name: String, picture: Bitmap)
 
-def userListable(implicit ctx: ActivityContext, appCtx: AppContext) =
+def userListable(implicit ctx: ContextWrapper) =
   Listable[User].tr {
     l[HorizontalLinearLayout](
       w[ImageView],
@@ -203,7 +203,7 @@ It is often required to have the *listable* enclosed into some container, for ex
 Here’s how this can be done:
 
 ```scala
-def cardListable[A, W <: View](listable: Listable[A, W])(implicit ctx: ActivityContext, appCtx: AppContext) =
+def cardListable[A, W <: View](listable: Listable[A, W])(implicit ctx: ContextWrapper) =
   Listable.wrap(listable) { w ⇒
     l[CardView](w) <~ Styles.card
   }
@@ -221,7 +221,7 @@ and we have already defined *listables* for `Long` and `Bitmap`. To combine them
 
 ```scala
 // this will be a Listable[(Long, Bitmap), View]
-def combinedListable(implicit ctx: ActivityContext, appCtx: AppContext) =
+def combinedListable(implicit ctx: ContextWrapper) =
   Listable.combine(timestampListable, pictureListable) { (t, p) ⇒
     l[VerticalLinearLayout](t, p)
   }
@@ -253,7 +253,7 @@ object UserListable extends SlottedListable[User] {
   // now we just need to implement two abstract methods of SlottedListable:
 
   // make and wire the slots
-  def makeSlots(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = {
+  def makeSlots(viewType: Int)(implicit ctx: ContextWrapper) = {
     val slots = new Slots
     val view = l[LinearLayout](
       w[ImageView] <~ wire(slots.picture),
@@ -263,7 +263,7 @@ object UserListable extends SlottedListable[User] {
   }
 
   // fill the slots
-  def fillSlots(slots: Slots, data: User)(implicit ctx: ActivityContext, appCtx: AppContext) = {
+  def fillSlots(slots: Slots, data: User)(implicit ctx: ContextWrapper) = {
     (slots.name <~ text(data.name)) ~
     (slots.picture <~ data.picture)
   }

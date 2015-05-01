@@ -6,16 +6,21 @@ two types of context: one obtained from an activity
 and one obtained from the application. The reason is that holding on to the activity context
 may cause [memory leaks](http://stackoverflow.com/questions/3346080/android-references-to-a-context-and-memory-leaks).
 
-*Macroid* distinguishes between these two types of Context and passes them implicitly to prevent code bloat.
+*Macroid* automatically stores `Activity` and `Service` contexts as weak references, avoiding the problem.
+This is done with the `ContextWrapper` trait, which has four methods:
 
-## What are they
+* `contextWrapper.application` will return the application context;
+* `contextWrapper.original` will return a weak reference to the original context passed to `ContextWrapper`;
+* `contextWrapper.getOriginal` is the same as above, but it will force the weak reference;
+* `contextWrapper.bestAvailable` will return the original context if it’s available,
+  otherwise — the application context.
 
-* `macroid.AppContext` holds the application context;
-* `macroid.ActivityContext` holds a weak reference to the activity context, so that it’s safe to store it.
+There are a few specialized cases of `ContextWrapper`: `ActivityContextWrapper`, `ServiceContextWrapper`
+and `ApplicationContextWrapper`.
 
 ## Including
 
-To include the implicit contexts in your activity, inherit `Contexts`:
+To include the implicit context in your activity, inherit `Contexts`:
 
 ```scala
 import macroid.Contexts
@@ -42,26 +47,41 @@ class MyFragment extends Fragment with Contexts[Fragment] {
 }
 ```
 
+You can also construct a `ContextWrapper` directly:
+
+```scala
+val ctx = ContextWrapper(myActivity)
+```
+
 ## Usage
 
-Most *Macroid* APIs require one or two of these contexts. If you use them inside an 
-activity or a fragment, you are golden. However sometimes you need to pass the contexts
+Most *Macroid* APIs require an implicit `ContextWrapper`. If you use them inside an
+activity or a fragment, you are golden. However sometimes you need to pass the context
 to other methods:
 
 ```scala
-import macroid.{ AppContext, ActivityContext }
+import macroid.ContextWrapper
 import macroid.FullDsl._
 import macroid.contrib._
 
-def customTweak(implicit appCtx: AppContext) =
-  // this one requires AppContext
+def customTweak(implicit ctx: ContextWrapper) =
   TextTweaks.large +
   text("foo")
 
-def customLayout(implicit ctx: ActivityContext) =
-  // layout bricks require ActivityContext
+def customLayout(implicit ctx: ContextWrapper) =
   l[LinearLayout](
     w[TextView],
     w[Button]
   )
+```
+
+You can also require a specific type of context:
+
+```scala
+import macroid.ActivityContextWrapper
+
+def needActivity(implicit ctx: ActivityContextWrapper) =
+  ctx.original.get foreach { activity: Activity ⇒
+    ...
+  }
 ```

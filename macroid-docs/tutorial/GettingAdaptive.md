@@ -17,7 +17,7 @@ We are going to incorporate this into our layout more elegantly by defining a he
 object OurTweaks {
   ...
   // the new helper
-  def orient(implicit appCtx: AppContext) =
+  def orient(implicit ctx: ContextWrapper) =
     landscape ? horizontal | vertical
 }
 ...

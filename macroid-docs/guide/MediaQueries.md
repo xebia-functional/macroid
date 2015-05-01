@@ -39,7 +39,7 @@ button <~ padding(top = 3 dp)
 As you may have figured out, media queries can be used to define adaptive tweaks:
 
 ```scala
-def orient(implicit appCtx: AppContext) =
+def orient(implicit ctx: ContextWrapper) =
   landscape ? horizontal | vertical
 ```
 
@@ -53,7 +53,7 @@ onlySeenInHD <~ (hdpi ? show)
 On the other hand, several queries can be chained:
 
 ```scala
-def adaptiveCaption(implicit appCtx: AppContext) =
+def adaptiveCaption(implicit ctx: ContextWrapper) =
   widerThan(200 dp) ? text("fooobaaar") |
   widerThan(100 dp) ? text("foobar") |
   text("foo")

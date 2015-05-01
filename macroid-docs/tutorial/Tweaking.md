@@ -26,14 +26,14 @@ l[LinearLayout](
 Of course, we can do much fancier than that! Remember the composability principle? Tweaks are composable as well:
 
 ```scala
-// AppContext is an Android Context obtained from getApplicationContext
-import macroid.AppContext
+// ContextWrapper is a safer Context wrapper
+import macroid.ContextWrapper
 // More tweaks
 import macroid.contrib.TextTweaks
 
 // A module with custom tweaks
 object OurTweaks {
-  def greeting(greeting: String)(implicit appCtx: AppContext) =
+  def greeting(greeting: String)(implicit ctx: ContextWrapper) =
     TextTweaks.large +
     text(greeting) +
     hide

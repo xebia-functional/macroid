@@ -23,17 +23,17 @@ trait PartialListable[A, +W <: View] { self ⇒
   def viewType(data: A): Option[Int]
 
   /** Create the layout */
-  def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
+  def makeView(viewType: Int)(implicit ctx: ContextWrapper): Ui[W]
 
   /** Fill the layout with data. Returns None if not defined for this value */
-  def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Option[Ui[W1]]
+  def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ContextWrapper): Option[Ui[W1]]
 
   /** Map the underlying data type `A` */
   def contraFlatMap[B](f: B ⇒ Option[A]): PartialListable[B, W] = new PartialListable[B, W] {
     def viewTypeCount = self.viewTypeCount
     def viewType(data: B) = f(data).flatMap(self.viewType)
-    def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-    def fillView[W1 >: W <: View](view: Ui[W1], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = f(data).flatMap(self.fillView(view, _))
+    def makeView(viewType: Int)(implicit ctx: ContextWrapper) = self.makeView(viewType)
+    def fillView[W1 >: W <: View](view: Ui[W1], data: B)(implicit ctx: ContextWrapper) = f(data).flatMap(self.fillView(view, _))
   }
 
   /** Combine with an alternative partial */
@@ -47,14 +47,14 @@ trait PartialListable[A, +W <: View] { self ⇒
         self.viewType(data) orElse
           alternative.viewType(data).map(_ + self.viewTypeCount)
 
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) =
+      def makeView(viewType: Int)(implicit ctx: ContextWrapper) =
         if (viewType < self.viewTypeCount) {
           self.makeView(viewType)
         } else {
           alternative.makeView(viewType - self.viewTypeCount)
         }
 
-      def fillView[W2 >: W1 <: View](view: Ui[W2], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+      def fillView[W2 >: W1 <: View](view: Ui[W2], data: A)(implicit ctx: ContextWrapper) =
         self.fillView(view, data) orElse
           alternative.fillView(view, data)
     }
@@ -65,8 +65,8 @@ trait PartialListable[A, +W <: View] { self ⇒
       def viewTypeCount = self.viewTypeCount
       def viewType(data: A) =
         if (p(data)) self.viewType(data) else None
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-      def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+      def makeView(viewType: Int)(implicit ctx: ContextWrapper) = self.makeView(viewType)
+      def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ContextWrapper) =
         if (p(data)) self.fillView(view, data) else None
     }
 
@@ -78,8 +78,8 @@ trait PartialListable[A, +W <: View] { self ⇒
         case x: A ⇒ self.viewType(x)
         case _ ⇒ None
       }
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-      def fillView[W1 >: W <: View](view: Ui[W1], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = data match {
+      def makeView(viewType: Int)(implicit ctx: ContextWrapper) = self.makeView(viewType)
+      def fillView[W1 >: W <: View](view: Ui[W1], data: B)(implicit ctx: ContextWrapper) = data match {
         case x: A ⇒ self.fillView(view, x)
         case _ ⇒ None
       }
@@ -90,8 +90,8 @@ trait PartialListable[A, +W <: View] { self ⇒
     new Listable[A, W1] {
       def viewTypeCount = self.viewTypeCount
       def viewType(data: A) = self.viewType(data).get
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-      def fillView(view: Ui[W1], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = self.fillView(view, data).get
+      def makeView(viewType: Int)(implicit ctx: ContextWrapper) = self.makeView(viewType)
+      def fillView(view: Ui[W1], data: A)(implicit ctx: ContextWrapper) = self.fillView(view, data).get
     }
 }
 
@@ -110,18 +110,18 @@ trait Listable[A, W <: View] { self ⇒
   def viewType(data: A): Int
 
   /** Create the layout */
-  def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
+  def makeView(viewType: Int)(implicit ctx: ContextWrapper): Ui[W]
 
   /** Fill the layout with data. Will be always called with layouts created by `makeView` using `viewType(data)` */
-  def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext): Ui[W]
+  def fillView(view: Ui[W], data: A)(implicit ctx: ContextWrapper): Ui[W]
 
   /** Map the underlying data type `A` */
   def contraMap[B](f: B ⇒ A): Listable[B, W] =
     new Listable[B, W] {
       def viewTypeCount = self.viewTypeCount
       def viewType(data: B) = self.viewType(f(data))
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-      def fillView(view: Ui[W], data: B)(implicit ctx: ActivityContext, appCtx: AppContext) = self.fillView(view, f(data))
+      def makeView(viewType: Int)(implicit ctx: ContextWrapper) = self.makeView(viewType)
+      def fillView(view: Ui[W], data: B)(implicit ctx: ContextWrapper) = self.fillView(view, f(data))
     }
 
   /** Add extra fillView function */
@@ -129,8 +129,8 @@ trait Listable[A, W <: View] { self ⇒
     new Listable[A, W] {
       def viewTypeCount = self.viewTypeCount
       def viewType(data: A) = self.viewType(data)
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+      def makeView(viewType: Int)(implicit ctx: ContextWrapper) = self.makeView(viewType)
+      def fillView(view: Ui[W], data: A)(implicit ctx: ContextWrapper) =
         fill(self.fillView(view, data), data)
     }
 
@@ -139,8 +139,8 @@ trait Listable[A, W <: View] { self ⇒
     new PartialListable[A, W] {
       def viewTypeCount = self.viewTypeCount
       def viewType(data: A) = Some(self.viewType(data))
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = self.makeView(viewType)
-      def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view match {
+      def makeView(viewType: Int)(implicit ctx: ContextWrapper) = self.makeView(viewType)
+      def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ContextWrapper) = view match {
         case x: Ui[W] ⇒ Some(self.fillView(x, data))
         case _ ⇒ None
       }
@@ -155,16 +155,16 @@ trait Listable[A, W <: View] { self ⇒
   /** Convert to a viewable */
   def toViewable: Viewable[A, W] =
     new Viewable[A, W] {
-      def view(data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+      def view(data: A)(implicit ctx: ContextWrapper) =
         fillView(makeView(viewType(data)), data)
     }
 
   /** An adapter to use with a `ListView` */
-  def listAdapter(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext): ListableListAdapter[A, W] =
-    new ListableListAdapter[A, W](data)(ctx, appCtx, this)
+  def listAdapter(data: Seq[A])(implicit ctx: ContextWrapper): ListableListAdapter[A, W] =
+    new ListableListAdapter[A, W](data)(ctx, this)
 
   /** A tweak to set the adapter of a `ListView` */
-  def listAdapterTweak(data: Seq[A])(implicit ctx: ActivityContext, appCtx: AppContext) =
+  def listAdapterTweak(data: Seq[A])(implicit ctx: ContextWrapper) =
     ListTweaks.adapter(listAdapter(data))
 }
 
@@ -175,8 +175,8 @@ class ListableBuilder[A] {
     new Listable[A, W] {
       val viewTypeCount = 1
       def viewType(data: A) = 0
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = make
-      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = fill(view)(data)
+      def makeView(viewType: Int)(implicit ctx: ContextWrapper) = make
+      def fillView(view: Ui[W], data: A)(implicit ctx: ContextWrapper) = fill(view)(data)
     }
 
   /** Define a listable by providing the make function and a tweak to fill the layout with data */
@@ -184,8 +184,8 @@ class ListableBuilder[A] {
     new Listable[A, W] {
       val viewTypeCount = 1
       def viewType(data: A) = 0
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = make
-      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ fill(data)
+      def makeView(viewType: Int)(implicit ctx: ContextWrapper) = make
+      def fillView(view: Ui[W], data: A)(implicit ctx: ContextWrapper) = view <~ fill(data)
     }
 
   /** Define a listable by providing the make function and a transformer to fill the layout with data */
@@ -193,8 +193,8 @@ class ListableBuilder[A] {
     new Listable[A, W] {
       val viewTypeCount = 1
       def viewType(data: A) = 0
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = make
-      def fillView(view: Ui[W], data: A)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ fill(data)
+      def makeView(viewType: Int)(implicit ctx: ContextWrapper) = make
+      def fillView(view: Ui[W], data: A)(implicit ctx: ContextWrapper) = view <~ fill(data)
     }
 }
 
@@ -207,8 +207,8 @@ object Listable {
     new Listable[String, TextView] {
       val viewTypeCount = 1
       def viewType(data: String) = 0
-      def makeView(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = w[TextView] <~ tweak
-      def fillView(view: Ui[TextView], data: String)(implicit ctx: ActivityContext, appCtx: AppContext) = view <~ Tweaks.text(data)
+      def makeView(viewType: Int)(implicit ctx: ContextWrapper) = w[TextView] <~ tweak
+      def fillView(view: Ui[TextView], data: String)(implicit ctx: ContextWrapper) = view <~ Tweaks.text(data)
     }
 
   /** An alias for SlottedListable */
@@ -224,13 +224,13 @@ object Listable {
       override val viewTypeCount = x.viewTypeCount
       override def viewType(data: A) = x.viewType(data)
 
-      def makeSlots(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = {
+      def makeSlots(viewType: Int)(implicit ctx: ContextWrapper) = {
         val slots = new Slots
         val view = wrapper(x.makeView(viewType) <~ wire(slots.x))
         (view, slots)
       }
 
-      def fillSlots(slots: Slots, data: A)(implicit ctx: ActivityContext, appCtx: AppContext) =
+      def fillSlots(slots: Slots, data: A)(implicit ctx: ContextWrapper) =
         slots.x.fold(Ui.nop)(z ⇒ x.fillView(Ui(z), data) ~ Ui.nop)
     }
 
@@ -250,7 +250,7 @@ object Listable {
       override def viewType(data: (A1, A2)) =
         x.viewType(data._1) * y.viewTypeCount + y.viewType(data._2)
 
-      def makeSlots(viewType: Int)(implicit ctx: ActivityContext, appCtx: AppContext) = {
+      def makeSlots(viewType: Int)(implicit ctx: ContextWrapper) = {
         val slots = new Slots
         val (xType, yType) = (viewType / y.viewTypeCount, viewType % y.viewTypeCount)
         val view = glue(
@@ -260,7 +260,7 @@ object Listable {
         (view, slots)
       }
 
-      def fillSlots(slots: Slots, data: (A1, A2))(implicit ctx: ActivityContext, appCtx: AppContext) =
+      def fillSlots(slots: Slots, data: (A1, A2))(implicit ctx: ContextWrapper) =
         slots.x.fold(Ui.nop)(z ⇒ x.fillView(Ui(z), data._1) ~ Ui.nop) ~
           slots.y.fold(Ui.nop)(z ⇒ y.fillView(Ui(z), data._2) ~ Ui.nop)
     }

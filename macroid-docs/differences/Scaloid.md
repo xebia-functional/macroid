@@ -53,7 +53,7 @@ so you can combine them and store in variables, traits or objects in any way you
 say
 
 ```scala
-def largeText(str: String)(implicit appCtx: AppContext) =
+def largeText(str: String)(implicit ctx: ContextWrapper) =
   text(str) + TextSize.large
 ```
 
@@ -92,14 +92,12 @@ The media queries are an integrated part of the UI language. For example, `hdpi 
 just returns an `Option[Tweak[TextView]]`, so you can store and use it anywhere.
 This contrasts with *Scaloid*, where `if` conditionals are used.
 
-## Safer implicit contexts
+## Safer implicit context
 
 *Scaloid* always holds on to the Activity instance to store its `implicit` Context,
 which [may result in memory leaks](http://android-developers.blogspot.co.at/2009/01/avoiding-memory-leaks.html).
 
-*Macroid* distinguishes between `AppContext` and `ActivityContext`, which are obtained and passed separately.
-The former is stored as-is, since it is safe, while the latter is stored as a `WeakReference`, avoiding the
-above problem.
+*Macroid* uses `WeakReference`s to store `Context`s other than `Application`, avoiding the above problem.
 
 ## Safer threading
 

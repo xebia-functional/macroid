@@ -14,57 +14,55 @@ trait CanSnail[W, S, R] {
 object CanSnail {
   import UiThreading._
 
-  implicit def `Widget is snailable with Snail`[W <: View, S <: Snail[W]](implicit ec: ExecutionContext) =
+  implicit def `Widget is snailable with Snail`[W <: View, S <: Snail[W]](implicit ec: ExecutionContext): CanSnail[W, S, W] =
     new CanSnail[W, S, W] {
-      def snail(w: W, s: S) = Ui { s(w).map(_ ⇒ w) }
+      def snail(w: W, s: S) = s(w).withResultAsync(w)
     }
 
-  implicit def `Widget is snailable with Future[Tweak]`[W <: View, T <: Tweak[W]](implicit ec: ExecutionContext) =
+  implicit def `Widget is snailable with Future[Tweak]`[W <: View, T <: Tweak[W]](implicit ec: ExecutionContext): CanSnail[W, Future[T], W] =
     new CanSnail[W, Future[T], W] {
       def snail(w: W, ft: Future[T]) = Ui {
-        ft.mapInPlace { t ⇒ t(w); w }(UiThreadExecutionContext)
+        ft.mapUi(t ⇒ t(w).withResult(w))
       }
     }
 
-  implicit def `Widget is snailable with Option`[W <: View, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]) =
+  implicit def `Widget is snailable with Option`[W <: View, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]): CanSnail[W, Option[S], W] =
     new CanSnail[W, Option[S], W] {
       def snail(w: W, o: Option[S]) = o.fold(Ui(Future.successful(w))) { s ⇒
-        canSnail.snail(w, s).map(f ⇒ f.map(_ ⇒ w))
+        canSnail.snail(w, s).withResultAsync(w)
       }
     }
 
-  implicit def `Ui is snailable`[W, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]) =
+  implicit def `Ui is snailable`[W, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]): CanSnail[Ui[W], S, W] =
     new CanSnail[Ui[W], S, W] {
-      def snail(ui: Ui[W], s: S) = ui flatMap { w ⇒ canSnail.snail(w, s).map(f ⇒ f.map(_ ⇒ w)) }
+      def snail(ui: Ui[W], s: S) = ui flatMap { w ⇒ canSnail.snail(w, s).withResultAsync(w) }
     }
 
-  implicit def `Option is snailable`[W, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]) =
+  implicit def `Option is snailable`[W, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]): CanSnail[Option[W], S, Option[W]] =
     new CanSnail[Option[W], S, Option[W]] {
       def snail(o: Option[W], s: S) = o.fold(Ui(Future.successful(o))) { w ⇒
-        canSnail.snail(w, s).map(f ⇒ f.map(_ ⇒ o))
+        canSnail.snail(w, s).withResultAsync(o)
       }
     }
 
-  implicit def `Widget is snailable with Future`[W <: View, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]) =
+  implicit def `Widget is snailable with Future`[W <: View, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]): CanSnail[W, Future[S], W] =
     new CanSnail[W, Future[S], W] {
-      // we can call Ui.get, since we are already inside the UI thread
       def snail(w: W, f: Future[S]) = Ui {
-        f.flatMapInPlace(s ⇒ canSnail.snail(w, s).get.map(_ ⇒ w))(UiThreadExecutionContext)
+        f.flatMapUi(s ⇒ canSnail.snail(w, s).withResultAsync(w))
       }
     }
 
-  implicit def `Future is snailable`[W, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]) =
+  implicit def `Future is snailable`[W, S, R](implicit ec: ExecutionContext, canSnail: CanSnail[W, S, R]): CanSnail[Future[W], S, W] =
     new CanSnail[Future[W], S, W] {
-      // we can call Ui.get, since we are already inside the UI thread
       def snail(f: Future[W], s: S) = Ui {
-        f.flatMapInPlace(w ⇒ canSnail.snail(w, s).get.map(_ ⇒ w))(UiThreadExecutionContext)
+        f.flatMapUi(w ⇒ canSnail.snail(w, s).withResultAsync(w))
       }
     }
 
-  implicit def `Widget is snailable with List`[W <: View, S, R](implicit canSnail: CanSnail[W, S, R]) =
-    new CanSnail[W, List[S], W] {
-      def snail(w: W, l: List[S]) = Ui(async {
-        val it = l.iterator
+  implicit def `Widget is snailable with TraversableOnce`[W <: View, S, R](implicit canSnail: CanSnail[W, S, R]): CanSnail[W, TraversableOnce[S], W] =
+    new CanSnail[W, TraversableOnce[S], W] {
+      def snail(w: W, l: TraversableOnce[S]) = Ui(async {
+        val it = l.toIterator
         while (it.hasNext) {
           // we can call Ui.get, since we are already inside the UI thread
           await(canSnail.snail(w, it.next()).get)
@@ -73,10 +71,10 @@ object CanSnail {
       }(UiThreadExecutionContext))
     }
 
-  implicit def `List is snailable`[W, S, R](implicit canSnail: CanSnail[W, S, R]) =
-    new CanSnail[List[W], S, List[W]] {
-      def snail(l: List[W], s: S) = Ui(async {
-        val it = l.iterator
+  implicit def `TraversableOnce is snailable`[W, S, R, C[X] <: TraversableOnce[X]](implicit canSnail: CanSnail[W, S, R]): CanSnail[C[W], S, C[W]] =
+    new CanSnail[C[W], S, C[W]] {
+      def snail(l: C[W], s: S) = Ui(async {
+        val it = l.toIterator
         while (it.hasNext) {
           // we can call Ui.get, since we are already inside the UI thread
           await(canSnail.snail(it.next(), s).get)

@@ -14,3 +14,6 @@ Latest version: `2.0.0-M4` ([installation](Installation.html) | [changelog](Chan
 * [Detailed guide](Guide.html)
 * [Sample projects](Samples.html)
 * [Mailing list](https://groups.google.com/forum/#!forum/macroid)
+
+
+[![Join the chat at https://gitter.im/macroid/macroid](https://img.shields.io/badge/GITTER-Join%20chat%20→-brightgreen.svg?style=flat)](https://gitter.im/macroid/macroid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)

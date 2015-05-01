@@ -11,34 +11,34 @@ trait CanTweak[W, T, R] {
 }
 
 object CanTweak {
-  implicit def `Widget is tweakable with Tweak`[W <: View, T <: Tweak[W]] =
+  implicit def `Widget is tweakable with Tweak`[W <: View, T <: Tweak[W]]: CanTweak[W, T, W] =
     new CanTweak[W, T, W] {
-      def tweak(w: W, t: T) = Ui { t(w); w }
+      def tweak(w: W, t: T) = t(w).withResult(w)
     }
 
-  implicit def `Widget is tweakable with Snail`[W <: View, S <: Snail[W]] =
+  implicit def `Widget is tweakable with Snail`[W <: View, S <: Snail[W]]: CanTweak[W, S, W] =
     new CanTweak[W, S, W] {
-      def tweak(w: W, s: S) = Ui { s(w); w }
+      def tweak(w: W, s: S) = s(w).withResult(w)
     }
 
-  implicit def `Layout is tweakable with Transformer`[L <: ViewGroup] =
+  implicit def `Layout is tweakable with Transformer`[L <: ViewGroup]: CanTweak[L, Transformer, L] =
     new CanTweak[L, Transformer, L] {
-      def tweak(l: L, t: Transformer) = Ui { t(l); l }
+      def tweak(l: L, t: Transformer) = t(l).withResult(l)
     }
 
-  implicit def `Widget is tweakable with Effector`[W <: View, F[+_], T, R](implicit effector: Effector[F], canTweak: CanTweak[W, T, R]) =
+  implicit def `Widget is tweakable with Effector`[W <: View, F[+_], T, R](implicit effector: Effector[F], canTweak: CanTweak[W, T, R]): CanTweak[W, F[T], W] =
     new CanTweak[W, F[T], W] {
-      def tweak(w: W, f: F[T]) = Ui { effector.foreach(f)(t ⇒ canTweak.tweak(w, t).run); w }
+      def tweak(w: W, f: F[T]) = Ui { effector.foreach(f)(t ⇒ canTweak.tweak(w, t)); w }
     }
 
-  implicit def `Effector is tweakable`[W, F[+_], T, R](implicit effector: Effector[F], canTweak: CanTweak[W, T, R]) =
+  implicit def `Effector is tweakable`[W, F[+_], T, R](implicit effector: Effector[F], canTweak: CanTweak[W, T, R]): CanTweak[F[W], T, F[W]] =
     new CanTweak[F[W], T, F[W]] {
-      def tweak(f: F[W], t: T) = Ui { effector.foreach(f)(w ⇒ canTweak.tweak(w, t).run); f }
+      def tweak(f: F[W], t: T) = Ui { effector.foreach(f)(w ⇒ canTweak.tweak(w, t)); f }
     }
 
-  implicit def `Ui is tweakable`[W, T, R](implicit canTweak: CanTweak[W, T, R]) =
+  implicit def `Ui is tweakable`[W, T, R](implicit canTweak: CanTweak[W, T, R]): CanTweak[Ui[W], T, W] =
     new CanTweak[Ui[W], T, W] {
-      def tweak(ui: Ui[W], t: T) = ui flatMap { w ⇒ canTweak.tweak(w, t).map(_ ⇒ w) }
+      def tweak(ui: Ui[W], t: T) = ui flatMap { w ⇒ canTweak.tweak(w, t).withResult(w) }
     }
 }
 

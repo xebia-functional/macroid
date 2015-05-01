@@ -24,13 +24,12 @@ It does not do anything yet and has a type `Ui[Int]`, since it returns an intege
 If you know [Haskell](http://www.haskell.org/haskellwiki/Haskell) or
 [scalaz](https://github.com/scalaz/scalaz), so far that’s your typical `IO` monad.
 
-An UI action can be sent to the UI thread to be run:
+A UI action can be sent to the UI thread to be run:
 
 ```scala
 action.run
 // or
-import macroid.FullDsl._
-runUi(action)
+Ui.run(action)
 ```
 
 Running an action of type `Ui[A]` returns a `Future[A]` (in this case — `Future[Int]`),
@@ -45,8 +44,7 @@ the UI thread):
 ```scala
 action.get
 // or
-import macroid.FullDsl._
-getUi(action)
+Ui.get(action)
 ```
 
 ## Advantages
@@ -70,12 +68,12 @@ tweaking:
 val action: Ui[Button] = button <~ text("Hi")
 ```
 
-and so on. The first case is one of the reasons why `getUi` is needed sometimes, as `setContentView` expects a `View` and
+and so on. The first case is one of the reasons why `Ui.get` is needed sometimes, as `setContentView` expects a `View` and
 not a `Ui[View]`:
 
 ```scala
 setContentView {
-  getUi {
+  Ui.get {
     w[TextView] <~ text("Hi")
   }
 }
@@ -125,7 +123,7 @@ The `UiFuture` extension class provides `mapUi`, `flatMapUi` and other `xxxUi` m
 which allow to use UI actions as callbacks for `Future`s:
 
   ```scala
-  import macroid.UiThreading._
+  import macroid._
   import scala.concurrent.ExecutionContext.Implicits.global
 
   Future {
@@ -167,5 +165,5 @@ For instructions refer to the [installation](../Installation.html) section.
 
 ## Low-level threading utilities
 
-*Macroid* also provides `macroid.util.UiThreadExecutionContext`, which allows to run futures on the UI thread.
+*Macroid* also provides `macroid.UiThreadExecutionContext`, which allows to run futures on the UI thread.
 You probably wouldn’t need to use this directly.

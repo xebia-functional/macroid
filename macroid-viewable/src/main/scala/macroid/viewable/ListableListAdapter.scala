@@ -2,7 +2,6 @@ package macroid.viewable
 
 import android.view.{ View, ViewGroup }
 import android.widget.ArrayAdapter
-import macroid.UiThreading._
 import macroid.util.SafeCast
 import macroid.{ContextWrapper, Ui}
 
@@ -19,7 +18,7 @@ class ListableListAdapter[A, W <: View](data: Seq[A])(implicit ctx: ContextWrapp
     super.getItemViewType(position)
   }
 
-  override def getView(position: Int, view: View, parent: ViewGroup): View = getUi {
+  override def getView(position: Int, view: View, parent: ViewGroup): View = Ui.get {
     val v = SafeCast[View, W](view).map(x ⇒ Ui(x))
       .getOrElse(listable.makeView(getItemViewType(position)))
     listable.fillView(v, getItem(position))

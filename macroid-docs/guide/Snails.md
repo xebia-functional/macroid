@@ -54,8 +54,7 @@ val fadeAndDisappear =
 ## “Snailing”
 
 “Snailing” is a made-up word that denotes the process of applying snails to widgets.
-Snailing is very similar to [tweaking](Tweaks.html#tweaking), except it uses the `<~~` operator
-(see [Changelog](../Changelog.html) for the recent syntax changes):
+Snailing is very similar to [tweaking](Tweaks.html#tweaking), except it uses the `<~~` operator:
 
 ```scala
 textView <~~ fadeIn

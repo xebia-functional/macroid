@@ -33,8 +33,6 @@ private[macroid] trait BasicSnails {
 }
 
 private[macroid] trait ProgressSnails extends BasicSnails with VisibilityTweaks {
-  import UiThreading._
-
   /** Show this progress bar with indeterminate progress and hide it once `future` is done */
   def waitProgress(future: Future[Any])(implicit ec: ExecutionContext): Snail[ProgressBar] =
     Tweak[ProgressBar](_.setIndeterminate(true)) + show ++ wait(future) + hide

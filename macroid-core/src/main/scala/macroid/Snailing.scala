@@ -12,8 +12,6 @@ trait CanSnail[W, S, R] {
 }
 
 object CanSnail {
-  import UiThreading._
-
   implicit def `Widget is snailable with Snail`[W <: View, S <: Snail[W]](implicit ec: ExecutionContext): CanSnail[W, S, W] =
     new CanSnail[W, S, W] {
       def snail(w: W, s: S) = s(w).withResultAsync(w)
@@ -92,5 +90,3 @@ private[macroid] trait Snailing {
     def <~~[T, R](t: T)(implicit canSnail: CanSnail[W, T, R]): Ui[Future[R]] = canSnail.snail(w, t)
   }
 }
-
-object Snailing extends Snailing

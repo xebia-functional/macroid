@@ -27,7 +27,7 @@ class GreetingActivity extends Activity with Contexts[Activity] {
     super.onCreate(savedInstanceState)
 
     setContentView {
-      getUi {
+      Ui.get {
         l[LinearLayout](
           w[Button] <~
             text("Click me") <~

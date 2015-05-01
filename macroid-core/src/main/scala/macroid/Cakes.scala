@@ -21,7 +21,7 @@ object ToastDsl extends ToastDsl
 
 private[macroid] trait FullDsl
   extends MediaQueries
-  with LayoutDsl with Tweaks with Snails
+  with LayoutDsl with Tweaks with Snails with Excerpts
   with DialogDsl with Phrases
   with ToastDsl with Loafs
 

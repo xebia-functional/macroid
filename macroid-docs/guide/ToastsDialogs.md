@@ -12,17 +12,17 @@ The toast API is similar to [tweaking](Tweaks.html#tweaking) and consists of `to
 The loafs are as follows:
 
 ```scala
-runUi {
+Ui.run {
   // `fry` shows the toast
   toast("Foo") <~ fry
 }
 
-runUi {
+Ui.run {
   // `long` makes the toast long
   toast("Foooo") <~ long <~ fry
 }
 
-runUi {
+Ui.run {
   // `gravity` should be self-evident
   toast("XY") <~ gravity(Gravity.CENTER, xOffset = 3 dp) <~ fry
 }
@@ -42,7 +42,7 @@ The dialog API is also similar to [tweaking](Tweaks.html#tweaking) and consists 
 It is also possible to provide a dialog theme:
 
 ```scala
-runUi {
+Ui.run {
   dialog(themeId)("I’m a message")
 }
 ```
@@ -50,7 +50,7 @@ runUi {
 The phrases can be discovered via the [scaladoc](../api/core/macroid/Phrases$.html), here are some examples:
 
 ```scala
-runUi {
+Ui.run {
   dialog("Please fasten your seat belts") <~
     title("Warning") <~
     speak // this shows the dialog
@@ -65,7 +65,7 @@ Finally, two implicit conversions to `Dialog.OnClickListener` are awailable:
 Example:
 
 ```scala
-runUi {
+Ui.run {
   dialog("Are you sure") <~
     positiveYes(textView <~ show) <~
     negativeNo(textView <~ hide) <~

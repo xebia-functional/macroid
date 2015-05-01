@@ -1,7 +1,6 @@
 package macroid.util
 
-import macroid.Ui
-import macroid.UiThreading.UiFuture
+import macroid._
 
 import scala.language.higherKinds
 import scala.concurrent.{ Future, ExecutionContext }

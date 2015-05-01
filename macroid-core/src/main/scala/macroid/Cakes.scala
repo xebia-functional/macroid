@@ -4,8 +4,6 @@ private[macroid] trait LayoutDsl
   extends Searching
   with LayoutBuilding
   with FragmentBuilding
-  with Tweaking
-  with Snailing
 
 object LayoutDsl extends LayoutDsl
 
@@ -22,10 +20,9 @@ private[macroid] trait ToastDsl
 object ToastDsl extends ToastDsl
 
 private[macroid] trait FullDsl
-  extends UiThreading
+  extends MediaQueries
   with LayoutDsl with Tweaks with Snails
-  with ToastDsl with Loafs
   with DialogDsl with Phrases
-  with MediaQueries
+  with ToastDsl with Loafs
 
 object FullDsl extends FullDsl

@@ -50,5 +50,3 @@ private[macroid] trait Tweaking {
     def <~[T, R](t: T)(implicit canTweak: CanTweak[W, T, R]): Ui[R] = canTweak.tweak(w, t)
   }
 }
-
-object Tweaking extends Tweaking

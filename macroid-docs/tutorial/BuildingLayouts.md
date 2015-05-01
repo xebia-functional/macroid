@@ -30,7 +30,8 @@ class GreetingActivity extends Activity with Contexts[Activity] {
 
     // the layout goes here
     setContentView {
-      getUi {
+      // 
+      Ui.get {
         l[LinearLayout](
           w[Button],
           w[TextView]

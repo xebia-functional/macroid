@@ -2,9 +2,8 @@ package macroid.viewable
 
 import android.view.View
 import android.widget.TextView
-import macroid.LayoutBuilding._
-import macroid.Tweaking._
 import macroid._
+import macroid.LayoutBuilding._
 import macroid.contrib.PagerTweaks
 
 import scala.annotation.implicitNotFound

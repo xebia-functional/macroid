@@ -10,7 +10,7 @@ object CheckUi extends WartTraverser {
       case LabelDef(_, _, _) ⇒
       case stat ⇒
         if (stat.tpe != null && stat.tpe <:< typeOf[macroid.Ui[_]])
-          u.error(stat.pos, s"This statement returns an Ui action, but does not actually perform it. Call the `run` method, wrap it in `runUi`, or combine it with other Ui actions.")
+          u.error(stat.pos, s"This statement returns a UI action, but does not actually run it. Call the `run` method, or wrap it in `Ui.run`, or combine it with other UI actions.")
     }
 
     new u.Traverser {

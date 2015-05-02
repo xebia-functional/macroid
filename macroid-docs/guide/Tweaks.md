@@ -117,34 +117,34 @@ A quick rundown:
     ```
   * `MultiOn` — works for the event listeners with several methods to override. 
   
-     It must be used as follows:
+    It must be used as follows:
   
-     `MultiOn.listenerName[W](Handlers*)`
+    `MultiOn.listenerName[W](Handlers*)`
     
-     * _listenerName_ must matches with the ListenerName without the prefix and the suffix. For instance: `OnSeekBarChangeListener` would be `seekBarChange`.
-     * _Handlers_ Handlers would be all the methods to override separated by commas if more than one is listed.
-     * Each *handler* follows this structure:
+    * _listenerName_ must matches with the ListenerName without the prefix and the suffix. For instance: `OnSeekBarChangeListener` would be `seekBarChange`.
+    * _Handlers_ Handlers would be all the methods to override separated by commas if more than one is listed.
+    * Each *handler* follows this structure:
      
-     `methodToOverride: EventType => body`
+    `methodToOverride: ListenerType => body`
       
-      * _methodToOverride_: the listener method which could be overriden in order to response to certain behavior.
-      * _EventType_: `UnitHandler` and `FuncHandler` are the possible values.
+    * _methodToOverride_: the listener method which could be overriden in order to response to certain behavior.
+    * _ListenerType_: `UnitListener` and `FuncListener` are the possible values.
   
-     Example for the `SeekBar` widget:
+    Example for the `SeekBar` widget:
 
     ```scala
     w[SeekBar] <~ MultiOn.SeekBarChange[SeekBar](
-      (onProgressChanged: FuncHandler) =>
+      (onProgressChanged: FuncListener) =>
         (view: SeekBar, progress: Int, fromUser: Boolean) => {
           val current = progress + 1
           Ui(println(s"Current Progress is $current"))
         },
-      (onStartTrackingTouch: FuncHandler) =>
+      (onStartTrackingTouch: FuncListener) =>
         (seekBar: SeekBar) => {
           val current = seekBar.getProgress
           Ui(println(s"Starting tracking touch, current Progress is $current"))
         },
-      (onStopTrackingTouch: FuncHandler) =>
+      (onStopTrackingTouch: FuncListener) =>
         (seekBar: SeekBar) => {
           val current = seekBar.getProgress
           Ui(println(s"Stopping tracking touch, current Progress is $current"))
@@ -152,12 +152,12 @@ A quick rundown:
      )
      // It isn’t necessary to implement all the methods, only whatever you need:
      w[SeekBar] <~ MultiOn.SeekBarChange[SeekBar](
-       (onProgressChanged: FuncHandler) =>
+       (onProgressChanged: FuncListener) =>
          (view: SeekBar, progress: Int, fromUser: Boolean) => {
            val current = progress + 1
            Ui(println(s"Current Progress is $current"))
          }
-     )
+    )
     ```
 
 ## Extra tweaks

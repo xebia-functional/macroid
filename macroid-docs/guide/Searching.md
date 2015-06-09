@@ -119,15 +119,20 @@ activity.findFrag[FragmentClass](tag)
 // or
 fragment.findFrag[FragmentClass](tag)
 ```
-
+Be aware that it will only be able to find fragment in ```onStart``` and later stages in the lifecycle.
 For example:
 
 ```scala
 class MyActivity extends Activity with Contexts[Activity] with IdGeneration {
-  ...
-  f[MapFragment].framed(Id.map, Tag.map)
-  ...
-  val map = this.findFrag[MapFragment](Tag.map)
+  override def onCreate(savedInstanceState: Bundle) = {
+    ...
+    f[MapFragment].framed(Id.map, Tag.map)
+    ...
+  }
+
+  override def onStart: Unit = {
+    val map = this.findFrag[MapFragment](Tag.map)
+  }
 }
 ```
 

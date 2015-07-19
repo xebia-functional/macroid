@@ -145,24 +145,6 @@ For an example of how to take advantage of UI actions together with [Akka](http:
 take a look at [macroid-akka-pingpong](http://typesafe.com/activator/template/macroid-akka-pingpong) Activator
 template.
 
-## Caveats
-
-Finally, it’s worth noting that Scala does not have an effect tracking system.
-(All right, it does have a [seemingly frozen one](https://github.com/lrytz/efftp)).
-Therefore if for example you use tweaking in a statement position, like this:
-
-```scala
-def wrong = {
-  button <~ text("Hi")
-  45
-}
-```
-
-the UI action will not be run and the compiler will normally not help you. Don’t panic.
-You can either enable `-Xlint`, under which non-`Unit` statements produce warnings, or use *Macroid*’s custom linter
-written with [Wartremover](https://github.com/typelevel/wartremover), which will produce a compile error.
-For instructions refer to the [installation](../Installation.html) section.
-
 ## Low-level threading utilities
 
 *Macroid* also provides `macroid.UiThreadExecutionContext`, which allows to run futures on the UI thread.

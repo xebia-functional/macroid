@@ -7,7 +7,7 @@ val commonSettings = androidBuildAar ++ bintrayPublishSettings ++ Seq(
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
 
   scalaVersion := "2.10.5",
-  crossScalaVersions := Seq("2.10.5", "2.11.6"),
+  crossScalaVersions := Seq("2.10.5", "2.11.7"),
   javacOptions ++= Seq("-source", "1.7", "-target", "1.7"),
   scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7"),
 
@@ -40,8 +40,7 @@ lazy val core = (project in file("macroid-core"))
 
     libraryDependencies ++= Seq(
       "com.android.support" % "support-v4" % "21.0.3",
-      "org.scala-lang.modules" %% "scala-async" % "0.9.2",
-      "org.brianmckenna" %% "wartremover" % "0.10",
+      "org.scala-lang.modules" %% "scala-async" % "0.9.4",
       "org.scalatest" %% "scalatest" % "2.1.5" % "test"
     )
   )

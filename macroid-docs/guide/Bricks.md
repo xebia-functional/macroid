@@ -48,7 +48,7 @@ You can add children to an empty layout later by doing
 layout <~ addViews(button, textView, ...)
 ```
 
-Finally, note that bricks return a [UI action](UiActions.html), therefore therefore
+Finally, note that bricks return a [UI action](UiActions.html), therefore
 if you need to use them e.g. in `setContentView`,
 `Ui.get` is required. *This also means that `w[Widget]` will
 return a new (different) instance of `Widget` each time you call `Ui.get(w[Widget])` or `w[Widget].get`*.

@@ -1,6 +1,6 @@
 package macroid
 
-import scala.language.dynamics
+import scala.language.{postfixOps, dynamics}
 import scala.language.experimental.macros
 import android.text.Html
 import android.view.{ ViewGroup, View }
@@ -98,6 +98,10 @@ private[macroid] trait TextTweaks {
 private[macroid] trait EventTweaks {
   import EventTweakMacros._
 
+  type UnitListener = String
+
+  type FuncListener = String
+
   object On extends Dynamic {
     /** Set event handler */
     def applyDynamic[W <: View](event: String)(handler: Ui[Any]): Tweak[W] = macro onUnitImpl[W]
@@ -105,7 +109,12 @@ private[macroid] trait EventTweaks {
 
   object FuncOn extends Dynamic {
     /** Set event handler */
-    def applyDynamic[W <: View](event: String)(handler: Any): Tweak[W] = macro onFuncImpl[W]
+    def applyDynamic[W <: View](event: String)(handler: Any): Tweak[W] = macro onUnitFuncImpl[W]
+  }
+
+  object MultiOn extends Dynamic {
+    /** Set all event handlers */
+    def applyDynamic[W <: View](event: String)(handlers: (String => Any)*): Tweak[W] = macro onMultipleFuncImpl[W]
   }
 }
 
@@ -160,66 +169,116 @@ object LayoutTweakMacros {
 }
 
 object EventTweakMacros {
-  def onBase(c: MacroContext)(event: c.Expr[String], tp: c.Type) = {
+
+  sealed trait ListenerType
+
+  object FuncListener extends ListenerType
+
+  object UnitListener extends ListenerType
+
+  def onUnitImpl[W <: View : c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handler: c.Expr[Any]) = {
     import c.universe._
 
-    // find the setter
+    val Expr(Literal(Constant(e: String))) = event
+
+    val h = q"(${newTermName(s"on${e.capitalize}")}: _root_.macroid.Tweaks.UnitListener) => $handler"
+    onMultipleFuncImpl(c)(event)(c.Expr[Tweaks.UnitListener => Any](h))
+  }
+
+  def onUnitFuncImpl[W <: View : c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handler: c.Expr[Any]) = {
+    import c.universe._
+
+    val Expr(Literal(Constant(e: String))) = event
+
+    val h = q"(${newTermName(s"on${e.capitalize}")}: _root_.macroid.Tweaks.FuncListener) => $handler"
+    onMultipleFuncImpl(c)(event)(c.Expr[Tweaks.FuncListener => Any](h))
+  }
+
+  def onMultipleFuncImpl[W <: View : c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handlers: (c.Expr[String => Any])*) = {
+    import c.universe._
+
+    val tpe = weakTypeOf[W]
+    val (_, setter) = findSetter(c)(event, tpe)
+
+    val (listener, handlerOnMethodTupleSequence) = onBaseMultipleHandlers(c)(setter, handlers)
+
+    val overrides = handlerOnMethodTupleSequence map { case (handler, on, handlerType) =>
+      getOverride(c)(on, c.Expr(c.resetLocalAttrs(handler.tree.children.last)), handlerType)
+    }
+
+    c.Expr[Tweak[View]](q"_root_.macroid.Tweak[$tpe] { x ⇒ x.$setter(new $listener { ..$overrides })}")
+  }
+
+  def findSetter(c: MacroContext)(event: c.Expr[String], tp: c.Type) = {
+    import c.universe._
+
     val Expr(Literal(Constant(eventName: String))) = event
     val setter = scala.util.Try {
       val s = tp.member(newTermName(s"setOn${eventName.capitalize}Listener")).asMethod
-      assert(s != NoSymbol); s
+      assert(s != NoSymbol)
+      s
     } getOrElse {
-      c.abort(c.enclosingPosition, s"Could not find method setOn${eventName.capitalize}Listener in $tp. You may need to provide the type argument explicitly")
+      c.abort(c.enclosingPosition, s"Could not find method setOn${eventName.capitalize}Listener in $tp. " +
+          s"You may need to provide the type argument explicitly")
     }
-
-    // find the method to override
-    val listener = setter.paramss(0)(0).typeSignature
-    val on = scala.util.Try {
-      val x = listener.member(newTermName(s"on${eventName.capitalize}")).asMethod
-      assert(x != NoSymbol); x
-    } getOrElse {
-      c.abort(c.enclosingPosition, s"Unsupported event listener class in $setter")
-    }
-
-    (setter, listener, on, tp)
+    (eventName, setter)
   }
 
-  sealed trait ListenerType
-  object FuncListener extends ListenerType
-  object UnitListener extends ListenerType
-
-  def getListener(c: MacroContext)(tpe: c.Type, setter: c.universe.MethodSymbol, listener: c.Type, on: c.universe.MethodSymbol, f: c.Expr[Any], mode: ListenerType) = {
+  def onBaseMultipleHandlers(c: MacroContext)(setter: c.universe.MethodSymbol, handlers: Seq[c.Expr[String => Any]]) = {
     import c.universe._
+
+    val listener = setter.paramss(0)(0).typeSignature
+    val handlerOnMethodTupleSequence = handlers map { h =>
+      val (eventName, typ) = h.tree.children.head match {
+        case ValDef(_, name, tpt, _) => (name.toString, tpt)
+      }
+
+      val handlerType = typ.toString() match {
+        case s: String if s.endsWith("UnitListener") => UnitListener
+        case s: String if s.endsWith("FuncListener") => FuncListener
+      }
+
+      val on = scala.util.Try {
+        val x = listener.member(newTermName(s"$eventName")).asMethod
+        assert(x != NoSymbol)
+        x
+      } getOrElse {
+        c.abort(c.enclosingPosition, s"Unsupported event listener class in $setter")
+      }
+
+      (h, on, handlerType)
+    }
+
+    val pendingMembersToOverride = listener.members filter (m => m.isMethod
+        && m.name.toString.startsWith("on")) toSet
+
+    val newSet = if (pendingMembersToOverride.nonEmpty) {
+      val specifiedMembers = handlerOnMethodTupleSequence map (t => t._2) toSet
+      val notImplemented = pendingMembersToOverride.asInstanceOf[Set[MethodSymbol]] diff specifiedMembers
+
+      val defaultHandlers = notImplemented map { m =>
+        val defaultHandler = c.Expr[Nothing](q"(${m.name.toTermName}: FuncListener) => _root_.macroid.Ui")
+
+        (defaultHandler, m, FuncListener)
+      }
+
+      handlerOnMethodTupleSequence ++ defaultHandlers
+    } else handlerOnMethodTupleSequence
+
+    (listener, newSet)
+  }
+
+  def getOverride(c: MacroContext)(on: c.universe.MethodSymbol, f: c.Expr[Any], handlerType: ListenerType) = {
+    import c.universe._
+
     val args = on.paramss(0).map(_ ⇒ newTermName(c.fresh("arg")))
     val params = args zip on.paramss(0) map { case (a, p) ⇒ q"val $a: ${p.typeSignature}" }
     lazy val argIdents = args.map(a ⇒ Ident(a))
-    val impl = mode match {
-      case FuncListener ⇒ q"$f(..$argIdents).get"
-      case UnitListener ⇒ q"$f.get"
+
+    val impl = handlerType match {
+      case UnitListener => q"$f.get"
+      case FuncListener => q"$f(..$argIdents).get"
     }
-    q"_root_.macroid.Tweak[$tpe] { x ⇒ x.$setter(new $listener { override def ${on.name.toTermName}(..$params) = $impl })}"
-  }
-
-  def onUnitImpl[W <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handler: c.Expr[Ui[Any]]) = {
-    import c.universe._
-
-    val (setter, listener, on, tp) = onBase(c)(event, weakTypeOf[W])
-    scala.util.Try {
-      if (!(on.returnType =:= typeOf[Unit])) assert((handler.actualType match { case TypeRef(_, _, t :: _) ⇒ t }) <:< on.returnType)
-      c.Expr[Tweak[View]](getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(handler.tree)), UnitListener))
-    } getOrElse {
-      c.abort(c.enclosingPosition, s"handler should be of type Ui[${on.returnType}]")
-    }
-  }
-
-  def onFuncImpl[W <: View: c.WeakTypeTag](c: MacroContext)(event: c.Expr[String])(handler: c.Expr[Any]) = {
-    import c.universe._
-
-    val (setter, listener, on, tp) = onBase(c)(event, weakTypeOf[W])
-    scala.util.Try {
-      c.Expr[Tweak[View]](c.typeCheck(getListener(c)(tp, setter, listener, on, c.Expr(c.resetLocalAttrs(handler.tree)), FuncListener)))
-    } getOrElse {
-      c.abort(c.enclosingPosition, s"handler should have type signature ${on.paramss.head.mkString("(", ",", ")")}⇒Ui[${on.returnType}]")
-    }
+    q"override def ${on.name.toTermName}(..$params) = $impl"
   }
 }

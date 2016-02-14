@@ -13,6 +13,7 @@ private[macroid] object SnailScheduler {
   val scheduler = Executors.newScheduledThreadPool(1)
   def snailSchedulerEc(millis: Long) = new ExecutionContext {
     def execute(runnable: Runnable) = scheduler.schedule(runnable, millis, TimeUnit.MILLISECONDS)
+
     def reportFailure(t: Throwable) = t.printStackTrace()
   }
 }
@@ -52,9 +53,9 @@ private[macroid] trait AnimationSnails extends VisibilityTweaks {
   def anim(animation: Animation, duration: Long = -1L) = Snail[View] { x ⇒
     val animPromise = Promise[Unit]()
     animation.setAnimationListener(new AnimationListener {
-      override def onAnimationStart(a: Animation) {}
-      override def onAnimationRepeat(a: Animation) {}
-      override def onAnimationEnd(a: Animation) { animPromise.complete(Success(())) }
+      override def onAnimationStart(a: Animation) = {}
+      override def onAnimationRepeat(a: Animation) = {}
+      override def onAnimationEnd(a: Animation) = { animPromise.complete(Success(())) }
     })
     if (duration >= 0) animation.setDuration(duration)
     x.startAnimation(animation)

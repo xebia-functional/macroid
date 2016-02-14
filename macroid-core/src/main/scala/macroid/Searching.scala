@@ -10,9 +10,9 @@ import macroid.support.{ Fragment, FragmentApi }
 /** A class to generate unique ids
   * The recommended usage is to create a singleton for the entire app:
   * {{{
-  *  object Id extends IdGen(1000)
-  *  ...
-  *  w[Button] <~ id(Id.button)
+  * object Id extends IdGen(1000)
+  * ...
+  * w[Button] <~ id(Id.button)
   * }}}
   *
   * @param start  The starting id.

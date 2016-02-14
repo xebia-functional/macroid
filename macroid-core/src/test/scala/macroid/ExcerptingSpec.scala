@@ -3,7 +3,6 @@ package macroid
 import android.widget.Button
 import org.scalatest.FlatSpec
 
-import macroid._
 import macroid.FullDsl._
 
 import scala.concurrent.Future

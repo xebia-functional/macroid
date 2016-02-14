@@ -3,11 +3,11 @@ package macroid
 import scala.language.experimental.macros
 import scala.language.implicitConversions
 import scala.language.postfixOps
-import scala.reflect.macros.{ Context ⇒ MacroContext }
-
 import android.os.Bundle
 import macroid.contrib.Layouts.RootFrameLayout
 import macroid.support.Fragment
+import macrocompat.bundle
+import scala.reflect.macros.blackbox
 
 /** A fragment builder proxy */
 case class FragmentBuilder[F](constructor: Ui[F], arguments: Bundle)(implicit ctx: ContextWrapper, fragment: Fragment[F]) {
@@ -23,10 +23,10 @@ case class FragmentBuilder[F](constructor: Ui[F], arguments: Bundle)(implicit ct
   def factory = constructor map { f ⇒ fragment.setArguments(f, arguments); f }
 
   /** Fragment wrapped in FrameLayout to be added to layout */
-  def framed[M](id: Int, tag: String)(implicit managerCtx: FragmentManagerContext[F, M]) = {
+  def framed[M](id: Int, tag: String)(implicit managerCtx: FragmentManagerContext[F, M]): Ui[RootFrameLayout] = {
     import managerCtx.fragmentApi
-    managerCtx.manager.findFrag[F](tag) map { f ⇒
-      f.getOrElse {
+    managerCtx.manager.findFrag[F](tag).map { f ⇒
+      if (f.isEmpty) {
         managerCtx.fragmentApi.addFragment(managerCtx.get, id, tag, factory.get)
       }
       new RootFrameLayout(ctx.getOriginal) {
@@ -37,38 +37,38 @@ case class FragmentBuilder[F](constructor: Ui[F], arguments: Bundle)(implicit ct
 }
 
 private[macroid] trait FragmentBuilding extends Bundles {
-  import FragmentBuildingMacros._
 
   /** Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
     */
-  def fragment[F](implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentImpl[F]
+  def fragment[F](implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro FragmentBuildingMacros.fragmentImpl[F]
 
   /** Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
     * (This is an alias for `fragment`.)
     */
-  def f[F](implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentImpl[F]
+  def f[F](implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro FragmentBuildingMacros.fragmentImpl[F]
 
   /** Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
     * Without arguments, newInstance() is called, and if that fails, class constructor is used.
     */
-  def fragment[F](newInstanceArgs: Any*)(implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentArgImpl[F]
+  def fragment[F](newInstanceArgs: Any*)(implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro FragmentBuildingMacros.fragmentArgImpl[F]
 
   /** Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
     * Without arguments, newInstance() is called, and if that fails, class constructor is used.
     * (This is an alias for `fragment`.)
     */
-  def f[F](newInstanceArgs: Any*)(implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentArgImpl[F]
+  def f[F](newInstanceArgs: Any*)(implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro FragmentBuildingMacros.fragmentArgImpl[F]
 }
 
 object FragmentBuilding extends FragmentBuilding
 
-object FragmentBuildingMacros {
-  def instFrag[F: c.WeakTypeTag](c: MacroContext)(args: Seq[c.Expr[Any]], ctx: c.Expr[ContextWrapper]) = {
-    import c.universe._
+@bundle
+class FragmentBuildingMacros(val c: blackbox.Context) {
+  import c.universe._
 
+  def instFrag[F: c.WeakTypeTag](args: Seq[c.Expr[Any]], ctx: c.Expr[ContextWrapper]): Tree = {
     scala.util.Try {
       // try to use newInstance(args)
-      c.typeCheck(q"${weakTypeOf[F].typeSymbol.companionSymbol}.newInstance(..$args)")
+      c.typecheck(q"${weakTypeOf[F].typeSymbol.companion}.newInstance(..$args)")
     } orElse scala.util.Try {
       // use class constructor
       assert(args.isEmpty)
@@ -78,21 +78,18 @@ object FragmentBuildingMacros {
     }
   }
 
-  def fragmentImpl[F: c.WeakTypeTag](c: MacroContext)(ctx: c.Expr[ContextWrapper], fragment: c.Expr[Fragment[F]]) = {
-    import c.universe._
-    val constructor = instFrag(c)(Seq(), ctx)
-    c.Expr[FragmentBuilder[F]](q"_root_.macroid.FragmentBuilder(_root_.macroid.Ui($constructor), new _root_.android.os.Bundle)($ctx, $fragment)")
+  def fragmentImpl[F: c.WeakTypeTag](ctx: c.Expr[ContextWrapper], fragment: c.Expr[Fragment[F]]): Tree = {
+    val constructor = instFrag(Seq(), ctx)
+    q"_root_.macroid.FragmentBuilder(_root_.macroid.Ui($constructor), new _root_.android.os.Bundle)($ctx, $fragment)"
   }
 
-  def fragmentArgImpl[F: c.WeakTypeTag](c: MacroContext)(newInstanceArgs: c.Expr[Any]*)(ctx: c.Expr[ContextWrapper], fragment: c.Expr[Fragment[F]]) = {
-    import c.universe._
-    val constructor = instFrag(c)(newInstanceArgs, ctx)
-    c.Expr[FragmentBuilder[F]](q"_root_.macroid.FragmentBuilder(_root_.macroid.Ui($constructor), new _root_.android.os.Bundle)($ctx, $fragment)")
+  def fragmentArgImpl[F: c.WeakTypeTag](newInstanceArgs: c.Expr[Any]*)(ctx: c.Expr[ContextWrapper], fragment: c.Expr[Fragment[F]]): Tree = {
+    val constructor = instFrag(newInstanceArgs, ctx)
+    q"_root_.macroid.FragmentBuilder(_root_.macroid.Ui($constructor), new _root_.android.os.Bundle)($ctx, $fragment)"
   }
 
-  def passImpl[F: c.WeakTypeTag](c: MacroContext)(arguments: c.Expr[(String, Any)]*) = {
-    import c.universe._
+  def passImpl[F: c.WeakTypeTag](arguments: c.Expr[(String, Any)]*): Tree = {
     val Apply(Apply(_, List(constructor, args)), List(ctx, fragment)) = c.prefix.tree
-    c.Expr[FragmentBuilder[F]](q"_root_.macroid.FragmentBuilder($constructor, $args + bundle(..$arguments))($ctx, $fragment)")
+    q"_root_.macroid.FragmentBuilder($constructor, $args + bundle(..$arguments))($ctx, $fragment)"
   }
 }

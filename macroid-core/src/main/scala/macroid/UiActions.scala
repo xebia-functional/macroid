@@ -1,8 +1,8 @@
 package macroid
 
-import android.os.{Handler, Looper}
+import android.os.{ Handler, Looper }
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.{ Failure, Success, Try }
 
 /** An ExecutionContext associated with the UI thread */

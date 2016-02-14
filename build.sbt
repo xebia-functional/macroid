@@ -1,3 +1,6 @@
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys
+import scalariform.formatter.preferences._
+
 val commonSettings = androidBuildAar ++ bintrayPublishSettings ++ Seq(
   platformTarget in Android := "android-23",
   typedResources := false,
@@ -11,7 +14,13 @@ val commonSettings = androidBuildAar ++ bintrayPublishSettings ++ Seq(
   javacOptions ++= Seq("-source", "1.7", "-target", "1.7"),
   scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7"),
 
-  libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+  libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test",
+
+  ScalariformKeys.preferences := ScalariformKeys.preferences.value
+    .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true)
+    .setPreference(DoubleIndentClassDeclaration, false)
+    .setPreference(MultilineScaladocCommentsStartOnFirstLine, true)
+    .setPreference(RewriteArrowSymbols, true)
 )
 
 val paradiseVersion = "2.1.0"

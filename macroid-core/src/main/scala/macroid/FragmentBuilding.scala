@@ -39,28 +39,24 @@ case class FragmentBuilder[F](constructor: Ui[F], arguments: Bundle)(implicit ct
 private[macroid] trait FragmentBuilding extends Bundles {
   import FragmentBuildingMacros._
 
-  /**
-   * Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
-   */
+  /** Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
+    */
   def fragment[F](implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentImpl[F]
 
-  /**
-   * Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
-   * (This is an alias for `fragment`.)
-   */
+  /** Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
+    * (This is an alias for `fragment`.)
+    */
   def f[F](implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentImpl[F]
 
-  /**
-   * Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
-   * Without arguments, newInstance() is called, and if that fails, class constructor is used.
-   */
+  /** Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
+    * Without arguments, newInstance() is called, and if that fails, class constructor is used.
+    */
   def fragment[F](newInstanceArgs: Any*)(implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentArgImpl[F]
 
-  /**
-   * Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
-   * Without arguments, newInstance() is called, and if that fails, class constructor is used.
-   * (This is an alias for `fragment`.)
-   */
+  /** Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
+    * Without arguments, newInstance() is called, and if that fails, class constructor is used.
+    * (This is an alias for `fragment`.)
+    */
   def f[F](newInstanceArgs: Any*)(implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] = macro fragmentArgImpl[F]
 }
 

@@ -25,12 +25,12 @@ object TextTweaks {
   val mono = Tweak[W](x ⇒ x.setTypeface(Typeface.MONOSPACE, typefaceStyle(x)))
 
   /** Set a typeface with the given name
-   *
-   * Example:
-   * {{{
-   * w[TextView] <~ typeface("sans-serif-light")
-   * }}}
-   */
+    *
+    * Example:
+    * {{{
+    * w[TextView] <~ typeface("sans-serif-light")
+    * }}}
+    */
   def typeface(name: String) = Tweak[W](x ⇒ x.setTypeface(Typeface.create(name, 0), typefaceStyle(x)))
 
   val numeric = Tweak[W](x ⇒ x.setInputType(InputType.TYPE_CLASS_NUMBER))

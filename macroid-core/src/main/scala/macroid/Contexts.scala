@@ -1,19 +1,19 @@
 package macroid
 
-import android.app.{Service, Activity, Application}
+import android.app.{ Service, Activity, Application }
 import android.content.Context
 import scala.ref.WeakReference
 import scala.annotation.implicitNotFound
 import macroid.support.{ Fragment, FragmentApi }
 
-@implicitNotFound("""Could not find a `ContextWrapper`.
-If you are inside Activity, Fragment or Service, extend Contexts[Activity], Contexts[Fragment] or Contexts[Service],
-otherwise pass an instance of `ContextWrapper` from outside.""")
 /** A wrapper that contains two contexts:
   * 1. the application context (which should be always alive)
   * 2. the current context, usually Activity or Service
-  *    (which is more specific, but may die and is stored as a weak reference)
+  *   (which is more specific, but may die and is stored as a weak reference)
   */
+@implicitNotFound("""Could not find a `ContextWrapper`.
+If you are inside Activity, Fragment or Service, extend Contexts[Activity], Contexts[Fragment] or Contexts[Service],
+otherwise pass an instance of `ContextWrapper` from outside.""")
 sealed trait ContextWrapper {
   type C <: Context
 
@@ -47,11 +47,12 @@ object ContextWrapper {
     ContextWrapper(fragmentImpl.activity(fragment))
 }
 
+/** FragmentManager context, used to manipulate fragments within an Activity or another Fragment
+  */
 @implicitNotFound("""Could not find `FragmentManagerContext[${F}, ${M}]`.
 If you are inside Activity or Fragment, extend Contexts[Activity] or Contexts[Fragment],
 otherwise pass an instance of `FragmentManagerContext` from outside.
 Please note that for support fragments you need to extends Contexts[FragmentActivity]""")
-/** FragmentManager context */
 case class FragmentManagerContext[-F, M](manager: M)(implicit val fragmentApi: FragmentApi[F, M, _]) {
   def get = manager
 }

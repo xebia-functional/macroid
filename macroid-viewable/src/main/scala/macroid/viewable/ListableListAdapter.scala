@@ -3,7 +3,7 @@ package macroid.viewable
 import android.view.{ View, ViewGroup }
 import android.widget.ArrayAdapter
 import macroid.util.SafeCast
-import macroid.{ContextWrapper, Ui}
+import macroid.{ ContextWrapper, Ui }
 
 /** A `ListAdapter` based on the `Listable` typeclass */
 class ListableListAdapter[A, W <: View](data: Seq[A])(implicit ctx: ContextWrapper, listable: Listable[A, W])

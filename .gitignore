@@ -6,3 +6,6 @@ local-*
 *.log
 _book
 proguard-sbt.txt
+
+# vim swap files
+*.sw*

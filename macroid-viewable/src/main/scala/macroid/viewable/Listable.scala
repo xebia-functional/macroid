@@ -10,11 +10,10 @@ import macroid.contrib.ListTweaks
 import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
 
-/**
- * Expresses the fact that *some* of the values of type `A` can be displayed with a widget or layout of type `W` in two steps:
- * 1) creating the layout
- * 2) filling the layout
- */
+/** Expresses the fact that *some* of the values of type `A` can be displayed with a widget or layout of type `W` in two steps:
+  * 1) creating the layout
+  * 2) filling the layout
+  */
 trait PartialListable[A, +W <: View] { self ⇒
   /** Supported number of different layout types */
   def viewTypeCount: Int
@@ -95,12 +94,11 @@ trait PartialListable[A, +W <: View] { self ⇒
     }
 }
 
-/**
- * Expresses the fact that data type `A` can be displayed with a widget or layout of type `W` in two steps:
- * 1) creating the layout
- * 2) filling the layout
- * Therefore suitable for use in `ListAdapter`s
- */
+/** Expresses the fact that data type `A` can be displayed with a widget or layout of type `W` in two steps:
+  * 1) creating the layout
+  * 2) filling the layout
+  * Therefore suitable for use in `ListAdapter`s
+  */
 @implicitNotFound("Don't know how to display data type ${A} in a list. Try importing an instance of Listable[${A}, ...]")
 trait Listable[A, W <: View] { self ⇒
   /** Supported number of different layout types */
@@ -236,8 +234,10 @@ object Listable {
 
   /** Combine two listables into a bigger *outer* layout */
   def combine[A1, A2, W1 <: View, W2 <: View](
-    x: Listable[A1, W1], y: Listable[A2, W2])(
-      glue: (Ui[W1], Ui[W2]) ⇒ Ui[View]): SlottedListable[(A1, A2)] =
+    x: Listable[A1, W1], y: Listable[A2, W2]
+  )(
+    glue: (Ui[W1], Ui[W2]) ⇒ Ui[View]
+  ): SlottedListable[(A1, A2)] =
     new SlottedListable[(A1, A2)] {
       class Slots {
         var x = slot[W1]

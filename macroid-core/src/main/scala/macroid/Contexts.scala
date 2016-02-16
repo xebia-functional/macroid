@@ -9,7 +9,7 @@ import macroid.support.{ Fragment, FragmentApi }
 /** A wrapper that contains two contexts:
   * 1. the application context (which should be always alive)
   * 2. the current context, usually Activity or Service
-  *   (which is more specific, but may die and is stored as a weak reference)
+  * (which is more specific, but may die and is stored as a weak reference)
   */
 @implicitNotFound("""Could not find a `ContextWrapper`.
 If you are inside Activity, Fragment or Service, extend Contexts[Activity], Contexts[Fragment] or Contexts[Service],

@@ -37,7 +37,7 @@ object TextTweaks {
   val date = Tweak[W](x ⇒ x.setInputType(InputType.TYPE_CLASS_DATETIME))
   val phone = Tweak[W](x ⇒ x.setInputType(InputType.TYPE_CLASS_PHONE))
 
-  def size(points: Int) = Tweak[W](_.setTextSize(TypedValue.COMPLEX_UNIT_SP, points))
+  def size(points: Int) = Tweak[W](_.setTextSize(TypedValue.COMPLEX_UNIT_SP, points.toFloat))
   val medium = size(18)
   val large = size(22)
 

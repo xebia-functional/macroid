@@ -2,6 +2,7 @@ package macroid
 
 import android.app.{ Service, Activity, Application }
 import android.content.Context
+import android.view.View
 import scala.ref.WeakReference
 import scala.annotation.implicitNotFound
 import macroid.support.{ Fragment, FragmentApi }
@@ -12,8 +13,8 @@ import macroid.support.{ Fragment, FragmentApi }
   * (which is more specific, but may die and is stored as a weak reference)
   */
 @implicitNotFound("""Could not find a `ContextWrapper`.
-If you are inside Activity, Fragment or Service, extend Contexts[Activity], Contexts[Fragment] or Contexts[Service],
-otherwise pass an instance of `ContextWrapper` from outside.""")
+If you are inside Activity, Fragment or Service, extend Contexts[Activity], Contexts[Fragment], Contexts[Service] or
+Contexts[View], otherwise pass an instance of `ContextWrapper` from outside.""")
 sealed trait ContextWrapper {
   type C <: Context
 
@@ -33,6 +34,9 @@ case class ServiceContextWrapper(original: WeakReference[Service], application: 
 case class ApplicationContextWrapper(original: WeakReference[Application], application: Context)
   extends ContextWrapper { type C = Application }
 
+case class GenericContextWrapper(original: WeakReference[Context], application: Context)
+  extends ContextWrapper { type C = Context }
+
 object ContextWrapper {
   def apply(activity: Activity): ActivityContextWrapper =
     ActivityContextWrapper(WeakReference(activity), activity.getApplicationContext)
@@ -45,6 +49,17 @@ object ContextWrapper {
 
   def apply[F](fragment: F)(implicit fragmentImpl: Fragment[F]): ActivityContextWrapper =
     ContextWrapper(fragmentImpl.activity(fragment))
+
+  def apply(context: Context): GenericContextWrapper =
+    GenericContextWrapper(WeakReference(context), context.getApplicationContext)
+
+  def apply(view: View): ContextWrapper = view.getContext match {
+    case activity: Activity ⇒ ContextWrapper(activity)
+    case service: Service ⇒ ContextWrapper(service)
+    case app: Application ⇒ ContextWrapper(app)
+    case context ⇒ ContextWrapper(context)
+  }
+
 }
 
 /** FragmentManager context, used to manipulate fragments within an Activity or another Fragment
@@ -66,6 +81,9 @@ trait Contexts[X] { self: X ⇒
 
   implicit def serviceContextWrapper(implicit service: X <:< Service): ServiceContextWrapper =
     ContextWrapper(service(self))
+
+  implicit def viewContextWrapper(implicit view: X <:< View): ContextWrapper =
+    ContextWrapper(view(self))
 
   implicit def activityManagerContext[M, F, A >: X](implicit fragmentApi: FragmentApi[F, M, A]) =
     FragmentManagerContext[F, M](fragmentApi.activityManager(self))

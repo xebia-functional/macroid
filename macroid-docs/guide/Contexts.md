@@ -15,8 +15,8 @@ This is done with the `ContextWrapper` trait, which has four methods:
 * `contextWrapper.bestAvailable` will return the original context if it’s available,
   otherwise — the application context.
 
-There are a few specialized cases of `ContextWrapper`: `ActivityContextWrapper`, `ServiceContextWrapper`
-and `ApplicationContextWrapper`.
+There are a few specialized cases of `ContextWrapper`: `ActivityContextWrapper`, `ServiceContextWrapper`,
+`ApplicationContextWrapper` and `GenericContextWrapper`.
 
 ## Including
 
@@ -39,10 +39,18 @@ class MyActivity extends FragmentActivity with Contexts[FragmentActivity] {
 }
 ```
 
-Finally, in a fragment (either `android.app.Fragment` or `android.support.v4.app.Fragment`):
+In a fragment (either `android.app.Fragment` or `android.support.v4.app.Fragment`):
 
 ```scala
 class MyFragment extends Fragment with Contexts[Fragment] {
+  ...
+}
+```
+
+Finally, if you want to include the implicit context in your views:
+
+```scala
+class MyFrameLayout extends FrameLayout with Contexts[View] {
   ...
 }
 ```

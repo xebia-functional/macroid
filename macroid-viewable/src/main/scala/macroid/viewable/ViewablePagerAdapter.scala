@@ -20,3 +20,7 @@ class ViewablePagerAdapter[A, +W <: View](data: Seq[A])(implicit ctx: ContextWra
 
   def isViewFromObject(view: View, `object`: Any) = view == `object`
 }
+
+class ViewableNamedPagerAdapter[A, +W <: View](m: Vector[(String, A)])(implicit ctx: ContextWrapper, viewable: Viewable[A, W]) extends ViewablePagerAdapter[A, W](m.map(_._2)) {
+  override def getPageTitle(position: Int): CharSequence = m.map(_._1).apply(position)
+}

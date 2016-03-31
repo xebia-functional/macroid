@@ -82,9 +82,15 @@ trait Viewable[A, +W <: View] { self ⇒
   def pagerAdapter(data: Seq[A])(implicit ctx: ContextWrapper): ViewablePagerAdapter[A, W] =
     new ViewablePagerAdapter[A, W](data)(ctx, this)
 
+  def pagerAdapter(v: Vector[(String, A)])(implicit ctx: ContextWrapper): ViewablePagerAdapter[A, W] =
+    new ViewableNamedPagerAdapter[A, W](v)(ctx, this)
+
   /** A tweak to set the adapter of a `ViewPager` */
   def pagerAdapterTweak(data: Seq[A])(implicit ctx: ContextWrapper) =
     PagerTweaks.adapter(pagerAdapter(data))
+
+  def pagerAdapterTweak(v: Vector[(String, A)])(implicit ctx: ContextWrapper) =
+    PagerTweaks.adapter(pagerAdapter(v))
 }
 
 /** A builder to define viewables for a particular data type */

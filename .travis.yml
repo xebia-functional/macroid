@@ -48,6 +48,6 @@ before_install:
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean test
 after_success:
-- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "=all-upgrade-for-sonatype-version" && sbt ++$TRAVIS_SCALA_VERSION "project core" "publishSnapshot"
-- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "=all-upgrade-for-sonatype-version" && sbt ++$TRAVIS_SCALA_VERSION "project akka" "publishSnapshot"
-- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "=all-upgrade-for-sonatype-version" && sbt ++$TRAVIS_SCALA_VERSION "project viewable" "publishSnapshot"
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && sbt ++$TRAVIS_SCALA_VERSION "project core" "publishSnapshot"
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && sbt ++$TRAVIS_SCALA_VERSION "project akka" "publishSnapshot"
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && sbt ++$TRAVIS_SCALA_VERSION "project viewable" "publishSnapshot"

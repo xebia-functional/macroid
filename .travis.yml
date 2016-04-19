@@ -19,6 +19,11 @@ cache:
   - $HOME/android-sdk_r24-linux.tgz
   - $HOME/android-sdk-linux
 
+env:
+  global:
+    - secure: "IySntSISKvpQjBJetgwfrFoFDTwAl2diMTpMv8yAeeOwYkpRaO8UaeuitWpK2JNb2JrfbzfvelT+pR79kyKCNzXfzvFJ1kw0NaSqSijBQo5h8PcnqpdB8W/Rr3LLE1v6isvTIAI/hqEnwOzbPkX1jJ0Zyq8gQA5vEk1iT/xpFzQ="
+    - secure: "bJzXS/Uhyrfl0Hr6FE856i0EOipG/8J12Sq/HaJdLwZ1c7Ns1eNQ1trSKN7plzRuY1ybiMgp3BHvkLDZkAaxfVNgyTl+REyMXr58ns1kIP9obTcHNxz/X2DXbILpFbngmNdf1LAvBDNVFbPaDUjUF9zUY31SUspjYE3gfflcAF0="
+    - secure: "WhPCWomgfcK/zMJYc5IMN82Gb2lXhCVt0XedSCAcOCsbNW/jeUN87ZleshhIuZgf/jQ6yHJ0X0Btiy4IpayrBI0n6Zg74MMnQ802etPeuBlxqQjdoBLsj0EGMxFtKrJap3mpfpmWvy8g0Mgcvxh4f3k+CPV5GCBxWOphEm9eH8Q="
 before_install:
 - sudo apt-get update -qq
 - sudo apt-get install -y libc6-i386 lib32z1 lib32stdc++6
@@ -26,4 +31,10 @@ before_install:
 - export ANDROID_HOME=$HOME/android-sdk-linux
 - export ANDROID_SDK_HOME=$HOME/android-sdk-linux
 - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
-
+- export GPG_FOLDER=$TRAVIS_BUILD_DIR
+- openssl aes-256-cbc -K $encrypted_7931e7eaa203_key -iv $encrypted_7931e7eaa203_iv -in rings.tar.enc -out rings.tar -d
+- tar -xvf $TRAVIS_BUILD_DIR/rings.tar -C $TRAVIS_BUILD_DIR
+after_success:
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "=all-upgrade-for-sonatype-version" && sbt ++$TRAVIS_SCALA_VERSION "project core" "publishSnapshot"
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "=all-upgrade-for-sonatype-version" && sbt ++$TRAVIS_SCALA_VERSION "project akka" "publishSnapshot"
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "=all-upgrade-for-sonatype-version" && sbt ++$TRAVIS_SCALA_VERSION "project viewable" "publishSnapshot"

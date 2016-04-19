@@ -1,6 +1,6 @@
 ### *Macroid* — a Scala GUI DSL for Android
 
-[![Build Status](https://travis-ci.org/macroid/macroid.png?branch=master)](https://travis-ci.org/macroid/macroid) [![Codacy Badge](https://www.codacy.com/project/badge/fb3d939567d04686bfb23da3a22b9de9)](https://www.codacy.com/public/nickstanch/macroid) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Macroid-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1529) [![Join the chat at https://gitter.im/macroid/macroid](https://img.shields.io/badge/GITTER-Join%20chat%20→-brightgreen.svg?style=flat)](https://gitter.im/macroid/macroid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/47deg/macroid.png?branch=master)](https://travis-ci.org/47deg/macroid) [![Codacy Badge](https://www.codacy.com/project/badge/fb3d939567d04686bfb23da3a22b9de9)](https://www.codacy.com/public/nickstanch/macroid) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Macroid-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1529) [![Join the chat at https://gitter.im/macroid/macroid](https://img.shields.io/badge/GITTER-Join%20chat%20→-brightgreen.svg?style=flat)](https://gitter.im/macroid/macroid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 *Macroid* is the most badass modular functional user interface creation language for Android, implemented with Scala macros.
 [Some people say](http://www.urbandictionary.com/define.php?term=macroid) it’s also a dead noodle.
@@ -9,7 +9,7 @@ Striving to be focused on one thing (GUI), *Macroid* promotes composability and 
 
 Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 
-Latest version: `2.0.0-M4` ([installation](http://macroid.github.io/Installation.html) | [changelog](http://macroid.github.io/Changelog.html)).
+Latest version: `2.0.0-M5`
 
 License: [MIT](http://opensource.org/licenses/MIT).
 
@@ -19,6 +19,27 @@ License: [MIT](http://opensource.org/licenses/MIT).
 * [Mailing list](https://groups.google.com/forum/#!forum/macroid)
 
 For more info head to http://macroid.github.io!
+
+#### Installation
+
+```scala
+
+libraryDependencies ++= Seq(
+  aar("org.macroid" %% "macroid" % "2.0.0-M5")
+
+```
+
+If you want to use the SNAPSHOT version you need to add the Sonatype SNAPSHOT repo
+ 
+```scala
+
+resolvers += 
+  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
+libraryDependencies ++= Seq(
+  aar("org.macroid" %% "macroid" % "2.0.0-M6-SNAPSHOT")
+
+```
 
 #### Contributing
 

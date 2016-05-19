@@ -1,12 +1,17 @@
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
+import sbt.Keys._
 import scalariform.formatter.preferences._
 
-val commonSettings = androidBuildAar ++ bintrayPublishSettings ++ Seq(
+
+lazy val gpgFolder = sys.env.getOrElse("GPG_FOLDER", ".")
+
+lazy val publishSnapshot = taskKey[Unit]("Publish only if the version is a SNAPSHOT")
+
+val commonSettings = androidBuildAar ++ Seq(
   platformTarget in Android := "android-23",
   typedResources := false,
 
-  organization := "org.macroid",
-  version := "2.0.0-M4",
+  version := "2.0.0-M5",
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
 
   scalaVersion := "2.11.7",
@@ -41,7 +46,58 @@ val commonSettings = androidBuildAar ++ bintrayPublishSettings ++ Seq(
     .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true)
     .setPreference(DoubleIndentClassDeclaration, false)
     .setPreference(MultilineScaladocCommentsStartOnFirstLine, true)
-    .setPreference(RewriteArrowSymbols, true)
+    .setPreference(RewriteArrowSymbols, true),
+
+  organization := "org.macroid",
+
+  organizationName := "macroid",
+
+  organizationHomepage := Some(new URL("http://macroid.github.io")),
+
+  publishMavenStyle := true,
+
+  startYear := Some(2015),
+
+  description := "A Scala GUI DSL for Android",
+
+  homepage := Some(url("http://macroid.github.io")),
+
+  scmInfo := Some(ScmInfo(url("https://github.com/47deg/macroid"), "https://github.com/47deg/macroid.git")),
+
+  pomExtra :=
+    <developers>
+      <developer>
+        <name>macroid</name>
+      </developer>
+    </developers>,
+
+  publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+  },
+
+  pgpPassphrase := Some(sys.env.getOrElse("GPG_PASSPHRASE", "").toCharArray),
+
+  pgpPublicRing := file(s"$gpgFolder/local.pubring.asc"),
+
+  pgpSecretRing := file(s"$gpgFolder/local.secring.asc"),
+
+  credentials += Credentials("Sonatype Nexus Repository Manager",
+    "oss.sonatype.org",
+    sys.env.getOrElse("PUBLISH_USERNAME", ""),
+    sys.env.getOrElse("PUBLISH_PASSWORD", "")),
+
+  publishArtifact in Test := false,
+
+  publishSnapshot := Def.taskDyn {
+    if (isSnapshot.value) Def.task { PgpKeys.publishSigned.value }
+    else Def.task(println("Actual version is not a Snapshot. Skipping publish."))
+  }.value
+
+
 ) ++ addCommandAlias("testAndCover", "; clean; coverage; test; coverageReport; coverageAggregate")
 
 val paradiseVersion = "2.1.0"

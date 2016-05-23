@@ -11,6 +11,8 @@ Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 
 Latest version: `2.0.0-M5`
 
+Snapshot version: `2.0.0-M6-SNAPSHOT`
+
 License: [MIT](http://opensource.org/licenses/MIT).
 
 * [What does it look like](http://macroid.github.io/Tutorial.html)
@@ -29,6 +31,18 @@ libraryDependencies ++= Seq(
 
 ```
 
+If you want to use the SNAPSHOT version you need to add the Sonatype SNAPSHOT repo
+
+```scala
+
+resolvers +=
+  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
+libraryDependencies ++= Seq(
+  aar("org.macroid" %% "macroid" % "2.0.0-M6-SNAPSHOT")
+
+```
+
 #### Contributing
 
 All contributions are welcome (and encouraged)!
@@ -40,7 +54,7 @@ All contributions are welcome (and encouraged)!
 [=|+|!] [core|viewable|akka|docs|all]: <Actual message>.
 ```
 * `=` means there are no API changes
-* `+` means added funtionality
+* `+` means added functionality
 * `!` means breaking changes (source or binary)
 
 Example:

@@ -7,6 +7,8 @@ lazy val gpgFolder = sys.env.getOrElse("GPG_FOLDER", ".")
 
 lazy val publishSnapshot = taskKey[Unit]("Publish only if the version is a SNAPSHOT")
 
+val scalaV = "2.11.8"
+
 val commonSettings = androidBuildAar ++ Seq(
   platformTarget in Android := "android-23",
   typedResources := false,
@@ -14,8 +16,8 @@ val commonSettings = androidBuildAar ++ Seq(
   version := "2.0.0-M6-SNAPSHOT",
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
 
-  scalaVersion := "2.11.7",
-  crossScalaVersions := Seq("2.10.6", "2.11.7"),
+  scalaVersion := scalaV,
+  crossScalaVersions := Seq("2.10.6", scalaV),
   javacOptions ++= Seq("-source", "1.7", "-target", "1.7"),
   scalacOptions ++= Seq(
     "-feature",
@@ -158,7 +160,7 @@ lazy val root = (project in file("."))
   .settings(
     publish := (),
     publishLocal := (),
-    scalaVersion := "2.11.7",
+    scalaVersion := scalaV,
     scalacOptions in (Compile, doc) ++= Seq(
       "-sourcepath", baseDirectory.value.getAbsolutePath,
       "-doc-source-url", "https://github.com/macroid/macroid/tree/master€{FILE_PATH}.scala"

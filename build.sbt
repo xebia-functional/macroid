@@ -2,16 +2,17 @@ import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import sbt.Keys._
 import scalariform.formatter.preferences._
 
-
 lazy val gpgFolder = sys.env.getOrElse("GPG_FOLDER", ".")
 
 lazy val publishSnapshot = taskKey[Unit]("Publish only if the version is a SNAPSHOT")
+
+val androidV = "24.2.0"
 
 val commonSettings = androidBuildAar ++ Seq(
   platformTarget in Android := "android-23",
   typedResources := false,
 
-  version := "2.0.0-M6-SNAPSHOT",
+  version := "2.0",
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
 
   scalaVersion := "2.11.7",
@@ -35,7 +36,7 @@ val commonSettings = androidBuildAar ++ Seq(
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "2.2.6" % Test,
     "com.geteit" %% "robotest" % "0.12" % Test,
-    "com.android.support" % "support-v4" % "23.1.1"
+    "com.android.support" % "support-v4" % androidV
   ),
 
   parallelExecution in Test := false,
@@ -153,8 +154,23 @@ lazy val akka = (project in file("macroid-akka"))
   )
   .dependsOn(core)
 
+lazy val extras = (project in file("macroid-extras"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "macroid-extras",
+    description := "Tweaks and utilities for android views",
+    homepage := Some(url("http://macroid.github.io/modules/Extras.html")),
+
+    libraryDependencies ++= Seq(
+      "com.android.support" % "appcompat-v7" % androidV,
+      "com.android.support" % "recyclerview-v7" % androidV,
+      "com.android.support" % "cardview-v7" % androidV,
+      "com.android.support" % "design" % androidV)
+  )
+  .dependsOn(core)
+
 lazy val root = (project in file("."))
-  .aggregate(core, viewable, akka)
+  .aggregate(core, viewable, akka, extras)
   .settings(
     publish := (),
     publishLocal := (),

@@ -1,21 +1,3 @@
-/*
- *
- *   Copyright (C) 2015 47 Degrees, LLC http://47deg.com hello@47deg.com
- *
- *   Licensed under the Apache License, Version 2.0 (the "License"); you may
- *   not use this file except in compliance with the License. You may obtain
- *   a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- *
- */
-
 package macroid.extras
 
 import android.support.v4.view.GravityCompat
@@ -48,5 +30,43 @@ object DrawerLayoutTweaks {
   def dlOpenDrawer: Tweak[W] = Tweak[W](_.openDrawer(GravityCompat.START))
 
   def dlCloseDrawer: Tweak[W] = Tweak[W](_.closeDrawer(GravityCompat.START))
+
+  def dlOpenDrawerEnd: Tweak[W] = Tweak[W](_.openDrawer(GravityCompat.END))
+
+  def dlCloseDrawerEnd: Tweak[W] = Tweak[W](_.closeDrawer(GravityCompat.END))
+
+  def dlLockedClosedStart: Tweak[W] = Tweak[W](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START))
+
+  def dlLockedClosedEnd: Tweak[W] = Tweak[W](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END))
+
+  def dlLockedClosed: Tweak[W] = Tweak[W](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED))
+
+  def dlUnlocked: Tweak[W] = Tweak[W](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED))
+
+  def dlUnlockedStart: Tweak[W] = Tweak[W](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START))
+
+  def dlUnlockedEnd: Tweak[W] = Tweak[W](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END))
+
+  def dlLockedOpen: Tweak[W] = Tweak[W](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN))
+
+  def dlLockedOpenStart: Tweak[W] = Tweak[W](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, GravityCompat.START))
+
+  def dlLockedOpenEnd: Tweak[W] = Tweak[W](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, GravityCompat.END))
+
+  def dlSwapDrawer: Tweak[W] = Tweak[W] { view =>
+    if (view.isDrawerOpen(GravityCompat.START)) {
+      view.closeDrawer(GravityCompat.START)
+    } else {
+      view.openDrawer(GravityCompat.START)
+    }
+  }
+
+  def dlSwapDrawerEnd: Tweak[W] = Tweak[W] { view =>
+    if (view.isDrawerOpen(GravityCompat.END)) {
+      view.closeDrawer(GravityCompat.END)
+    } else {
+      view.openDrawer(GravityCompat.END)
+    }
+  }
 
 }

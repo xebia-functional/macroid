@@ -1,30 +1,13 @@
-/*
- *
- *   Copyright (C) 2015 47 Degrees, LLC http://47deg.com hello@47deg.com
- *
- *   Licensed under the Apache License, Version 2.0 (the "License"); you may
- *   not use this file except in compliance with the License. You may obtain
- *   a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- *
- */
-
 package macroid.extras
 
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextUtils.TruncateAt
-import android.text.{ Spannable, Spanned }
+import android.text.style.UnderlineSpan
+import android.text.{Spannable, SpannableString, Spanned}
 import android.util.TypedValue
 import android.widget.TextView
-import macroid.{ ContextWrapper, Tweak }
+import macroid.{ContextWrapper, Tweak}
 
 object TextViewTweaks {
   type W = TextView
@@ -95,6 +78,8 @@ object TextViewTweaks {
 
   def tvHint(text: Int): Tweak[W] = Tweak[W](_.setHint(text))
 
+  def tvHintColor(color: Int): Tweak[W] = Tweak[W](_.setHintTextColor(color))
+
   def tvCompoundDrawablesWithIntrinsicBounds(
     left: Option[Drawable] = None,
     top: Option[Drawable] = None,
@@ -108,5 +93,11 @@ object TextViewTweaks {
 
   def tvShadowLayer(radius: Float, dx: Int, dy: Int, color: Int): Tweak[W] =
     Tweak[W](_.setShadowLayer(radius, dx, dy, color))
+
+  def tvUnderlineText(text: String): Tweak[W] = Tweak[W] { tv =>
+    val content = new SpannableString(text)
+    content.setSpan(new UnderlineSpan(), 0, text.length, 0)
+    tv.setText(content)
+  }
 
 }

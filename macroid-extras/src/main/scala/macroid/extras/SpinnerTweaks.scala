@@ -1,29 +1,25 @@
-/*
- *
- *   Copyright (C) 2015 47 Degrees, LLC http://47deg.com hello@47deg.com
- *
- *   Licensed under the Apache License, Version 2.0 (the "License"); you may
- *   not use this file except in compliance with the License. You may obtain
- *   a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- *
- */
-
 package macroid.extras
 
-import android.widget.{ Spinner, SpinnerAdapter }
+import android.graphics.PorterDuff
+import android.view.View
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.{AdapterView, Spinner, SpinnerAdapter}
 import macroid.Tweak
 
 object SpinnerTweaks {
   type W = Spinner
 
   def sAdapter(adapter: SpinnerAdapter) = Tweak[W](_.setAdapter(adapter))
+
+  def sSelection(position: Int) = Tweak[W](_.setSelection(position))
+
+  def sItemSelectedListener(onItem: (Int => Unit)) = Tweak[W](_.setOnItemSelectedListener(new OnItemSelectedListener {
+    override def onNothingSelected(parent: AdapterView[_]): Unit = {}
+
+    override def onItemSelected(parent: AdapterView[_], view: View, position: Int, id: Long): Unit = onItem(position)
+  }))
+
+  def sChangeDropdownColor(color: Int) = Tweak[W](_.getBackground.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
+
 
 }

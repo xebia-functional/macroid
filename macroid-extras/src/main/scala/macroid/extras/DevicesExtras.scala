@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2015 47 Degrees, LLC http://47deg.com hello@47deg.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may
- * not use this file except in compliance with the License. You may obtain
- * a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package macroid.extras
 
 import android.os.Build
@@ -49,6 +33,8 @@ object DeviceVersion {
 
     def !=(a: SDKVersion) = this.version != a.version
 
+    def isSupported: Boolean = this > CurrentVersion
+
     def withOpThan[A](op: ⇒ Boolean)(f: ⇒ A): Option[A] = if (op) Some(f) else None
 
     def ifEqualThen[A](f: ⇒ A): Option[A] = withOpThan(this == CurrentVersion)(f)
@@ -77,6 +63,8 @@ object DeviceVersion {
   case object CurrentVersion extends Version(SDK_INT)
 
   case object Marshmallow extends Version(M)
+
+  case object LollipopMR1 extends Version(LOLLIPOP_MR1)
 
   case object Lollipop extends Version(LOLLIPOP)
 

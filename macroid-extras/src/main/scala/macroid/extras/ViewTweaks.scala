@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2015 47 Degrees, LLC http://47deg.com hello@47deg.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may
- * not use this file except in compliance with the License. You may obtain
- * a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package macroid.extras
 
 import android.animation.AnimatorInflater
@@ -56,6 +40,16 @@ object ViewTweaks {
 
   def vMinWidth(width: Int): Tweak[W] = Tweak[W](_.setMinimumWidth(width))
 
+  def vResize(size: Int): Tweak[View] = vResize(size, size)
+
+  def vResize(width: Int, height: Int): Tweak[W] = Tweak[W] {
+    view =>
+      val params = view.getLayoutParams
+      params.height = width
+      params.width = height
+      view.requestLayout()
+  }
+
   def vMargins(margin: Int): Tweak[W] = Tweak[W] { view ⇒
     view
       .getLayoutParams
@@ -90,6 +84,8 @@ object ViewTweaks {
     paddingRight: Int = 0,
     paddingBottom: Int = 0
   ): Tweak[W] = Tweak[W](_.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom))
+
+  def vDisableHapticFeedback: Tweak[W] = Tweak[W](_.setHapticFeedbackEnabled(false))
 
   def vActivated(activated: Boolean): Tweak[W] = Tweak[W](_.setActivated(activated))
 
@@ -320,6 +316,18 @@ object ViewTweaks {
 
   def vSnackbarIndefiniteAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] { view ⇒
     Ui(Snackbar.make(view, res, Snackbar.LENGTH_INDEFINITE).setAction(buttonText, new OnClickListener {
+      override def onClick(v: View): Unit = f()
+    }).show()).run
+  }
+
+  def vSnackbarLongAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] { view ⇒
+    Ui(Snackbar.make(view, res, Snackbar.LENGTH_LONG).setAction(buttonText, new OnClickListener {
+      override def onClick(v: View): Unit = f()
+    }).show()).run
+  }
+
+  def vSnackbarShortAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] { view ⇒
+    Ui(Snackbar.make(view, res, Snackbar.LENGTH_SHORT).setAction(buttonText, new OnClickListener {
       override def onClick(v: View): Unit = f()
     }).show()).run
   }

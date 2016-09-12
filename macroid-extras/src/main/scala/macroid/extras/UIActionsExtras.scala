@@ -1,9 +1,9 @@
 package macroid.extras
 
 import android.content.Context
-import android.os.{Handler, Vibrator}
+import android.os.{ Handler, Vibrator }
 import android.widget.Toast
-import macroid.{ContextWrapper, Ui}
+import macroid.{ ContextWrapper, Ui }
 
 object UIActionsExtras {
 
@@ -35,8 +35,8 @@ object UIActionsExtras {
 
   def uiVibrate(millis: Long = 100)(implicit contextWrapper: ContextWrapper): Ui[Any] = Ui {
     contextWrapper.application.getSystemService(Context.VIBRATOR_SERVICE) match {
-      case vibrator: Vibrator => vibrator.vibrate(millis)
-      case _ =>
+      case vibrator: Vibrator ⇒ vibrator.vibrate(millis)
+      case _ ⇒
     }
   }
 

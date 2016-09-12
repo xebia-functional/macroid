@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable
 import android.view.ContextThemeWrapper
 import macroid.ActivityContextWrapper
 
-
 object ThemeExtras {
 
   def themeGetDrawable(themeId: Int, attr: Int)(implicit activityContext: ActivityContextWrapper): Option[Drawable] =

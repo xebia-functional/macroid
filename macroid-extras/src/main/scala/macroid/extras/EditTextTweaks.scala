@@ -27,11 +27,11 @@ object EditTextTweaks {
     }
   }
 
-  def etShowKeyboard(implicit contextWrapper: ContextWrapper) = Tweak[W] { editText =>
+  def etShowKeyboard(implicit contextWrapper: ContextWrapper) = Tweak[W] { editText ⇒
     editText.requestFocus()
     Option(contextWrapper.bestAvailable.getSystemService(Context.INPUT_METHOD_SERVICE)) foreach {
-      case imm: InputMethodManager => imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
-      case _ =>
+      case imm: InputMethodManager ⇒ imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+      case _ ⇒
     }
   }
 

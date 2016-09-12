@@ -43,7 +43,7 @@ object ViewTweaks {
   def vResize(size: Int): Tweak[View] = vResize(size, size)
 
   def vResize(width: Int, height: Int): Tweak[W] = Tweak[W] {
-    view =>
+    view ⇒
       val params = view.getLayoutParams
       params.height = width
       params.width = height
@@ -107,8 +107,8 @@ object ViewTweaks {
   def vTag[T](id: Int, tag: T) = Tweak[W](_.setTag(id, tag))
 
   def vTransformation(x: Int = 0, y: Int = 0): Tweak[W] = Tweak[W] { view ⇒
-    view.setTranslationX(x)
-    view.setTranslationY(y)
+    view.setTranslationX(x.toFloat)
+    view.setTranslationY(y.toFloat)
   }
 
   val vGone: Tweak[W] = Tweak[W](_.setVisibility(View.GONE))
@@ -133,11 +133,11 @@ object ViewTweaks {
 
   def vScaleY(y: Float): Tweak[W] = Tweak[W](_.setScaleY(y))
 
-  def vTranslationX(x: Float): Tweak[W] = Tweak[W](_.setTranslationX(x))
+  def vTranslationX(x: Float): Tweak[W] = Tweak[W](_.setTranslationX(x.toFloat))
 
-  def vTranslationY(y: Float): Tweak[W] = Tweak[W](_.setTranslationY(y))
+  def vTranslationY(y: Float): Tweak[W] = Tweak[W](_.setTranslationY(y.toFloat))
 
-  def vTranslationZ(z: Float): Tweak[W] = Tweak[W](_.setTranslationZ(z))
+  def vTranslationZ(z: Float): Tweak[W] = Tweak[W](_.setTranslationZ(z.toFloat))
 
   def vBackgroundColorFilterResource(res: Int, mode: Mode = Mode.MULTIPLY)(implicit context: ContextWrapper): Tweak[W] =
     Tweak[W](_.getBackground.setColorFilter(new PorterDuffColorFilter(resGetColor(res), mode)))
@@ -220,7 +220,7 @@ object ViewTweaks {
           verticalPadding,
           view.getWidth - horizontalPadding,
           view.getHeight - verticalPadding,
-          radius
+          radius.toFloat
         )
     })
     view.setClipToOutline(true)

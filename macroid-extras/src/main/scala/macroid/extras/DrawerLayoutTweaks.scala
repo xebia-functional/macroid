@@ -53,7 +53,7 @@ object DrawerLayoutTweaks {
 
   def dlLockedOpenEnd: Tweak[W] = Tweak[W](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, GravityCompat.END))
 
-  def dlSwapDrawer: Tweak[W] = Tweak[W] { view =>
+  def dlSwapDrawer: Tweak[W] = Tweak[W] { view ⇒
     if (view.isDrawerOpen(GravityCompat.START)) {
       view.closeDrawer(GravityCompat.START)
     } else {
@@ -61,7 +61,7 @@ object DrawerLayoutTweaks {
     }
   }
 
-  def dlSwapDrawerEnd: Tweak[W] = Tweak[W] { view =>
+  def dlSwapDrawerEnd: Tweak[W] = Tweak[W] { view ⇒
     if (view.isDrawerOpen(GravityCompat.END)) {
       view.closeDrawer(GravityCompat.END)
     } else {

@@ -4,10 +4,10 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextUtils.TruncateAt
 import android.text.style.UnderlineSpan
-import android.text.{Spannable, SpannableString, Spanned}
+import android.text.{ Spannable, SpannableString, Spanned }
 import android.util.TypedValue
 import android.widget.TextView
-import macroid.{ContextWrapper, Tweak}
+import macroid.{ ContextWrapper, Tweak }
 
 object TextViewTweaks {
   type W = TextView
@@ -94,7 +94,7 @@ object TextViewTweaks {
   def tvShadowLayer(radius: Float, dx: Int, dy: Int, color: Int): Tweak[W] =
     Tweak[W](_.setShadowLayer(radius, dx, dy, color))
 
-  def tvUnderlineText(text: String): Tweak[W] = Tweak[W] { tv =>
+  def tvUnderlineText(text: String): Tweak[W] = Tweak[W] { tv ⇒
     val content = new SpannableString(text)
     content.setSpan(new UnderlineSpan(), 0, text.length, 0)
     tv.setText(content)

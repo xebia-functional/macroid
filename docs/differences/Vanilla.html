@@ -1,0 +1,101 @@
+<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>macroid</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="author" content="macroid" /><meta name="og:image" content="/macroid/img/poster.png" /><meta name="og:title" content="macroid" /><meta name="og:site_name" content="macroid" /><meta name="og:url" content="http://macroid.github.io" /><meta name="og:type" content="website" /><meta name="og:description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="twitter:image" content="/macroid/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/macroid/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css" /><link rel="stylesheet" href="/macroid/css/style.css" /><link rel="stylesheet" href="/macroid/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/macroid/" class="brand"><div class="brand-wrapper" style="background:url('/macroid/img/sidebar_brand.png') no-repeat"><span>macroid</span></div></a></li>  <li><a href="/macroid/docs/index.html" class="">Introduction</a>  <li><a href="/macroid/docs/Installation.html" class="">Installation</a> <ul class="sub_section"> <li><a href="/macroid/docs/installation/ScalaOnAndroid.html" class="">Scala on Android</a></li></ul>  <li><a href="/macroid/docs/Tutorial.html" class="">Tutorial</a> <ul class="sub_section"> <li><a href="/macroid/docs/tutorial/BuildingLayouts.html" class="">Building layouts</a></li> <li><a href="/macroid/docs/tutorial/Tweaking.html" class="">Tweaking widgets</a></li> <li><a href="/macroid/docs/tutorial/HandlingEvents.html" class="">Handling events</a></li> <li><a href="/macroid/docs/tutorial/GettingAdaptive.html" class="">Getting adaptive</a></li> <li><a href="/macroid/docs/tutorial/CompleteCode.html" class="">Complete code</a></li></ul>  <li><a href="/macroid/docs/Guide.html" class="">Guide</a> <ul class="sub_section"> <li><a href="/macroid/docs/guide/UiActions.html" class="">UI actions</a></li> <li><a href="/macroid/docs/guide/Contexts.html" class="">Contexts</a></li> <li><a href="/macroid/docs/guide/Bricks.html" class="">Bricks</a></li> <li><a href="/macroid/docs/guide/Tweaks.html" class="">Tweaks</a></li> <li><a href="/macroid/docs/guide/Snails.html" class="">Snails</a></li> <li><a href="/macroid/docs/guide/Transformers.html" class="">Transformers</a></li> <li><a href="/macroid/docs/guide/Operators.html" class="">Understand operators</a></li> <li><a href="/macroid/docs/guide/MediaQueries.html" class="">Media queries</a></li> <li><a href="/macroid/docs/guide/Fragments.html" class="">Fragments</a></li> <li><a href="/macroid/docs/guide/Searching.html" class="">Searching</a></li> <li><a href="/macroid/docs/guide/ToastsDialogs.html" class="">Toasts and dialogs</a></li> <li><a href="/macroid/docs/guide/Advanced.html" class="">Advances techniques</a></li> <li><a href="/macroid/docs/guide/Imports.html" class="">Imports</a></li></ul>  <li><a href="/macroid/docs/Modules.html" class="">Modules</a> <ul class="sub_section"> <li><a href="/macroid/docs/modules/Viewable.html" class="">Viewable</a></li> <li><a href="/macroid/docs/modules/Akka.html" class="">Akka Integration</a></li></ul>  <li><a href="/macroid/docs/Differences.html" class="">Differences from</a> <ul class="sub_section"> <li><a href="/macroid/docs/differences/Vanilla.html" class=" active ">Vanilla Android</a></li> <li><a href="/macroid/docs/differences/Scaloid.html" class="">Scaloid</a></li></ul>  <li><a href="/macroid/docs/Samples.html" class="">Sample Projects</a>  <li><a href="/macroid/docs/Talks.html" class="">Talks</a>  <li><a href="/macroid/docs/Changelog.html" class="">Changelog</a> </li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="macroid"><div class="content-wrapper"><section><h1 id="differences-from-vanilla-android">Differences from vanilla Android</h1>
+
+<h2 id="xml-vs-code">XML vs code</h2>
+
+<p>Android XML UI layouts have quite a few disadvantages:</p>
+
+<ul>
+  <li>
+    <p><em>Only one layout per file</em></p>
+
+    <p>If you want to build a layout from smaller pieces, each one has to be put in its own file,
+greatly boosting the number of files and making it hard to track.</p>
+
+    <p><em>Macroid</em> lets you define layouts anywhere in any quantities, using plain Scala code.</p>
+  </li>
+  <li>
+    <p><em>No namespacing</em></p>
+
+    <p>No folders are allowed, thus all layouts, including those small pieces, that may be only
+relevant for a particular activity, pollute the IDE sidebars.</p>
+
+    <p><em>Macroid</em> leverages the power of Scala’s modular aspect: by using <code class="highlighter-rouge">object</code>s and flexible
+<code class="highlighter-rouge">import</code>s, any desired namespacing can be achieved for layouts, styles, behaviors, etc.</p>
+  </li>
+  <li>
+    <p><em>Folders for different screen sizes</em></p>
+
+    <p>While this adaptation mechanism is relatively easy to use, it’s not very flexible.</p>
+
+    <p><em>Macroid</em> provides media queries, which allow you to define composable adaptive
+pieces of layouts or behaviors.</p>
+  </li>
+  <li>
+    <p><em>Code required anyway</em></p>
+
+    <p>Glue code finding widgets by ids and assigning event handlers feels a bit weird.</p>
+
+    <p>Before you tell me that it’s about separating looks from behaviors, <em>Macroid</em>
+does not stand in the way of this separation at all! Widgets can be wired to
+variables and manipulated somewhere else.</p>
+  </li>
+</ul>
+
+<p>Of course, there are advantages too:</p>
+
+<ul>
+  <li>
+    <p><em>XML layouts can be edited visually</em></p>
+
+    <p>(Although it does not help much if you are populating them dynamically.)</p>
+  </li>
+  <li>
+    <p><em>Immediate feedback</em></p>
+
+    <p>Editing XML layouts is very fast and straightforward. On the contrary,
+updating <em>Macroid</em> layouts requires recompiling and rerunning the app.
+Still, with proper incremental compiler (<a href="http://www.scala-sbt.org/">sbt</a>) and
+ProGuard cache (<a href="https://github.com/pfn/android-sdk-plugin">android-sdk-plugin</a>)
+this normaly takes a mere 20 seconds. And you can always use dedicated sketching
+tools to develop the UI look even faster than with XML.</p>
+  </li>
+</ul>
+
+<h2 id="high-level-abstractions">High-level abstractions</h2>
+
+<p><em>Macroid</em> supports generalized widget tweaking, for example you can take
+a textbox and assign it some text, that will only be available in a few seconds:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">val</span> <span class="n">futureText</span> <span class="k">=</span> <span class="nc">Future</span> <span class="o">{</span>
+  <span class="nc">Thread</span><span class="o">.</span><span class="n">sleep</span><span class="o">(</span><span class="mi">5000</span><span class="o">)</span> <span class="c1">// used as an example, never use sleep in real code ;)
+</span>  <span class="n">text</span><span class="o">(</span><span class="s">"Hi!"</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="n">myTextView</span> <span class="o">&lt;~</span> <span class="n">futureText</span>
+</code></pre>
+</div>
+
+<h2 id="safer-implicit-context">Safer implicit context</h2>
+
+<p><em>Macroid</em> uses <code class="highlighter-rouge">WeakReference</code>s to store <code class="highlighter-rouge">Context</code>s other than <code class="highlighter-rouge">Application</code>. This helps to automatically avoid
+<a href="http://stackoverflow.com/questions/3346080/android-references-to-a-context-and-memory-leaks">memory leaks</a>.</p>
+
+<h2 id="safer-threading">Safer threading</h2>
+
+<p>As we know from the Android documentation,</p>
+
+<blockquote>
+  <p>The Andoid UI toolkit is not thread-safe. So, you must not manipulate your UI from a worker thread—you must do all manipulation to your user interface from the UI thread.</p>
+</blockquote>
+
+<p><em>Macroid</em> wraps any UI manipulation in a so-called UI action.
+UI actions can be combined to be run in a batch, and have a method to be sent to the
+UI thread for execution.</p>
+
+<h2 id="unique-features">Unique features</h2>
+
+<p><em>Macroid</em> boasts several unique features. For example, <a href="../guide/Snails.html">Snails</a> provide
+a mini data-flow language to create animations and other “slow” behaviors.
+<a href="../guide/Transformers.html">Layout transformers</a> employ the power of pattern matching
+to tweak nested layouts. Browsing the <a href="Guide.html">guide</a> will give you a sense of what
+else is possible with <em>Macroid</em>.</p>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/languages/scala.min.js"></script><script src="/macroid/js/main.js"></script></body></html>

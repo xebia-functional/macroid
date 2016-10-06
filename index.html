@@ -1,0 +1,41 @@
+<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>macroid</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="author" content="macroid" /><meta name="og:image" content="/macroid/img/poster.png" /><meta name="og:title" content="macroid" /><meta name="og:site_name" content="macroid" /><meta name="og:url" content="http://macroid.github.io" /><meta name="og:type" content="website" /><meta name="og:description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="twitter:image" content="/macroid/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/macroid/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css" /><link rel="stylesheet" href="/macroid/css/style.css" /><link rel="stylesheet" href="/macroid/css/palette.css" /></head><body><header id="site-header"><div class="navbar-wrapper"><div class="container"><div class="row"><div class="col-xs-6"><a href="/macroid/" class="brand"><div class="icon-wrapper" style="background:url('/macroid/img/navbar_brand.png') no-repeat"><span>macroid</span></div></a></div><div class="col-xs-6"><nav class="text-right"><ul class=""><li><a href="https://github.com/47deg/macroid"><i class="fa fa-github"></i><span class="hidden-xs">GitHub</span></a></li><li><a href="/macroid/docs/"><i class="fa fa-file-text"></i><span class="hidden-xs">Documentation</span></a></li></ul></nav></div></div></div></div><div class="jumbotron" style="background-image:url('/macroid/img/jumbotron_pattern.png')"><div class="container"><h1 class="text-center">A modular functional user interface creation language for Android, implemented with Scala macros</h1><h2></h2><p class="text-center"><a href="https://github.com/47deg/macroid" class="btn btn-outline-inverse">View on GitHub</a></p></div></div><div><ul class="horizontalNav">                                                                      </ul></div></header><main id="site-main"><section class="use"><div class="container"><div id="content"><h1 id="macroid">Macroid</h1>
+
+<p><em>Macroid</em> is the most badass modular functional user interface creation language for Android, implemented with Scala macros.
+<a href="http://www.urbandictionary.com/define.php?term=macroid">Some people say</a> it’s also a dead noodle.</p>
+
+<p>Striving to be focused on one thing (GUI), <em>Macroid</em> promotes composability and high-level abstractions.</p>
+
+<p>Prerequisites: Scala <code class="highlighter-rouge">2.10.x</code> or <code class="highlighter-rouge">2.11.x</code>, Android <code class="highlighter-rouge">API 9+</code>.</p>
+
+<p><a href="https://gitter.im/47deg/macroid?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://img.shields.io/badge/GITTER-Join%20chat%20→-brightgreen.svg?style=flat" alt="Join the chat at https://gitter.im/macroid/macroid" /></a></p>
+
+<h1 id="installation">Installation</h1>
+
+<h2 id="version-200-m5">Version <code class="highlighter-rouge">2.0.0-M5</code></h2>
+
+<p><em>Macroid</em> is packaged in the AAR format and published to <a href="http://central.maven.org/maven2/org/macroid/macroid_2.11/2.0.0-M5/">Maven Central</a>.</p>
+
+<p>Assuming sbt version <code class="highlighter-rouge">0.13.x</code> and <a href="https://github.com/pfn/android-sdk-plugin">android-sdk-plugin</a> 
+version <code class="highlighter-rouge">1.2.20</code> and above, you can add it to your project like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">libraryDependencies</span> <span class="o">++=</span> <span class="nc">Seq</span><span class="o">(</span>
+  <span class="n">aar</span><span class="o">(</span><span class="s">"org.macroid"</span> <span class="o">%%</span> <span class="s">"macroid"</span> <span class="o">%</span> <span class="s">"2.0.0-M5"</span><span class="o">)</span>
+</code></pre>
+</div>
+
+<p>If you want to use the SNAPSHOT version you need to add the Sonatype SNAPSHOT repo</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">resolvers</span> <span class="o">+=</span>
+  <span class="s">"Sonatype OSS Snapshots"</span> <span class="n">at</span> <span class="s">"https://oss.sonatype.org/content/repositories/snapshots"</span>
+
+<span class="n">libraryDependencies</span> <span class="o">++=</span> <span class="nc">Seq</span><span class="o">(</span>
+  <span class="n">aar</span><span class="o">(</span><span class="s">"org.macroid"</span> <span class="o">%%</span> <span class="s">"macroid"</span> <span class="o">%</span> <span class="s">"2.0-SNAPSHOT"</span><span class="o">)</span>
+</code></pre>
+</div>
+</div></div></section><section class="technologies"><div class="container"><div class="row">
+            <div class="col-md-4"><div class="first-icon-wrapper"></div><h3>Scala</h3><p>Macroid has been implemented with Scala macros</p></div>
+          
+            <div class="col-md-4"><div class="second-icon-wrapper"></div><h3>Android</h3><p>Modular functional user interface creation language for Android</p></div>
+          
+            <div class="col-md-4"><div class="third-icon-wrapper"></div><h3>Open Source</h3><p>By opening its development, we hope that the community helps us to expand and improve this project. Macroid wants you!</p></div>
+          </div></div></section></main><footer id="site-footer"><div class="container"><div class="row"><div class="col-xs-6"><p>macroid is designed and developed by <a href="http://macroid.github.io" target="_blank">macroid</a></p></div><div class="col-xs-6"><p class="text-right"><a href="https://github.com/47deg/macroid"><span class="fa fa-github"></span>View on Github</a></p></div></div></div></footer><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/languages/scala.min.js"></script><script>jQuery(document).ready(function(){hljs.initHighlightingOnLoad();});</script></body></html>

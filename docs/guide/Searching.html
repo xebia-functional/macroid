@@ -1,0 +1,141 @@
+<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>macroid</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="author" content="macroid" /><meta name="og:image" content="/macroid/img/poster.png" /><meta name="og:title" content="macroid" /><meta name="og:site_name" content="macroid" /><meta name="og:url" content="http://macroid.github.io" /><meta name="og:type" content="website" /><meta name="og:description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="twitter:image" content="/macroid/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/macroid/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css" /><link rel="stylesheet" href="/macroid/css/style.css" /><link rel="stylesheet" href="/macroid/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/macroid/" class="brand"><div class="brand-wrapper" style="background:url('/macroid/img/sidebar_brand.png') no-repeat"><span>macroid</span></div></a></li>  <li><a href="/macroid/docs/index.html" class="">Introduction</a>  <li><a href="/macroid/docs/Installation.html" class="">Installation</a> <ul class="sub_section"> <li><a href="/macroid/docs/installation/ScalaOnAndroid.html" class="">Scala on Android</a></li></ul>  <li><a href="/macroid/docs/Tutorial.html" class="">Tutorial</a> <ul class="sub_section"> <li><a href="/macroid/docs/tutorial/BuildingLayouts.html" class="">Building layouts</a></li> <li><a href="/macroid/docs/tutorial/Tweaking.html" class="">Tweaking widgets</a></li> <li><a href="/macroid/docs/tutorial/HandlingEvents.html" class="">Handling events</a></li> <li><a href="/macroid/docs/tutorial/GettingAdaptive.html" class="">Getting adaptive</a></li> <li><a href="/macroid/docs/tutorial/CompleteCode.html" class="">Complete code</a></li></ul>  <li><a href="/macroid/docs/Guide.html" class="">Guide</a> <ul class="sub_section"> <li><a href="/macroid/docs/guide/UiActions.html" class="">UI actions</a></li> <li><a href="/macroid/docs/guide/Contexts.html" class="">Contexts</a></li> <li><a href="/macroid/docs/guide/Bricks.html" class="">Bricks</a></li> <li><a href="/macroid/docs/guide/Tweaks.html" class="">Tweaks</a></li> <li><a href="/macroid/docs/guide/Snails.html" class="">Snails</a></li> <li><a href="/macroid/docs/guide/Transformers.html" class="">Transformers</a></li> <li><a href="/macroid/docs/guide/Operators.html" class="">Understand operators</a></li> <li><a href="/macroid/docs/guide/MediaQueries.html" class="">Media queries</a></li> <li><a href="/macroid/docs/guide/Fragments.html" class="">Fragments</a></li> <li><a href="/macroid/docs/guide/Searching.html" class=" active ">Searching</a></li> <li><a href="/macroid/docs/guide/ToastsDialogs.html" class="">Toasts and dialogs</a></li> <li><a href="/macroid/docs/guide/Advanced.html" class="">Advances techniques</a></li> <li><a href="/macroid/docs/guide/Imports.html" class="">Imports</a></li></ul>  <li><a href="/macroid/docs/Modules.html" class="">Modules</a> <ul class="sub_section"> <li><a href="/macroid/docs/modules/Viewable.html" class="">Viewable</a></li> <li><a href="/macroid/docs/modules/Akka.html" class="">Akka Integration</a></li></ul>  <li><a href="/macroid/docs/Differences.html" class="">Differences from</a> <ul class="sub_section"> <li><a href="/macroid/docs/differences/Vanilla.html" class="">Vanilla Android</a></li> <li><a href="/macroid/docs/differences/Scaloid.html" class="">Scaloid</a></li></ul>  <li><a href="/macroid/docs/Samples.html" class="">Sample Projects</a>  <li><a href="/macroid/docs/Talks.html" class="">Talks</a>  <li><a href="/macroid/docs/Changelog.html" class="">Changelog</a> </li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="macroid"><div class="content-wrapper"><section><h1 id="searching">Searching</h1>
+
+<p>Sometimes you need to search for a particular widget, layout, or fragment. Let’s see how it can be done.</p>
+
+<h2 id="slots-and-wires">Slots and wires</h2>
+
+<p>This is a better and safer (and thus the preferred) way. First, declare a slot:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">var</span> <span class="n">button</span> <span class="k">=</span> <span class="n">slot</span><span class="o">[</span><span class="kt">Button</span><span class="o">]</span>
+</code></pre>
+</div>
+
+<p>The variable is given a type <code class="highlighter-rouge">Option[Button]</code> with a value of <code class="highlighter-rouge">None</code>.
+(Read about <code class="highlighter-rouge">Option</code>s in
+<a href="http://danielwestheide.com/blog/2012/12/19/the-neophytes-guide-to-scala-part-5-the-option-type.html">Neophyte’s guide to Scala</a>)
+Now you can wire a widget to it:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">w</span><span class="o">[</span><span class="kt">Button</span><span class="o">]</span> <span class="o">&lt;~</span> <span class="n">wire</span><span class="o">(</span><span class="n">button</span><span class="o">)</span>
+</code></pre>
+</div>
+
+<p>Once the layout is created, <code class="highlighter-rouge">button</code> will point to the actual widget.</p>
+
+<p>Even though slots are <code class="highlighter-rouge">Option</code>s,
+tweaking works with them as expected (<a href="Advanced.html">see why</a>). On the other hand,
+using an <code class="highlighter-rouge">Option</code> protects you from <code class="highlighter-rouge">NullPointerException</code>s in cases when the layout is
+not yet created or the slot is not wired.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">var</span> <span class="n">button</span> <span class="k">=</span> <span class="n">slot</span><span class="o">[</span><span class="kt">Button</span><span class="o">]</span>
+<span class="o">...</span>
+<span class="n">button</span> <span class="o">&lt;~</span> <span class="n">text</span><span class="o">(</span><span class="s">"Hi"</span><span class="o">)</span>
+</code></pre>
+</div>
+
+<p>Note that getting a property back from the slot, e.g. the text from the <code class="highlighter-rouge">EditText</code> will
+require you to either call through <code class="highlighter-rouge">get</code> or deal with an <code class="highlighter-rouge">Option</code>:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">var</span> <span class="n">edit</span> <span class="k">=</span> <span class="n">slot</span><span class="o">[</span><span class="kt">EditText</span><span class="o">]</span>
+<span class="o">...</span>
+<span class="k">val</span> <span class="n">text1</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">edit</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">getText</span>
+<span class="c1">// or
+</span><span class="k">val</span> <span class="n">text2</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">edit</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">getText</span><span class="o">)</span>
+</code></pre>
+</div>
+
+<p>This may be addressed in future versions of <em>Macroid</em>.</p>
+
+<h2 id="id-and-tag-generation">Id and tag generation</h2>
+
+<p>Creating your widget ids in code might not be very rewarding. <em>Macroid</em> offers an elegant solution
+using Scala’s <a href="http://docs.scala-lang.org/sips/completed/type-dynamic.html"><code class="highlighter-rouge">Dynamic</code> feature</a>.</p>
+
+<p>First, create a global id generator. You can specify the starting id:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">import</span> <span class="nn">macroid.IdGenerator</span>
+
+<span class="k">object</span> <span class="nc">Id</span> <span class="k">extends</span> <span class="nc">IdGenerator</span><span class="o">(</span><span class="n">start</span> <span class="k">=</span> <span class="mi">1000</span><span class="o">)</span>
+</code></pre>
+</div>
+
+<p>Now <code class="highlighter-rouge">Id.something</code> will generate a new id for you:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">// Id.button creates a new id
+</span><span class="n">w</span><span class="o">[</span><span class="kt">Button</span><span class="o">]</span> <span class="o">&lt;~</span> <span class="n">id</span><span class="o">(</span><span class="nc">Id</span><span class="o">.</span><span class="n">button</span><span class="o">)</span>
+
+<span class="c1">// once created, the id stays the same
+</span><span class="n">assert</span><span class="o">(</span><span class="nc">Id</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="nc">Id</span><span class="o">.</span><span class="n">button</span><span class="o">)</span>
+</code></pre>
+</div>
+
+<p>Sometimes you also need fragment tags, which are plain strings.
+For symmetry, <em>Macroid</em> includes a <code class="highlighter-rouge">Tag</code> singleton:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">// Doesn’t this look better than just "map"?
+</span><span class="n">f</span><span class="o">[</span><span class="kt">MapFragment</span><span class="o">].</span><span class="n">framed</span><span class="o">(</span><span class="nc">Id</span><span class="o">.</span><span class="n">map</span><span class="o">,</span> <span class="nc">Tag</span><span class="o">.</span><span class="n">map</span><span class="o">)</span>
+
+<span class="c1">// tags are just strings
+</span><span class="n">assert</span><span class="o">(</span><span class="nc">Tag</span><span class="o">.</span><span class="n">map</span> <span class="o">==</span> <span class="s">"map"</span><span class="o">)</span>
+</code></pre>
+</div>
+
+<h2 id="find-and-findfrag"><code class="highlighter-rouge">find</code> and <code class="highlighter-rouge">findFrag</code></h2>
+
+<p>If a <code class="highlighter-rouge">View</code> has an id, it can be found like this:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">import</span> <span class="nn">macroid.FullDsl._</span>
+<span class="c1">// or just
+// import macroid.Searching._
+</span>
+<span class="n">someParentView</span><span class="o">.</span><span class="n">find</span><span class="o">[</span><span class="kt">ViewClass</span><span class="o">](</span><span class="n">id</span><span class="o">)</span>
+<span class="c1">// or
+</span><span class="n">activity</span><span class="o">.</span><span class="n">find</span><span class="o">[</span><span class="kt">ViewClass</span><span class="o">](</span><span class="n">id</span><span class="o">)</span>
+<span class="c1">// or
+</span><span class="n">fragment</span><span class="o">.</span><span class="n">find</span><span class="o">[</span><span class="kt">ViewClass</span><span class="o">](</span><span class="n">id</span><span class="o">)</span>
+</code></pre>
+</div>
+
+<p>For example:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyActivity</span> <span class="k">extends</span> <span class="nc">Activity</span> <span class="k">with</span> <span class="nc">Contexts</span><span class="o">[</span><span class="kt">Activity</span><span class="o">]</span> <span class="o">{</span>
+  <span class="o">...</span>
+  <span class="n">w</span><span class="o">[</span><span class="kt">Button</span><span class="o">]</span> <span class="o">&lt;~</span> <span class="n">id</span><span class="o">(</span><span class="nc">Id</span><span class="o">.</span><span class="n">button</span><span class="o">)</span>
+  <span class="o">...</span>
+  <span class="k">val</span> <span class="n">button</span> <span class="k">=</span> <span class="k">this</span><span class="o">.</span><span class="n">find</span><span class="o">[</span><span class="kt">Button</span><span class="o">](</span><span class="nc">Id</span><span class="o">.</span><span class="n">button</span><span class="o">)</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>Note that <code class="highlighter-rouge">find</code> returns an <code class="highlighter-rouge">Ui[Option[...]]</code>: if the <code class="highlighter-rouge">View</code> is not found or has a wrong type, the underlying result will be <code class="highlighter-rouge">None</code>.
+This however <a href="Advanced.html">poses no problem</a> for tweaking:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">this</span><span class="o">.</span><span class="n">find</span><span class="o">[</span><span class="kt">Button</span><span class="o">](</span><span class="nc">Id</span><span class="o">.</span><span class="n">button</span><span class="o">)</span> <span class="o">&lt;~</span> <span class="n">text</span><span class="o">(</span><span class="s">"foo"</span><span class="o">)</span>
+</code></pre>
+</div>
+
+<p>There is also a <code class="highlighter-rouge">findFrag</code> method:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">activity</span><span class="o">.</span><span class="n">findFrag</span><span class="o">[</span><span class="kt">FragmentClass</span><span class="o">](</span><span class="n">tag</span><span class="o">)</span>
+<span class="c1">// or
+</span><span class="n">fragment</span><span class="o">.</span><span class="n">findFrag</span><span class="o">[</span><span class="kt">FragmentClass</span><span class="o">](</span><span class="n">tag</span><span class="o">)</span>
+</code></pre>
+</div>
+<p>Be aware that it will only be able to find fragment in <code class="highlighter-rouge">onStart</code> and later stages in the lifecycle.
+For example:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyActivity</span> <span class="k">extends</span> <span class="nc">Activity</span> <span class="k">with</span> <span class="nc">Contexts</span><span class="o">[</span><span class="kt">Activity</span><span class="o">]</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="k">:</span> <span class="kt">Bundle</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">f</span><span class="o">[</span><span class="kt">MapFragment</span><span class="o">].</span><span class="n">framed</span><span class="o">(</span><span class="nc">Id</span><span class="o">.</span><span class="n">map</span><span class="o">,</span> <span class="nc">Tag</span><span class="o">.</span><span class="n">map</span><span class="o">)</span>
+    <span class="o">...</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">onStart</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">map</span> <span class="k">=</span> <span class="k">this</span><span class="o">.</span><span class="n">findFrag</span><span class="o">[</span><span class="kt">MapFragment</span><span class="o">](</span><span class="nc">Tag</span><span class="o">.</span><span class="n">map</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">findFrag</code> returns an <code class="highlighter-rouge">Ui[Option[...]]</code> as well.</p>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/languages/scala.min.js"></script><script src="/macroid/js/main.js"></script></body></html>

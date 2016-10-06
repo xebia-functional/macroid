@@ -1,0 +1,88 @@
+options:
+  - title: Introduction
+    url: index.html
+
+  - title: Installation
+    url: Installation.html
+    section: installation
+
+    nested_options:
+     - title: Scala on Android
+       url: installation/ScalaOnAndroid.html
+
+  - title: Tutorial
+    url: Tutorial.html
+    section: tutorial
+
+    nested_options:
+     - title: Building layouts
+       url: tutorial/BuildingLayouts.html
+     - title: Tweaking widgets
+       url: tutorial/Tweaking.html
+     - title: Handling events
+       url: tutorial/HandlingEvents.html
+     - title: Getting adaptive
+       url: tutorial/GettingAdaptive.html
+     - title: Complete code
+       url: tutorial/CompleteCode.html
+
+  - title: Guide
+    url: Guide.html
+    section: guide
+
+    nested_options:
+     - title: UI actions
+       url: guide/UiActions.html
+     - title: Contexts
+       url: guide/Contexts.html
+     - title: Bricks
+       url: guide/Bricks.html
+     - title: Tweaks
+       url: guide/Tweaks.html
+     - title: Snails
+       url: guide/Snails.html
+     - title: Transformers
+       url: guide/Transformers.html
+     - title: Understand operators
+       url: guide/Operators.html
+     - title: Media queries
+       url: guide/MediaQueries.html
+     - title: Fragments
+       url: guide/Fragments.html
+     - title: Searching
+       url: guide/Searching.html
+     - title: Toasts and dialogs
+       url: guide/ToastsDialogs.html
+     - title: Advances techniques
+       url: guide/Advanced.html
+     - title: Imports
+       url: guide/Imports.html
+
+  - title: Modules
+    url: Modules.html
+    section: modules
+
+    nested_options:
+     - title: Viewable
+       url: modules/Viewable.html
+     - title: Akka Integration
+       url: modules/Akka.html
+
+  - title: Differences from
+    url: Differences.html
+    section: differences
+
+    nested_options:
+     - title: Vanilla Android
+       url: differences/Vanilla.html
+     - title: Scaloid
+       url: differences/Scaloid.html
+
+  - title: Sample Projects
+    url: Samples.html
+
+  - title: Talks
+    url: Talks.html
+
+  - title: Changelog
+    url: Changelog.html

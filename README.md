@@ -11,7 +11,7 @@ Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 
 Latest version: `2.0.0-M5`
 
-Snapshot version: `2.0.0-M6-SNAPSHOT`
+Snapshot version: `2.0-SNAPSHOT`
 
 License: [MIT](http://opensource.org/licenses/MIT).
 
@@ -39,7 +39,7 @@ resolvers +=
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq(
-  aar("org.macroid" %% "macroid" % "2.0.0-M6-SNAPSHOT")
+  aar("org.macroid" %% "macroid" % "2.0-SNAPSHOT")
 
 ```
 

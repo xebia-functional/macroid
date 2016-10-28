@@ -1,10 +1,30 @@
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import sbt.Keys._
+
 import scalariform.formatter.preferences._
 
 lazy val gpgFolder = sys.env.getOrElse("GPG_FOLDER", ".")
 
 lazy val publishSnapshot = taskKey[Unit]("Publish only if the version is a SNAPSHOT")
+
+lazy val micrositeSettings = Seq(
+  micrositeName := "macroid",
+  micrositeDescription := "A modular functional user interface creation language for Android, implemented with Scala macros",
+  micrositeBaseUrl := "macroid",
+  micrositeDocumentationUrl := "/macroid/docs/",
+  micrositeGithubOwner := "47deg",
+  micrositeGithubRepo := "macroid",
+  includeFilter in makeSite := "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.js" | "*.swf" | "*.md",
+  micrositePalette := Map(
+    "brand-primary"     -> "#F24130",
+    "brand-secondary"   -> "#203040",
+    "brand-tertiary"    -> "#1B2A38",
+    "gray-dark"         -> "#4E4E4E",
+    "gray"              -> "#7C7C7C",
+    "gray-light"        -> "#E9E9E9",
+    "gray-lighter"      -> "#F7F7F7",
+    "white-color"       -> "#FFFFFF")
+)
 
 val androidV = "24.2.0"
 
@@ -12,7 +32,7 @@ val commonSettings = androidBuildAar ++ Seq(
   platformTarget in Android := "android-23",
   typedResources := false,
 
-  version := "2.0",
+  version := "2.0-SNAPSHOT",
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
 
   scalaVersion := "2.11.7",
@@ -152,6 +172,16 @@ lazy val akka = (project in file("macroid-akka"))
 
     libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.14" % "provided"
   )
+  .dependsOn(core)
+
+lazy val docs = (project in file("macroid-docs"))
+  .settings(commonSettings: _*)
+  .settings(micrositeSettings: _*)
+  .settings(moduleName := "macroid-docs")
+  .enablePlugins(MicrositesPlugin)
+  .settings(
+    name := "docs",
+    description := "Macroid Documentation")
   .dependsOn(core)
 
 lazy val extras = (project in file("macroid-extras"))

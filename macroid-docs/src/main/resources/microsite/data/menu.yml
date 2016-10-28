@@ -67,6 +67,8 @@ options:
        url: modules/Viewable.html
      - title: Akka Integration
        url: modules/Akka.html
+     - title: Extras
+       url: modules/Extras.html
 
   - title: Differences from
     url: Differences.html

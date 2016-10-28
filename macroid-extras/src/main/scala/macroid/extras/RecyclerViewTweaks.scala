@@ -1,6 +1,7 @@
 package macroid.extras
 
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.animation.AnimationUtils
 import macroid.{ ContextWrapper, Tweak }
@@ -35,5 +36,21 @@ object RecyclerViewTweaks {
     val touchHelper = new ItemTouchHelper(callback)
     touchHelper.attachToRecyclerView(rv)
   }
+
+  def rvAddOnScrollListener(
+    scrolled: (Int, Int) ⇒ Unit,
+    scrollStateChanged: (Int) ⇒ Unit
+  ): Tweak[W] =
+    Tweak[RecyclerView](_.addOnScrollListener(new OnScrollListener {
+      override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = scrolled(dx, dy)
+
+      override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = scrollStateChanged(newState)
+    }))
+
+  def rvSmoothScrollBy(dx: Int = 0, dy: Int = 0): Tweak[W] =
+    Tweak[RecyclerView](_.smoothScrollBy(dx, dy))
+
+  def rvScrollBy(dx: Int = 0, dy: Int = 0): Tweak[W] =
+    Tweak[RecyclerView](_.scrollBy(dx, dy))
 
 }

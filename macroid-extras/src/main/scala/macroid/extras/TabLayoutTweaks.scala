@@ -12,6 +12,6 @@ object TabLayoutTweaks {
     }
   }
 
-  def tlSetListener(listener: TabLayout.OnTabSelectedListener): Tweak[W] =
-    Tweak[W](_.setOnTabSelectedListener(listener))
+  def tlAddListener(listener: TabLayout.OnTabSelectedListener): Tweak[W] =
+    Tweak[W](_.addOnTabSelectedListener(listener))
 }

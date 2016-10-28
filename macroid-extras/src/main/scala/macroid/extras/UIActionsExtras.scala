@@ -26,7 +26,7 @@ object UIActionsExtras {
       })
     }
 
-  def uiHandlerDelayed(f: ⇒ Ui[_], delayMilis: Int): Ui[Unit] =
+  def uiHandlerDelayed(f: ⇒ Ui[_], delayMilis: Long): Ui[Unit] =
     Ui {
       new Handler().postDelayed(new Runnable {
         override def run(): Unit = f.run

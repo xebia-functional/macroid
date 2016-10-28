@@ -139,6 +139,16 @@ object ViewTweaks {
 
   def vTranslationZ(z: Float): Tweak[W] = Tweak[W](_.setTranslationZ(z.toFloat))
 
+  def vRotation(rotation: Float) = Tweak[W](_.setRotation(rotation))
+
+  def vSelectableItemBackground(implicit contextWrapper: ContextWrapper) = Tweak[W] { view ⇒
+    val typedArray = contextWrapper.bestAvailable.obtainStyledAttributes(Seq(android.R.attr.selectableItemBackground).toArray)
+    view.setBackgroundResource(typedArray.getResourceId(0, 0))
+    typedArray.recycle()
+  }
+
+  def vFocusable(focusable: Boolean) = Tweak[W](_.setFocusable(focusable))
+
   def vBackgroundColorFilterResource(res: Int, mode: Mode = Mode.MULTIPLY)(implicit context: ContextWrapper): Tweak[W] =
     Tweak[W](_.getBackground.setColorFilter(new PorterDuffColorFilter(resGetColor(res), mode)))
 

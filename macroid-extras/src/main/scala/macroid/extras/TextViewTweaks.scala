@@ -15,7 +15,7 @@ object TextViewTweaks {
   def tvColor(color: Int): Tweak[W] = Tweak[W](_.setTextColor(color))
 
   def tvColorResource(resColor: Int)(implicit context: ContextWrapper): Tweak[W] =
-    Tweak[W](_.setTextColor(context.application.getResources.getColor(resColor)))
+    Tweak[W](_.setTextColor(context.application.getResources.getColor(resColor, null)))
 
   val tvBold: Tweak[W] = Tweak[W](x ⇒ x.setTypeface(x.getTypeface, Typeface.BOLD))
 
@@ -47,7 +47,7 @@ object TextViewTweaks {
 
   val tvBoldItalicMedium: Tweak[W] = Tweak[W](x ⇒ x.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD_ITALIC)))
 
-  def tvSize(points: Int): Tweak[W] = Tweak[W](_.setTextSize(TypedValue.COMPLEX_UNIT_SP, points))
+  def tvSize(points: Int): Tweak[W] = Tweak[W](_.setTextSize(TypedValue.COMPLEX_UNIT_SP, points.toFloat))
 
   def tvSizeResource(res: Int)(implicit context: ContextWrapper): Tweak[W] =
     Tweak[W](_.setTextSize(TypedValue.COMPLEX_UNIT_PX, context.application.getResources.getDimension(res)))
@@ -60,7 +60,7 @@ object TextViewTweaks {
 
   def tvEllipsize(truncateAt: TruncateAt): Tweak[W] = Tweak[W](_.setEllipsize(truncateAt))
 
-  val tvAllCaps: Tweak[W] = Tweak[W](_.setAllCaps(true))
+  def tvAllCaps(allCaps: Boolean = true): Tweak[W] = Tweak[W](_.setAllCaps(allCaps))
 
   def tvGravity(gravity: Int): Tweak[W] = Tweak[W](_.setGravity(gravity))
 
@@ -92,7 +92,7 @@ object TextViewTweaks {
     Tweak[TextView](_.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom))
 
   def tvShadowLayer(radius: Float, dx: Int, dy: Int, color: Int): Tweak[W] =
-    Tweak[W](_.setShadowLayer(radius, dx, dy, color))
+    Tweak[W](_.setShadowLayer(radius, dx.toFloat, dy.toFloat, color))
 
   def tvUnderlineText(text: String): Tweak[W] = Tweak[W] { tv ⇒
     val content = new SpannableString(text)

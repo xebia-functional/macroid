@@ -2,8 +2,9 @@ package macroid.extras
 
 import android.content.Context
 import android.text.{ Editable, TextWatcher }
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
+import android.view.KeyEvent
+import android.view.inputmethod.{ EditorInfo, InputMethodManager }
+import android.widget.{ EditText, TextView }
 import macroid.{ ContextWrapper, Tweak }
 
 object EditTextTweaks {
@@ -34,5 +35,17 @@ object EditTextTweaks {
       case _ ⇒
     }
   }
+
+  def etClickActionSearch(performSearch: (String) ⇒ Unit) = Tweak[EditText] { editText ⇒
+    editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+      override def onEditorAction(v: TextView, actionId: Int, event: KeyEvent): Boolean =
+        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+          performSearch(editText.getText.toString)
+          true
+        } else false
+    })
+  }
+
+  def etHintColor(color: Int): Tweak[EditText] = Tweak[EditText](_.setHintTextColor(color))
 
 }

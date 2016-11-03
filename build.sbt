@@ -26,6 +26,8 @@ lazy val micrositeSettings = Seq(
     "white-color"       -> "#FFFFFF")
 )
 
+val androidV = "24.2.0"
+
 val commonSettings = androidBuildAar ++ Seq(
   platformTarget in Android := "android-23",
   typedResources := false,
@@ -54,7 +56,7 @@ val commonSettings = androidBuildAar ++ Seq(
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "2.2.6" % Test,
     "com.geteit" %% "robotest" % "0.12" % Test,
-    "com.android.support" % "support-v4" % "23.1.1"
+    "com.android.support" % "support-v4" % androidV
   ),
 
   parallelExecution in Test := false,
@@ -182,8 +184,23 @@ lazy val docs = (project in file("macroid-docs"))
     description := "Macroid Documentation")
   .dependsOn(core)
 
+lazy val extras = (project in file("macroid-extras"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "macroid-extras",
+    description := "Tweaks and utilities for android views",
+    homepage := Some(url("http://macroid.github.io/modules/Extras.html")),
+
+    libraryDependencies ++= Seq(
+      "com.android.support" % "appcompat-v7" % androidV,
+      "com.android.support" % "recyclerview-v7" % androidV,
+      "com.android.support" % "cardview-v7" % androidV,
+      "com.android.support" % "design" % androidV)
+  )
+  .dependsOn(core)
+
 lazy val root = (project in file("."))
-  .aggregate(core, viewable, akka)
+  .aggregate(core, viewable, akka, extras)
   .settings(
     publish := (),
     publishLocal := (),

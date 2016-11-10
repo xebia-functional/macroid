@@ -7,6 +7,7 @@ import android.text.style.UnderlineSpan
 import android.text.{ Spannable, SpannableString, Spanned }
 import android.util.TypedValue
 import android.widget.TextView
+import macroid.extras.ResourcesExtras._
 import macroid.{ ContextWrapper, Tweak }
 
 object TextViewTweaks {
@@ -15,7 +16,7 @@ object TextViewTweaks {
   def tvColor(color: Int): Tweak[W] = Tweak[W](_.setTextColor(color))
 
   def tvColorResource(resColor: Int)(implicit context: ContextWrapper): Tweak[W] =
-    Tweak[W](_.setTextColor(context.application.getResources.getColor(resColor, null)))
+    Tweak[W](_.setTextColor(resGetColor(resColor)))
 
   val tvBold: Tweak[W] = Tweak[W](x ⇒ x.setTypeface(x.getTypeface, Typeface.BOLD))
 

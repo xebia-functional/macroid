@@ -1,8 +1,8 @@
 package macroid.extras
 
 import android.graphics.drawable.Drawable
+import android.support.v4.content.ContextCompat
 import macroid.ContextWrapper
-import macroid.extras.DeviceVersion.Lollipop
 
 object ResourcesExtras {
 
@@ -19,10 +19,10 @@ object ResourcesExtras {
   def resGetBoolean(resource: String)(implicit c: ContextWrapper): Option[Boolean] =
     resGetResource(resource, "boolean")((c, resourceId) ⇒ c.bestAvailable.getResources.getBoolean(resourceId))
 
-  def resGetColor(resourceId: Int)(implicit c: ContextWrapper): Int = c.bestAvailable.getResources.getColor(resourceId)
+  def resGetColor(resourceId: Int)(implicit c: ContextWrapper): Int = ContextCompat.getColor(c.bestAvailable, resourceId)
 
   def resGetColor(resource: String)(implicit c: ContextWrapper): Option[Int] =
-    resGetResource(resource, "color")((c, resourceId) ⇒ c.bestAvailable.getResources.getColor(resourceId))
+    resGetResource(resource, "color")((c, resourceId) ⇒ ContextCompat.getColor(c.bestAvailable, resourceId))
 
   def resGetDimension(resourceId: Int)(implicit c: ContextWrapper): Float = c.bestAvailable.getResources.getDimension(resourceId)
 
@@ -34,10 +34,10 @@ object ResourcesExtras {
   def resGetDimensionPixelSize(resource: String)(implicit c: ContextWrapper): Option[Int] =
     resGetResource(resource, "dimen")((c, resourceId) ⇒ c.bestAvailable.getResources.getDimensionPixelSize(resourceId))
 
-  def resGetDrawable(resourceId: Int)(implicit c: ContextWrapper): Drawable = getDrawable(resourceId)
+  def resGetDrawable(resourceId: Int)(implicit c: ContextWrapper): Drawable = ContextCompat.getDrawable(c.bestAvailable, resourceId)
 
   def resGetDrawable(resource: String)(implicit c: ContextWrapper): Option[Drawable] =
-    resGetResource(resource, "drawable")((c, resourceId) ⇒ getDrawable(resourceId)(c))
+    resGetResource(resource, "drawable")((c, resourceId) ⇒ ContextCompat.getDrawable(c.bestAvailable, resourceId))
 
   def resGetDrawableIdentifier(resource: String)(implicit c: ContextWrapper): Option[Int] =
     resGetResource(resource, "drawable")((c, resourceId) ⇒ resourceId)
@@ -69,12 +69,5 @@ object ResourcesExtras {
 
   def resGetQuantityString(resourceId: Int, quantity: Int, formatArgs: AnyRef*)(implicit c: ContextWrapper): String =
     c.bestAvailable.getResources.getQuantityString(resourceId, quantity, formatArgs: _*)
-
-  private[this] def getDrawable(resourceId: Int)(implicit c: ContextWrapper) =
-    Lollipop.ifSupportedThen {
-      c.bestAvailable.getResources.getDrawable(resourceId, c.bestAvailable.getTheme)
-    } getOrElse {
-      c.bestAvailable.getResources.getDrawable(resourceId)
-    }
 
 }

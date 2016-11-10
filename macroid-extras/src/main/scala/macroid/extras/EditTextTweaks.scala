@@ -1,11 +1,11 @@
 package macroid.extras
 
 import android.content.Context
-import android.text.{ Editable, TextWatcher }
+import android.text.{Editable, InputType, TextWatcher}
 import android.view.KeyEvent
-import android.view.inputmethod.{ EditorInfo, InputMethodManager }
-import android.widget.{ EditText, TextView }
-import macroid.{ ContextWrapper, Tweak }
+import android.view.inputmethod.{EditorInfo, InputMethodManager}
+import android.widget.{EditText, TextView}
+import macroid.{ContextWrapper, Tweak}
 
 object EditTextTweaks {
   type W = EditText
@@ -47,5 +47,11 @@ object EditTextTweaks {
   }
 
   def etHintColor(color: Int): Tweak[EditText] = Tweak[EditText](_.setHintTextColor(color))
+
+  def etImeOptionSearch(implicit contextWrapper: ContextWrapper): Tweak[EditText] =
+    Tweak[W](_.setImeOptions(EditorInfo.IME_ACTION_SEARCH))
+
+  def etSetInputTypeText(implicit contextWrapper: ContextWrapper): Tweak[EditText] =
+    Tweak[EditText](_.setInputType(InputType.TYPE_CLASS_TEXT))
 
 }

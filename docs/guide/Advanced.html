@@ -1,34 +1,32 @@
-<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>macroid</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="author" content="macroid" /><meta name="og:image" content="/macroid/img/poster.png" /><meta name="og:title" content="macroid" /><meta name="og:site_name" content="macroid" /><meta name="og:url" content="http://macroid.github.io" /><meta name="og:type" content="website" /><meta name="og:description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="twitter:image" content="/macroid/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/macroid/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css" /><link rel="stylesheet" href="/macroid/css/style.css" /><link rel="stylesheet" href="/macroid/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/macroid/" class="brand"><div class="brand-wrapper" style="background:url('/macroid/img/sidebar_brand.png') no-repeat"><span>macroid</span></div></a></li>  <li><a href="/macroid/docs/index.html" class="">Introduction</a>  <li><a href="/macroid/docs/Installation.html" class="">Installation</a> <ul class="sub_section"> <li><a href="/macroid/docs/installation/ScalaOnAndroid.html" class="">Scala on Android</a></li></ul>  <li><a href="/macroid/docs/Tutorial.html" class="">Tutorial</a> <ul class="sub_section"> <li><a href="/macroid/docs/tutorial/BuildingLayouts.html" class="">Building layouts</a></li> <li><a href="/macroid/docs/tutorial/Tweaking.html" class="">Tweaking widgets</a></li> <li><a href="/macroid/docs/tutorial/HandlingEvents.html" class="">Handling events</a></li> <li><a href="/macroid/docs/tutorial/GettingAdaptive.html" class="">Getting adaptive</a></li> <li><a href="/macroid/docs/tutorial/CompleteCode.html" class="">Complete code</a></li></ul>  <li><a href="/macroid/docs/Guide.html" class="">Guide</a> <ul class="sub_section"> <li><a href="/macroid/docs/guide/UiActions.html" class="">UI actions</a></li> <li><a href="/macroid/docs/guide/Contexts.html" class="">Contexts</a></li> <li><a href="/macroid/docs/guide/Bricks.html" class="">Bricks</a></li> <li><a href="/macroid/docs/guide/Tweaks.html" class="">Tweaks</a></li> <li><a href="/macroid/docs/guide/Snails.html" class="">Snails</a></li> <li><a href="/macroid/docs/guide/Transformers.html" class="">Transformers</a></li> <li><a href="/macroid/docs/guide/Operators.html" class="">Understand operators</a></li> <li><a href="/macroid/docs/guide/MediaQueries.html" class="">Media queries</a></li> <li><a href="/macroid/docs/guide/Fragments.html" class="">Fragments</a></li> <li><a href="/macroid/docs/guide/Searching.html" class="">Searching</a></li> <li><a href="/macroid/docs/guide/ToastsDialogs.html" class="">Toasts and dialogs</a></li> <li><a href="/macroid/docs/guide/Advanced.html" class=" active ">Advances techniques</a></li> <li><a href="/macroid/docs/guide/Imports.html" class="">Imports</a></li></ul>  <li><a href="/macroid/docs/Modules.html" class="">Modules</a> <ul class="sub_section"> <li><a href="/macroid/docs/modules/Viewable.html" class="">Viewable</a></li> <li><a href="/macroid/docs/modules/Akka.html" class="">Akka Integration</a></li></ul>  <li><a href="/macroid/docs/Differences.html" class="">Differences from</a> <ul class="sub_section"> <li><a href="/macroid/docs/differences/Vanilla.html" class="">Vanilla Android</a></li> <li><a href="/macroid/docs/differences/Scaloid.html" class="">Scaloid</a></li></ul>  <li><a href="/macroid/docs/Samples.html" class="">Sample Projects</a>  <li><a href="/macroid/docs/Talks.html" class="">Talks</a>  <li><a href="/macroid/docs/Changelog.html" class="">Changelog</a> </li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="macroid"><div class="content-wrapper"><section><h1 id="advanced-techniques">Advanced techniques</h1>
+<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>macroid</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="author" content="macroid" /><meta name="og:image" content="/macroid/img/poster.png" /><meta name="og:title" content="macroid" /><meta name="og:site_name" content="macroid" /><meta name="og:url" content="http://macroid.github.io" /><meta name="og:type" content="website" /><meta name="og:description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="twitter:image" content="/macroid/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/macroid/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css" /><link rel="stylesheet" href="/macroid/css/style.css" /><link rel="stylesheet" href="/macroid/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/macroid/" class="brand"><div class="brand-wrapper" style="background:url('/macroid/img/sidebar_brand.png') no-repeat"><span>macroid</span></div></a></li>  <li><a href="/macroid/docs/index.html" class="">Introduction</a>  <li><a href="/macroid/docs/Installation.html" class="">Installation</a> <ul class="sub_section"> <li><a href="/macroid/docs/installation/ScalaOnAndroid.html" class="">Scala on Android</a></li></ul>  <li><a href="/macroid/docs/Tutorial.html" class="">Tutorial</a> <ul class="sub_section"> <li><a href="/macroid/docs/tutorial/BuildingLayouts.html" class="">Building layouts</a></li> <li><a href="/macroid/docs/tutorial/Tweaking.html" class="">Tweaking widgets</a></li> <li><a href="/macroid/docs/tutorial/HandlingEvents.html" class="">Handling events</a></li> <li><a href="/macroid/docs/tutorial/GettingAdaptive.html" class="">Getting adaptive</a></li> <li><a href="/macroid/docs/tutorial/CompleteCode.html" class="">Complete code</a></li></ul>  <li><a href="/macroid/docs/Guide.html" class="">Guide</a> <ul class="sub_section"> <li><a href="/macroid/docs/guide/UiActions.html" class="">UI actions</a></li> <li><a href="/macroid/docs/guide/Contexts.html" class="">Contexts</a></li> <li><a href="/macroid/docs/guide/Bricks.html" class="">Bricks</a></li> <li><a href="/macroid/docs/guide/Tweaks.html" class="">Tweaks</a></li> <li><a href="/macroid/docs/guide/Snails.html" class="">Snails</a></li> <li><a href="/macroid/docs/guide/Transformers.html" class="">Transformers</a></li> <li><a href="/macroid/docs/guide/Operators.html" class="">Understand operators</a></li> <li><a href="/macroid/docs/guide/MediaQueries.html" class="">Media queries</a></li> <li><a href="/macroid/docs/guide/Fragments.html" class="">Fragments</a></li> <li><a href="/macroid/docs/guide/Searching.html" class="">Searching</a></li> <li><a href="/macroid/docs/guide/ToastsDialogs.html" class="">Toasts and dialogs</a></li> <li><a href="/macroid/docs/guide/Advanced.html" class=" active ">Advances techniques</a></li> <li><a href="/macroid/docs/guide/Imports.html" class="">Imports</a></li></ul>  <li><a href="/macroid/docs/Modules.html" class="">Modules</a> <ul class="sub_section"> <li><a href="/macroid/docs/modules/Viewable.html" class="">Viewable</a></li> <li><a href="/macroid/docs/modules/Akka.html" class="">Akka Integration</a></li> <li><a href="/macroid/docs/modules/Extras.html" class="">Extras</a></li></ul>  <li><a href="/macroid/docs/Differences.html" class="">Differences from</a> <ul class="sub_section"> <li><a href="/macroid/docs/differences/Vanilla.html" class="">Vanilla Android</a></li> <li><a href="/macroid/docs/differences/Scaloid.html" class="">Scaloid</a></li></ul>  <li><a href="/macroid/docs/Samples.html" class="">Sample Projects</a>  <li><a href="/macroid/docs/Talks.html" class="">Talks</a>  <li><a href="/macroid/docs/Changelog.html" class="">Changelog</a> </li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="macroid"><div class="content-wrapper"><section><h1 id="advanced-techniques">Advanced techniques</h1>
 
 <p>This section explains why <a href="Tweaks.html#tweaking">tweaking</a> and <a href="Snails.html#-snailing-">snailing</a> are much more powerful
 than they seem at the first glance.</p>
 
 <h2 id="options">Options</h2>
 
-<p>What are options? My favorite explanation is in the <a href="http://danielwestheide.com/blog/2012/12/19/the-neophytes-guide-to-scala-part-5-the-option-type.html">Neophyte’s guide to Scala</a>. Anyway, as you may already know, <a href="Searching.html"><code class="highlighter-rouge">searching for widgets</code></a> or
-<a href="MediaQueries.html"><code class="highlighter-rouge">media queries</code></a> often force you to deal with <code class="highlighter-rouge">Option[...]</code> or even <code class="highlighter-rouge">Ui[Option[...]]</code>:</p>
+<p>What are options? My favorite explanation is in the <a href="http://danielwestheide.com/blog/2012/12/19/the-neophytes-guide-to-scala-part-5-the-option-type.html">Neophyte’s guide to Scala</a>. Anyway, as you may already know, <a href="Searching.html"><code>searching for widgets</code></a> or
+<a href="MediaQueries.html"><code>media queries</code></a> often force you to deal with <code>Option[...]</code> or even <code>Ui[Option[...]]</code>:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">val</span> <span class="n">display</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Tweak</span><span class="o">[</span><span class="kt">View</span><span class="o">]]</span> <span class="k">=</span> <span class="n">widerThan</span><span class="o">(</span><span class="mi">100</span> <span class="n">dp</span><span class="o">)</span> <span class="o">?</span> <span class="n">show</span>
+<pre><code class="language-scala">val display: Option[Tweak[View]] = widerThan(100 dp) ? show
 
-<span class="k">val</span> <span class="n">button</span><span class="k">:</span> <span class="kt">Ui</span><span class="o">[</span><span class="kt">Option</span><span class="o">[</span><span class="kt">Button</span><span class="o">]]</span> <span class="k">=</span> <span class="k">this</span><span class="o">.</span><span class="n">find</span><span class="o">[</span><span class="kt">Button</span><span class="o">](</span><span class="nc">Id</span><span class="o">.</span><span class="n">button</span><span class="o">)</span>
+val button: Ui[Option[Button]] = this.find[Button](Id.button)
 </code></pre>
-</div>
 
 <p>However this poses no problem for either tweaking or snailing:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">// if display is None, nothing happens
-</span><span class="n">w</span><span class="o">[</span><span class="kt">TextView</span><span class="o">]</span> <span class="o">&lt;~</span> <span class="o">(</span><span class="n">display</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Tweak</span><span class="o">[</span><span class="kt">View</span><span class="o">]])</span>
+<pre><code class="language-scala">// if display is None, nothing happens
+w[TextView] &lt;~ (display: Option[Tweak[View]])
 
-<span class="c1">// if button is None (e.g. not found), nothing happens
-</span><span class="o">(</span><span class="n">button</span><span class="k">:</span> <span class="kt">Ui</span><span class="o">[</span><span class="kt">Option</span><span class="o">[</span><span class="kt">Button</span><span class="o">]])</span> <span class="o">&lt;~</span> <span class="n">show</span>
+// if button is None (e.g. not found), nothing happens
+(button: Ui[Option[Button]]) &lt;~ show
 
-<span class="c1">// this works as well!
-</span><span class="o">(</span><span class="n">button</span><span class="k">:</span> <span class="kt">Ui</span><span class="o">[</span><span class="kt">Option</span><span class="o">[</span><span class="kt">Button</span><span class="o">]])</span> <span class="o">&lt;~</span> <span class="o">(</span><span class="n">display</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Tweak</span><span class="o">[</span><span class="kt">View</span><span class="o">]])</span>
+// this works as well!
+(button: Ui[Option[Button]]) &lt;~ (display: Option[Tweak[View]])
 
-<span class="c1">// the same with snailing
-</span><span class="n">buton</span> <span class="o">&lt;~~</span> <span class="n">fadeOut</span><span class="o">(</span><span class="mi">300</span><span class="o">)</span>
+// the same with snailing
+buton &lt;~~ fadeOut(300)
 </code></pre>
-</div>
 
 <p>All this is possible thanks to a typeclass-based design (recommended reading:
 <a href="http://danielwestheide.com/blog/2013/02/06/the-neophytes-guide-to-scala-part-12-type-classes.html">Neophyte’s guide to Scala</a>)
@@ -36,100 +34,92 @@ Now that we see the flexibility under the hood, let’s find out what else works
 
 <h2 id="lists">Lists</h2>
 
-<p>A widget can be tweaked with a list (or any <code class="highlighter-rouge">TraversableOnce</code>) of tweaks:</p>
+<p>A widget can be tweaked with a list (or any <code>TraversableOnce</code>) of tweaks:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">textView</span> <span class="o">&lt;~</span> <span class="nc">List</span><span class="o">(</span><span class="n">show</span><span class="o">,</span> <span class="n">text</span><span class="o">(</span><span class="s">"Hi"</span><span class="o">))</span>
+<pre><code class="language-scala">textView &lt;~ List(show, text("Hi"))
 </code></pre>
-</div>
 
 <p>Perhaps more interestinly, widgets can be tweaked in batches:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">List</span><span class="o">(</span><span class="n">button1</span><span class="o">,</span> <span class="n">button2</span><span class="o">)</span> <span class="o">&lt;~</span> <span class="n">show</span>
+<pre><code class="language-scala">List(button1, button2) &lt;~ show
 </code></pre>
-</div>
 
 <p>Of course, you can use lists on both sides:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">List</span><span class="o">(</span><span class="n">button1</span><span class="o">,</span> <span class="n">button2</span><span class="o">)</span> <span class="o">&lt;~</span> <span class="nc">List</span><span class="o">(</span><span class="n">show</span><span class="o">,</span> <span class="n">text</span><span class="o">(</span><span class="s">"Hi"</span><span class="o">))</span>
+<pre><code class="language-scala">List(button1, button2) &lt;~ List(show, text("Hi"))
 </code></pre>
-</div>
 
 <p>Or use lists with options:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nc">List</span><span class="o">(</span><span class="n">button1</span><span class="o">,</span> <span class="n">button2</span><span class="o">)</span> <span class="o">&lt;~</span> <span class="o">(</span><span class="n">hdpi</span> <span class="o">?</span> <span class="n">show</span><span class="o">)</span>
+<pre><code class="language-scala">List(button1, button2) &lt;~ (hdpi ? show)
 </code></pre>
-</div>
 
 <h2 id="futures">Futures</h2>
 
-<p>Here’s where it gets really interesting. Suppose we have a <code class="highlighter-rouge">Future[String]</code> with a caption,
+<p>Here’s where it gets really interesting. Suppose we have a <code>Future[String]</code> with a caption,
 that will become available only in a few moments:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">val</span> <span class="n">futureCaption</span> <span class="k">=</span> <span class="nc">Future</span> <span class="o">{</span>
-  <span class="nc">Thread</span><span class="o">.</span><span class="n">sleep</span><span class="o">(</span><span class="mi">4000</span><span class="o">)</span> <span class="c1">// used here for demonstration purposes only, never use in real code ;)
-</span>  <span class="s">"Wait for it!"</span>
-<span class="o">}</span>
+<pre><code class="language-scala">val futureCaption = Future {
+  Thread.sleep(4000) // used here for demonstration purposes only, never use in real code ;)
+  "Wait for it!"
+}
 </code></pre>
-</div>
 
 <p>But we can use it in tweaking right now!</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">// the caption will be set 
-</span><span class="n">textView</span> <span class="o">&lt;~</span> <span class="n">futureCaption</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">text</span><span class="o">)</span>
+<pre><code class="language-scala">// the caption will be set 
+textView &lt;~ futureCaption.map(text)
 </code></pre>
-</div>
 
 <h2 id="functional-reactive-programming">Functional reactive programming</h2>
 
 <p>Using a functional reactive library like <a href="https://github.com/lihaoyi/scala.rx">scala.rx</a>, we can go even further:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">// create a reactive variable
-</span><span class="k">val</span> <span class="n">caption</span> <span class="k">=</span> <span class="n">rx</span><span class="o">.</span><span class="nc">Var</span><span class="o">(</span><span class="s">"Olá"</span><span class="o">)</span>
+<pre><code class="language-scala">// create a reactive variable
+val caption = rx.Var("Olá")
 
-<span class="c1">// set text to “Olá”
-</span><span class="n">textView</span> <span class="o">&lt;~</span> <span class="n">caption</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">text</span><span class="o">)</span>
+// set text to “Olá”
+textView &lt;~ caption.map(text)
 
-<span class="c1">// text automatically updates to “Adeus”
-</span><span class="n">caption</span><span class="o">.</span><span class="n">update</span><span class="o">(</span><span class="s">"Adeus"</span><span class="o">)</span>
+// text automatically updates to “Adeus”
+caption.update("Adeus")
 </code></pre>
-</div>
 
-<p><code class="highlighter-rouge">EventStream</code>s from <a href="https://github.com/dylemma/scala.frp">scala.frp</a> are very similar, but do not have an initial value:</p>
+<p><code>EventStream</code>s from <a href="https://github.com/dylemma/scala.frp">scala.frp</a> are very similar, but do not have an initial value:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">// create an event source
-</span><span class="k">val</span> <span class="n">clicks</span> <span class="k">=</span> <span class="nc">EventSource</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span>
+<pre><code class="language-scala">// create an event source
+val clicks = EventSource[Unit]
 
-<span class="c1">// setup a button to fire events
-</span><span class="n">button</span> <span class="o">&lt;~</span> <span class="nc">On</span><span class="o">.</span><span class="n">click</span><span class="o">(</span><span class="nc">Ui</span><span class="o">(</span><span class="n">clicks</span><span class="o">.</span><span class="n">fire</span><span class="o">(())))</span>
+// setup a button to fire events
+button &lt;~ On.click(Ui(clicks.fire(())))
 
-<span class="c1">// a more useful event stream
-</span><span class="k">val</span> <span class="n">randomInts</span> <span class="k">=</span> <span class="n">clicks</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span> <span class="k">⇒</span> <span class="n">scala</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Random</span><span class="o">.</span><span class="n">nextInt</span><span class="o">().</span><span class="n">toString</span><span class="o">)</span>
+// a more useful event stream
+val randomInts = clicks.map(_ ⇒ scala.util.Random.nextInt().toString)
 
-<span class="c1">// the caption will update with each button click
-</span><span class="n">textView</span> <span class="o">&lt;~</span> <span class="n">randomInts</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">text</span><span class="o">)</span>
+// the caption will update with each button click
+textView &lt;~ randomInts.map(text)
 </code></pre>
-</div>
 
 <p>The respective helper declarations have been cut from <em>Macroid</em> with the intention of putting them into the newly-born
 <a href="../Related.html">macroid-frp library</a>. Please stay tuned!</p>
 
 <h2 id="extending">Extending</h2>
 
-<p>If you want to use tweaking with your own container types, like <code class="highlighter-rouge">AdvancedFuture</code> or <code class="highlighter-rouge">CrazyOption</code>, there are
+<p>If you want to use tweaking with your own container types, like <code>AdvancedFuture</code> or <code>CrazyOption</code>, there are
 two ways of going about it:</p>
 
 <ul>
-  <li>Provide an instance of a <a href="../api/core/macroid/util/Effector.html"><code class="highlighter-rouge">macroid.util.Effector</code> typeclass</a>,<br />
-which requires just a <code class="highlighter-rouge">foreach</code> method;</li>
-  <li>Specify a <a href="../api/core/macroid/CanTweak.html"><code class="highlighter-rouge">macroid.CanTweak[W, T, R]</code> functional dependency</a>,<br />
-which allows to tweak <code class="highlighter-rouge">W</code> with <code class="highlighter-rouge">T</code> and get an <code class="highlighter-rouge">Ui[R]</code> as a result (see the sources for examples).</li>
+  <li>Provide an instance of a <a href="../api/core/macroid/util/Effector.html"><code>macroid.util.Effector</code> typeclass</a>,<br />
+which requires just a <code>foreach</code> method;</li>
+  <li>Specify a <a href="../api/core/macroid/CanTweak.html"><code>macroid.CanTweak[W, T, R]</code> functional dependency</a>,<br />
+which allows to tweak <code>W</code> with <code>T</code> and get an <code>Ui[R]</code> as a result (see the sources for examples).</li>
 </ul>
 
 <p>Extending snailing offers only the latter option:</p>
 
 <ul>
-  <li>Specify a <a href="../api/core/macroid/CanSnail.html"><code class="highlighter-rouge">macroid.CanSnail[W, T, R]</code> functional dependency</a>,<br />
-which allows to snail <code class="highlighter-rouge">W</code> with <code class="highlighter-rouge">T</code> and get an <code class="highlighter-rouge">Ui[Future[R]]</code> as a result (see the sources for examples).</li>
+  <li>Specify a <a href="../api/core/macroid/CanSnail.html"><code>macroid.CanSnail[W, T, R]</code> functional dependency</a>,<br />
+which allows to snail <code>W</code> with <code>T</code> and get an <code>Ui[Future[R]]</code> as a result (see the sources for examples).</li>
 </ul>
 
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/languages/scala.min.js"></script><script src="/macroid/js/main.js"></script></body></html>

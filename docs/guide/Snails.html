@@ -1,119 +1,112 @@
-<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>macroid</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="author" content="macroid" /><meta name="og:image" content="/macroid/img/poster.png" /><meta name="og:title" content="macroid" /><meta name="og:site_name" content="macroid" /><meta name="og:url" content="http://macroid.github.io" /><meta name="og:type" content="website" /><meta name="og:description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="twitter:image" content="/macroid/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/macroid/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css" /><link rel="stylesheet" href="/macroid/css/style.css" /><link rel="stylesheet" href="/macroid/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/macroid/" class="brand"><div class="brand-wrapper" style="background:url('/macroid/img/sidebar_brand.png') no-repeat"><span>macroid</span></div></a></li>  <li><a href="/macroid/docs/index.html" class="">Introduction</a>  <li><a href="/macroid/docs/Installation.html" class="">Installation</a> <ul class="sub_section"> <li><a href="/macroid/docs/installation/ScalaOnAndroid.html" class="">Scala on Android</a></li></ul>  <li><a href="/macroid/docs/Tutorial.html" class="">Tutorial</a> <ul class="sub_section"> <li><a href="/macroid/docs/tutorial/BuildingLayouts.html" class="">Building layouts</a></li> <li><a href="/macroid/docs/tutorial/Tweaking.html" class="">Tweaking widgets</a></li> <li><a href="/macroid/docs/tutorial/HandlingEvents.html" class="">Handling events</a></li> <li><a href="/macroid/docs/tutorial/GettingAdaptive.html" class="">Getting adaptive</a></li> <li><a href="/macroid/docs/tutorial/CompleteCode.html" class="">Complete code</a></li></ul>  <li><a href="/macroid/docs/Guide.html" class="">Guide</a> <ul class="sub_section"> <li><a href="/macroid/docs/guide/UiActions.html" class="">UI actions</a></li> <li><a href="/macroid/docs/guide/Contexts.html" class="">Contexts</a></li> <li><a href="/macroid/docs/guide/Bricks.html" class="">Bricks</a></li> <li><a href="/macroid/docs/guide/Tweaks.html" class="">Tweaks</a></li> <li><a href="/macroid/docs/guide/Snails.html" class=" active ">Snails</a></li> <li><a href="/macroid/docs/guide/Transformers.html" class="">Transformers</a></li> <li><a href="/macroid/docs/guide/Operators.html" class="">Understand operators</a></li> <li><a href="/macroid/docs/guide/MediaQueries.html" class="">Media queries</a></li> <li><a href="/macroid/docs/guide/Fragments.html" class="">Fragments</a></li> <li><a href="/macroid/docs/guide/Searching.html" class="">Searching</a></li> <li><a href="/macroid/docs/guide/ToastsDialogs.html" class="">Toasts and dialogs</a></li> <li><a href="/macroid/docs/guide/Advanced.html" class="">Advances techniques</a></li> <li><a href="/macroid/docs/guide/Imports.html" class="">Imports</a></li></ul>  <li><a href="/macroid/docs/Modules.html" class="">Modules</a> <ul class="sub_section"> <li><a href="/macroid/docs/modules/Viewable.html" class="">Viewable</a></li> <li><a href="/macroid/docs/modules/Akka.html" class="">Akka Integration</a></li></ul>  <li><a href="/macroid/docs/Differences.html" class="">Differences from</a> <ul class="sub_section"> <li><a href="/macroid/docs/differences/Vanilla.html" class="">Vanilla Android</a></li> <li><a href="/macroid/docs/differences/Scaloid.html" class="">Scaloid</a></li></ul>  <li><a href="/macroid/docs/Samples.html" class="">Sample Projects</a>  <li><a href="/macroid/docs/Talks.html" class="">Talks</a>  <li><a href="/macroid/docs/Changelog.html" class="">Changelog</a> </li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="macroid"><div class="content-wrapper"><section><h1 id="snails">Snails</h1>
+<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>macroid</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="author" content="macroid" /><meta name="og:image" content="/macroid/img/poster.png" /><meta name="og:title" content="macroid" /><meta name="og:site_name" content="macroid" /><meta name="og:url" content="http://macroid.github.io" /><meta name="og:type" content="website" /><meta name="og:description" content="A modular functional user interface creation language for Android, implemented with Scala macros" /><meta name="twitter:image" content="/macroid/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/macroid/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css" /><link rel="stylesheet" href="/macroid/css/style.css" /><link rel="stylesheet" href="/macroid/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/macroid/" class="brand"><div class="brand-wrapper" style="background:url('/macroid/img/sidebar_brand.png') no-repeat"><span>macroid</span></div></a></li>  <li><a href="/macroid/docs/index.html" class="">Introduction</a>  <li><a href="/macroid/docs/Installation.html" class="">Installation</a> <ul class="sub_section"> <li><a href="/macroid/docs/installation/ScalaOnAndroid.html" class="">Scala on Android</a></li></ul>  <li><a href="/macroid/docs/Tutorial.html" class="">Tutorial</a> <ul class="sub_section"> <li><a href="/macroid/docs/tutorial/BuildingLayouts.html" class="">Building layouts</a></li> <li><a href="/macroid/docs/tutorial/Tweaking.html" class="">Tweaking widgets</a></li> <li><a href="/macroid/docs/tutorial/HandlingEvents.html" class="">Handling events</a></li> <li><a href="/macroid/docs/tutorial/GettingAdaptive.html" class="">Getting adaptive</a></li> <li><a href="/macroid/docs/tutorial/CompleteCode.html" class="">Complete code</a></li></ul>  <li><a href="/macroid/docs/Guide.html" class="">Guide</a> <ul class="sub_section"> <li><a href="/macroid/docs/guide/UiActions.html" class="">UI actions</a></li> <li><a href="/macroid/docs/guide/Contexts.html" class="">Contexts</a></li> <li><a href="/macroid/docs/guide/Bricks.html" class="">Bricks</a></li> <li><a href="/macroid/docs/guide/Tweaks.html" class="">Tweaks</a></li> <li><a href="/macroid/docs/guide/Snails.html" class=" active ">Snails</a></li> <li><a href="/macroid/docs/guide/Transformers.html" class="">Transformers</a></li> <li><a href="/macroid/docs/guide/Operators.html" class="">Understand operators</a></li> <li><a href="/macroid/docs/guide/MediaQueries.html" class="">Media queries</a></li> <li><a href="/macroid/docs/guide/Fragments.html" class="">Fragments</a></li> <li><a href="/macroid/docs/guide/Searching.html" class="">Searching</a></li> <li><a href="/macroid/docs/guide/ToastsDialogs.html" class="">Toasts and dialogs</a></li> <li><a href="/macroid/docs/guide/Advanced.html" class="">Advances techniques</a></li> <li><a href="/macroid/docs/guide/Imports.html" class="">Imports</a></li></ul>  <li><a href="/macroid/docs/Modules.html" class="">Modules</a> <ul class="sub_section"> <li><a href="/macroid/docs/modules/Viewable.html" class="">Viewable</a></li> <li><a href="/macroid/docs/modules/Akka.html" class="">Akka Integration</a></li> <li><a href="/macroid/docs/modules/Extras.html" class="">Extras</a></li></ul>  <li><a href="/macroid/docs/Differences.html" class="">Differences from</a> <ul class="sub_section"> <li><a href="/macroid/docs/differences/Vanilla.html" class="">Vanilla Android</a></li> <li><a href="/macroid/docs/differences/Scaloid.html" class="">Scaloid</a></li></ul>  <li><a href="/macroid/docs/Samples.html" class="">Sample Projects</a>  <li><a href="/macroid/docs/Talks.html" class="">Talks</a>  <li><a href="/macroid/docs/Changelog.html" class="">Changelog</a> </li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/macroid"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('macroid A modular functional user interface creation language for Android, implemented with Scala macros');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="macroid"><div class="content-wrapper"><section><h1 id="snails">Snails</h1>
 
 <p>Snails provide a dataflow mini-language for animations and things like that.</p>
 
 <h2 id="what-are-they">What are they</h2>
 
 <p>Snails are almost like <a href="Tweaks.html">tweaks</a>, but are used when changing a widget property takes time.
-A snail is defined by a function <code class="highlighter-rouge">WidgetClass ⇒ Future[Unit]</code>.</p>
+A snail is defined by a function <code>WidgetClass ⇒ Future[Unit]</code>.</p>
 
 <h2 id="defining">Defining</h2>
 
-<p>Snails can be defined using the <code class="highlighter-rouge">Snail</code> companion object:</p>
+<p>Snails can be defined using the <code>Snail</code> companion object:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">import</span> <span class="nn">macroid.Snail</span>
+<pre><code class="language-scala">import macroid.Snail
 
-<span class="c1">// plays a sound
+// plays a sound
 // and returns a future to track when it ends
-</span><span class="k">def</span> <span class="n">playSound</span> <span class="k">=</span> <span class="o">{</span>
-  <span class="k">val</span> <span class="n">done</span> <span class="k">=</span> <span class="nc">Promise</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]()</span>
-  <span class="c1">// set up media player
-</span>  <span class="c1">// play sound
-</span>  <span class="c1">// when complete, call `done.success(())`
-</span>  <span class="n">done</span><span class="o">.</span><span class="n">future</span>
-<span class="o">}</span>
+def playSound = {
+  val done = Promise[Unit]()
+  // set up media player
+  // play sound
+  // when complete, call `done.success(())`
+  done.future
+}
 
-<span class="c1">// set focus and play a sound
-</span><span class="k">val</span> <span class="n">focusLoudly</span> <span class="k">=</span> <span class="nc">Snail</span><span class="o">[</span><span class="kt">View</span><span class="o">]</span> <span class="o">{</span> <span class="n">view</span> <span class="k">⇒</span>
-  <span class="n">view</span><span class="o">.</span><span class="n">setFocus</span><span class="o">()</span>
-  <span class="n">playSound</span>
-<span class="o">}</span>
+// set focus and play a sound
+val focusLoudly = Snail[View] { view ⇒
+  view.setFocus()
+  playSound
+}
 </code></pre>
-</div>
 
 <h2 id="composing">Composing</h2>
 
-<p>Snails can be composed by using the <code class="highlighter-rouge">++</code> operator:</p>
+<p>Snails can be composed by using the <code>++</code> operator:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">val</span> <span class="n">wink</span> <span class="k">=</span> <span class="n">fadeIn</span> <span class="o">++</span> <span class="n">fadeOut</span>
+<pre><code class="language-scala">val wink = fadeIn ++ fadeOut
 </code></pre>
-</div>
 
-<p>It is also possible to combine snails with tweaks by using either <code class="highlighter-rouge">+</code> or <code class="highlighter-rouge">++</code>.
-More specifically, snails are added with <code class="highlighter-rouge">++</code>, and tweaks are added with <code class="highlighter-rouge">+</code>
+<p>It is also possible to combine snails with tweaks by using either <code>+</code> or <code>++</code>.
+More specifically, snails are added with <code>++</code>, and tweaks are added with <code>+</code>
 (see <a href="Operators.html">Understanding operators</a>):</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="n">textAndFade</span><span class="o">(</span><span class="n">str</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span>
-  <span class="n">text</span><span class="o">(</span><span class="n">str</span><span class="o">)</span> <span class="o">++</span> <span class="n">fadeIn</span>
+<pre><code class="language-scala">def textAndFade(str: String) =
+  text(str) ++ fadeIn
 
-<span class="k">val</span> <span class="n">fadeAndDisappear</span> <span class="k">=</span>
-  <span class="n">fadeOut</span> <span class="o">+</span> <span class="n">hide</span>
+val fadeAndDisappear =
+  fadeOut + hide
 </code></pre>
-</div>
 
 <h2 id="snailing">“Snailing”</h2>
 
 <p>“Snailing” is a made-up word that denotes the process of applying snails to widgets.
-Snailing is very similar to <a href="Tweaks.html#tweaking">tweaking</a>, except it uses the <code class="highlighter-rouge">&lt;~~</code> operator:</p>
+Snailing is very similar to <a href="Tweaks.html#tweaking">tweaking</a>, except it uses the <code>&lt;~~</code> operator:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">textView</span> <span class="o">&lt;~~</span> <span class="n">fadeIn</span>
+<pre><code class="language-scala">textView &lt;~~ fadeIn
 </code></pre>
-</div>
 
 <p>It can be chained:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">textView</span> <span class="o">&lt;~~</span> <span class="n">fadeIn</span> <span class="o">&lt;~~</span> <span class="n">fadeOut</span>
+<pre><code class="language-scala">textView &lt;~~ fadeIn &lt;~~ fadeOut
 </code></pre>
-</div>
 
 <p>Snailing can be also mixed with tweaking:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">editText</span> <span class="o">&lt;~</span> <span class="n">text</span><span class="o">(</span><span class="s">"foo"</span><span class="o">)</span> <span class="o">&lt;~~</span> <span class="n">fadeIn</span> <span class="o">&lt;~</span> <span class="n">enable</span>
+<pre><code class="language-scala">editText &lt;~ text("foo") &lt;~~ fadeIn &lt;~ enable
 </code></pre>
-</div>
 
-<p>It you want to apply the snail without waiting for it to finish, you can use <code class="highlighter-rouge">&lt;~</code>.
+<p>It you want to apply the snail without waiting for it to finish, you can use <code>&lt;~</code>.
 By the way, if you are confused about all these operators, check the <a href="Operators.html">Understanding operators</a> section.</p>
 
-<p>Snailing returns a <a href="UiActions.html">UI action</a>, to be more specific, a <code class="highlighter-rouge">Ui[Future[...]]</code>.</p>
+<p>Snailing returns a <a href="UiActions.html">UI action</a>, to be more specific, a <code>Ui[Future[...]]</code>.</p>
 
 <h2 id="snailing-workflows">Snailing workflows</h2>
 
 <p>By combining UI actions, we can program complex asynchronous snailing (and tweaking) workflows,
 for example:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="o">(</span><span class="n">myProgressBar</span> <span class="o">&lt;~~</span> <span class="n">fadeOut</span><span class="o">(</span><span class="mi">400</span><span class="o">))</span> <span class="o">~~</span>
-<span class="o">(</span><span class="n">myTextView</span> <span class="o">&lt;~~</span> <span class="n">blink</span><span class="o">)</span> <span class="o">~~</span>
-<span class="o">(</span><span class="n">myOtherTextView</span> <span class="o">&lt;~</span> <span class="n">text</span><span class="o">(</span><span class="s">"’SUP?"</span><span class="o">))</span>
+<pre><code class="language-scala">(myProgressBar &lt;~~ fadeOut(400)) ~~
+(myTextView &lt;~~ blink) ~~
+(myOtherTextView &lt;~ text("’SUP?"))
 </code></pre>
-</div>
 
-<p>Note the use of <code class="highlighter-rouge">~~</code> operator: it denotes that we need to wait for completion of the action.</p>
+<p>Note the use of <code>~~</code> operator: it denotes that we need to wait for completion of the action.</p>
 
 <h2 id="standard-snails">Standard snails</h2>
 
 <p>A number of standard snails are included. You can always find them in the <a href="../api/core/macroid/Snails$.html">scaladoc</a>.
-Note that all these snails can be imported with <code class="highlighter-rouge">import macroid.FullDsl._</code> or just <code class="highlighter-rouge">import macroid.Snails._</code>.</p>
+Note that all these snails can be imported with <code>import macroid.FullDsl._</code> or just <code>import macroid.Snails._</code>.</p>
 
 <p>A quick rundown:</p>
 
 <ul>
   <li>Basic snails
     <ul>
-      <li><code class="highlighter-rouge">delay</code> — wait for a given time</li>
-      <li><code class="highlighter-rouge">wait</code> — wait for a given <code class="highlighter-rouge">Future</code></li>
+      <li><code>delay</code> — wait for a given time</li>
+      <li><code>wait</code> — wait for a given <code>Future</code></li>
     </ul>
   </li>
   <li>Progress
     <ul>
-      <li><code class="highlighter-rouge">waitProgress</code> — modify a <code class="highlighter-rouge">ProgressBar</code> to track a <code class="highlighter-rouge">Future</code> or a list of <code class="highlighter-rouge">Future</code>s</li>
+      <li><code>waitProgress</code> — modify a <code>ProgressBar</code> to track a <code>Future</code> or a list of <code>Future</code>s</li>
     </ul>
   </li>
   <li>Animation
     <ul>
-      <li><code class="highlighter-rouge">anim</code> — apply an animation</li>
-      <li><code class="highlighter-rouge">fadeIn</code> — apply a fade-in</li>
-      <li><code class="highlighter-rouge">fadeOut</code> — apply a fade-out</li>
+      <li><code>anim</code> — apply an animation</li>
+      <li><code>fadeIn</code> — apply a fade-in</li>
+      <li><code>fadeOut</code> — apply a fade-out</li>
     </ul>
   </li>
 </ul>

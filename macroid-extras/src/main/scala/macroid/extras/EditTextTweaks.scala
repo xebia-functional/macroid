@@ -1,11 +1,11 @@
 package macroid.extras
 
 import android.content.Context
-import android.text.{Editable, InputType, TextWatcher}
+import android.text.{ Editable, InputType, TextWatcher }
 import android.view.KeyEvent
-import android.view.inputmethod.{EditorInfo, InputMethodManager}
-import android.widget.{EditText, TextView}
-import macroid.{ContextWrapper, Tweak}
+import android.view.inputmethod.{ EditorInfo, InputMethodManager }
+import android.widget.{ EditText, TextView }
+import macroid.{ ContextWrapper, Tweak }
 
 object EditTextTweaks {
   type W = EditText

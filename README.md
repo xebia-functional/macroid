@@ -9,9 +9,9 @@ Striving to be focused on one thing (GUI), *Macroid* promotes composability and 
 
 Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 
-Latest version: `2.0.0-M5`
+Latest version: `2.0`
 
-Snapshot version: `2.0-SNAPSHOT`
+Snapshot version: `2.0.1-SNAPSHOT`
 
 License: [MIT](http://opensource.org/licenses/MIT).
 
@@ -27,7 +27,7 @@ For more info head to http://macroid.github.io!
 ```scala
 
 libraryDependencies ++= Seq(
-  aar("org.macroid" %% "macroid" % "2.0.0-M5")
+  aar("org.macroid" %% "macroid" % "2.0")
 
 ```
 
@@ -39,7 +39,7 @@ resolvers +=
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq(
-  aar("org.macroid" %% "macroid" % "2.0-SNAPSHOT")
+  aar("org.macroid" %% "macroid" % "2.0.1-SNAPSHOT")
 
 ```
 

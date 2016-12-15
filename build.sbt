@@ -26,13 +26,13 @@ lazy val micrositeSettings = Seq(
     "white-color"       -> "#FFFFFF")
 )
 
-val androidV = "24.2.0"
+val androidV = "25.0.1"
 
 val commonSettings = androidBuildAar ++ Seq(
-  platformTarget in Android := "android-23",
+  platformTarget in Android := "android-24",
   typedResources := false,
 
-  version := "2.0-SNAPSHOT",
+  version := "2.0",
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
 
   scalaVersion := "2.11.7",

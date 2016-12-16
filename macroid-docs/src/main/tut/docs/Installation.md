@@ -15,7 +15,7 @@ version `1.2.20` and above, you can add it to your project like this:
 
 ```scala
 libraryDependencies ++= Seq(
-  aar("org.macroid" %% "macroid" % "2.0.0-M5")
+  aar("org.macroid" %% "macroid" % "2.0")
 ```
 
 If you want to use the SNAPSHOT version you need to add the Sonatype SNAPSHOT repo
@@ -25,7 +25,7 @@ resolvers +=
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq(
-  aar("org.macroid" %% "macroid" % "2.0-SNAPSHOT")
+  aar("org.macroid" %% "macroid" % "2.0.1-SNAPSHOT")
 ```
 
 ## Version `2.0.0-M2` and below

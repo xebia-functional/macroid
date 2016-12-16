@@ -19,7 +19,7 @@ Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 
 # Installation
 
-## Version `2.0.0-M5`
+## Version `2.0`
 
 *Macroid* is packaged in the AAR format and published to [Maven Central](http://central.maven.org/maven2/org/macroid/macroid_2.11/2.0.0-M5/).
 
@@ -28,7 +28,7 @@ version `1.2.20` and above, you can add it to your project like this:
 
 ```scala
 libraryDependencies ++= Seq(
-  aar("org.macroid" %% "macroid" % "2.0.0-M5")
+  aar("org.macroid" %% "macroid" % "2.0")
 ```
 
 If you want to use the SNAPSHOT version you need to add the Sonatype SNAPSHOT repo
@@ -38,5 +38,5 @@ resolvers +=
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq(
-  aar("org.macroid" %% "macroid" % "2.0-SNAPSHOT")
+  aar("org.macroid" %% "macroid" % "2.0.1-SNAPSHOT")
 ```

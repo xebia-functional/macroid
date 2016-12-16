@@ -8,6 +8,11 @@ section: docs
 
 Breaking changes are in bold.
 
+## Version `2.0`
+
+* Added new `macroid-extras` module
+* Added documentation using `sbt-microsite`
+
 ## Version `2.0.0-M4`
 
 Detailed diff can be found [on GitHub](https://github.com/macroid/macroid/compare/v2.0.0-M3...v2.0.0-M4).

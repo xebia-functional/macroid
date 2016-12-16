@@ -32,7 +32,7 @@ val commonSettings = androidBuildAar ++ Seq(
   platformTarget in Android := "android-24",
   typedResources := false,
 
-  version := "2.0",
+  version := "2.0.1-SNAPSHOT",
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
 
   scalaVersion := "2.11.7",

@@ -34,4 +34,4 @@ proguardOptions ++= Seq(
 )
 ```
 
-Documentation is available here: http://macroid.github.io/modules/Akka.html
+Documentation is available here: http://47deg.github.io/macroid/docs/modules/Akka.html

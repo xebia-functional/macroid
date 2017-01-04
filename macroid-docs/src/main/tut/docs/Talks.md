@@ -19,6 +19,6 @@ x
 ## ScalaDays 2014
 
 * Event: http://scaladays.org/#schedule/What-s-in-your-pocket--The-state-of-the-art-in-Android-programming-with-Scala
-* Slides: http://macroid.github.io/ScalaDays2014.pdf
+* Slides: https://github.com/47deg/macroid/raw/master/macroid-docs/src/main/resources/ScalaDays2014.pdf
 * Code: https://github.com/stanch/macroid-scaladays-demo
 * Video: http://www.parleys.com/play/53a7d2cfe4b0543940d9e564

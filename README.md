@@ -15,12 +15,12 @@ Snapshot version: `2.0.1-SNAPSHOT`
 
 License: [MIT](http://opensource.org/licenses/MIT).
 
-* [What does it look like](http://macroid.github.io/Tutorial.html)
-* [How is it different from...](http://macroid.github.io/Differences.html)
-* [Detailed guide](http://macroid.github.io/Guide.html)
+* [What does it look like](http://47deg.github.io/macroid/docs/Tutorial.html)
+* [How is it different from...](http://47deg.github.io/macroid/docs/Differences.html)
+* [Detailed guide](http://47deg.github.io/macroid/docs/Guide.html)
 * [Mailing list](https://groups.google.com/forum/#!forum/macroid)
 
-For more info head to http://macroid.github.io!
+For more info head to http://47deg.github.io/macroid!
 
 #### Installation
 

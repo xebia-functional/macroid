@@ -73,7 +73,7 @@ val commonSettings = androidBuildAar ++ Seq(
 
   organizationName := "macroid",
 
-  organizationHomepage := Some(new URL("http://macroid.github.io")),
+  organizationHomepage := Some(new URL("http://47deg.github.io/macroid")),
 
   publishMavenStyle := true,
 
@@ -81,7 +81,7 @@ val commonSettings = androidBuildAar ++ Seq(
 
   description := "A Scala GUI DSL for Android",
 
-  homepage := Some(url("http://macroid.github.io")),
+  homepage := Some(url("http://47deg.github.io/macroid")),
 
   scmInfo := Some(ScmInfo(url("https://github.com/47deg/macroid"), "https://github.com/47deg/macroid.git")),
 
@@ -144,7 +144,7 @@ lazy val core = (project in file("macroid-core"))
   .settings(
     name := "macroid",
     description := "A Scala GUI DSL for Android",
-    homepage := Some(url("http://macroid.github.io")),
+    homepage := Some(url("http://47deg.github.io/macroid")),
 
     unmanagedSourceDirectories in Test := Seq(baseDirectory.value / "src" / "test" / "scala"),
 
@@ -159,7 +159,7 @@ lazy val viewable = (project in file("macroid-viewable"))
   .settings(
     name := "macroid-viewable",
     description := "Typeclasses to turn data into Android layouts",
-    homepage := Some(url("http://macroid.github.io/modules/Viewable.html"))
+    homepage := Some(url("http://47deg.github.io/macroid/docs/modules/Viewable.html"))
   )
   .dependsOn(core)
 
@@ -168,7 +168,7 @@ lazy val akka = (project in file("macroid-akka"))
   .settings(
     name := "macroid-akka",
     description := "Helpers to attach Akka Actors to Android Fragments",
-    homepage := Some(url("http://macroid.github.io/modules/Akka.html")),
+    homepage := Some(url("http://47deg.github.io/macroid/docs/modules/Akka.html")),
 
     libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.14" % "provided"
   )
@@ -189,7 +189,7 @@ lazy val extras = (project in file("macroid-extras"))
   .settings(
     name := "macroid-extras",
     description := "Tweaks and utilities for android views",
-    homepage := Some(url("http://macroid.github.io/modules/Extras.html")),
+    homepage := Some(url("http://47deg.github.io/macroid/docs/modules/Extras.html")),
 
     libraryDependencies ++= Seq(
       "com.android.support" % "appcompat-v7" % androidV,

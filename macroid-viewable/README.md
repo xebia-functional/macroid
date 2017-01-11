@@ -14,4 +14,4 @@ Assuming you already have *Macroid* `2.0.0-M4` installed, add this line to your 
 libraryDependencies += aar("org.macroid" %% "macroid-viewable" % "2.0.0-M4")
 ```
 
-Documentation is available here: http://macroid.github.io/modules/Viewable.html
+Documentation is available here: http://47deg.github.io/macroid/docs/modules/Viewable.html

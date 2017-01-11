@@ -88,7 +88,7 @@ class MyActor extends FragmentActor[MyFragment] {
     // with the currently attached fragment, if any
     case MyOtherMessage ⇒ withUi(fragment ⇒ Ui {
       // code run on the Ui thread
-      // more about Ui at http://macroid.github.io/guide/UiActions.html
+      // more about Ui at http://47deg.github.io/macroid/docs/guide/UiActions.html
       ...
     })
 

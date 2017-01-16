@@ -159,7 +159,9 @@ lazy val viewable = (project in file("macroid-viewable"))
   .settings(
     name := "macroid-viewable",
     description := "Typeclasses to turn data into Android layouts",
-    homepage := Some(url("http://47deg.github.io/macroid/docs/modules/Viewable.html"))
+    homepage := Some(url("http://47deg.github.io/macroid/docs/modules/Viewable.html")),
+    libraryDependencies ++= Seq(
+      "com.android.support" % "recyclerview-v7" % androidV)
   )
   .dependsOn(core)
 

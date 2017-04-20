@@ -53,7 +53,7 @@ Ui.run {
 }
 ```
 
-The phrases can be discovered via the [scaladoc](../api/core/macroid/Phrases$.html), here are some examples:
+Here are some Phrases examples:
 
 ```scala
 Ui.run {

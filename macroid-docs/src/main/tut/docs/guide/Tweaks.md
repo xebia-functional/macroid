@@ -71,7 +71,7 @@ Note that tweaking does not require the widgets to be created with *Macroid* bri
 
 ## Standard tweaks
 
-A number of standard tweaks are included. You can always find them in the [scaladoc](../api/core/macroid/Tweaks$.html).
+A number of standard tweaks are included. You can always find them in the [source in github](https://github.com/47deg/macroid/blob/master/macroid-core/src/main/scala/macroid/Tweaks.scala).
 Note that all these tweaks can be imported with `import macroid.FullDsl._` or just `import macroid.Tweaks._`.
 
 A quick rundown:
@@ -131,7 +131,7 @@ A quick rundown:
 
 ## Extra tweaks
 
-Some extra tweaks are included in the `macroid.contrib` package. You can always find them in the [scaladoc](../api/core/macroid/contrib/package.html).
+Some extra tweaks are included in the `macroid.contrib` package. You can always find them in the [source in github](https://github.com/47deg/macroid/blob/master/macroid-core/src/main/scala/macroid/contrib/ExtraTweaks.scala).
 
 *Please feel free to file a pull request with any extra tweaks you find useful. The naming strategy can be observed below.*
 

@@ -12,25 +12,31 @@ case class Phrase(f: AlertDialog.Builder ⇒ Unit) {
 }
 
 private[macroid] trait DialogBuilding {
+
   /** A helper class to provide different ways of building a dialog */
   class DialogBuilder[A](theme: Option[Int]) {
     private def builder(implicit ctx: ContextWrapper) =
-      theme.fold(new AlertDialog.Builder(ctx.getOriginal))(t ⇒ new AlertDialog.Builder(ctx.getOriginal, t))
+      theme.fold(new AlertDialog.Builder(ctx.getOriginal))(t ⇒
+        new AlertDialog.Builder(ctx.getOriginal, t))
 
     /** Create a dialog with the specified view */
-    def apply(view: Ui[View])(implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
+    def apply(view: Ui[View])(
+        implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
       view.map(v ⇒ builder.setView(v))
 
     /** Create a dialog with the specified message */
-    def apply(message: CharSequence)(implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
+    def apply(message: CharSequence)(
+        implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
       Ui(builder.setMessage(message))
 
     /** Create a dialog with the specified item list and click handler */
-    def apply(items: Array[CharSequence])(handler: OnClickListener)(implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
+    def apply(items: Array[CharSequence])(handler: OnClickListener)(
+        implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
       Ui(builder.setItems(items, handler))
 
     /** Create a dialog with the specified ListAdapter and click handler */
-    def apply(adapter: ListAdapter)(handler: OnClickListener)(implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
+    def apply(adapter: ListAdapter)(handler: OnClickListener)(
+        implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
       Ui(builder.setAdapter(adapter, handler))
   }
 
@@ -48,45 +54,59 @@ private[macroid] trait DialogImplicits {
     def onClick(dialog: DialogInterface, which: Int): Unit = f.get
   }
 
-  implicit def func2OnClickListener(f: (DialogInterface, Int) ⇒ Ui[Any]) = new OnClickListener {
-    def onClick(dialog: DialogInterface, which: Int): Unit = f(dialog, which).get
-  }
+  implicit def func2OnClickListener(f: (DialogInterface, Int) ⇒ Ui[Any]) =
+    new OnClickListener {
+      def onClick(dialog: DialogInterface, which: Int): Unit =
+        f(dialog, which).get
+    }
 }
 
 private[macroid] trait Phrases {
+
   /** Set title */
   def title(title: CharSequence) = Phrase(_.setTitle(title))
 
   /** Set positive button */
-  def positive(text: CharSequence)(handler: OnClickListener) = Phrase(_.setPositiveButton(text, handler))
+  def positive(text: CharSequence)(handler: OnClickListener) =
+    Phrase(_.setPositiveButton(text, handler))
 
   /** Set positive button with text "yes" */
-  def positiveYes(handler: OnClickListener) = Phrase(_.setPositiveButton(android.R.string.yes, handler))
+  def positiveYes(handler: OnClickListener) =
+    Phrase(_.setPositiveButton(android.R.string.yes, handler))
 
   /** Set positive button with text "Ok" */
-  def positiveOk(handler: OnClickListener) = Phrase(_.setPositiveButton(android.R.string.ok, handler))
+  def positiveOk(handler: OnClickListener) =
+    Phrase(_.setPositiveButton(android.R.string.ok, handler))
 
   /** Set negative button */
-  def negative(text: CharSequence)(handler: OnClickListener) = Phrase(_.setNegativeButton(text, handler))
+  def negative(text: CharSequence)(handler: OnClickListener) =
+    Phrase(_.setNegativeButton(text, handler))
 
   /** Set negative button with text "no" */
-  def negativeNo(handler: OnClickListener) = Phrase(_.setNegativeButton(android.R.string.no, handler))
+  def negativeNo(handler: OnClickListener) =
+    Phrase(_.setNegativeButton(android.R.string.no, handler))
 
   /** Set negative button with text "cancel" */
-  def negativeCancel(handler: OnClickListener) = Phrase(_.setNegativeButton(android.R.string.cancel, handler))
+  def negativeCancel(handler: OnClickListener) =
+    Phrase(_.setNegativeButton(android.R.string.cancel, handler))
 
   /** Set neutral button */
-  def neutral(text: CharSequence)(handler: OnClickListener) = Phrase(_.setNeutralButton(text, handler))
+  def neutral(text: CharSequence)(handler: OnClickListener) =
+    Phrase(_.setNeutralButton(text, handler))
 
   /** Show the dialog */
-  def speak = Phrase { d ⇒ d.show(); () }
+  def speak = Phrase { d ⇒
+    d.show(); ()
+  }
 }
 
 object Phrases extends Phrases
 
 private[macroid] trait Phrasing extends DialogImplicits {
   implicit class PhrasingOps(dialog: Ui[AlertDialog.Builder]) {
-    def <~(phrase: Phrase) = dialog map { d ⇒ phrase(d); d }
+    def <~(phrase: Phrase) = dialog map { d ⇒
+      phrase(d); d
+    }
   }
 }
 

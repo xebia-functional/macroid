@@ -4,12 +4,12 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams._
 import android.widget.LinearLayout
 import macroid.FullDsl._
-import macroid.{ ContextWrapper, Tweak }
+import macroid.{ContextWrapper, Tweak}
 
 object LinearLayoutTweaks {
   type W = LinearLayout
-
-  val llHorizontal: Tweak[W] = Tweak[W](_.setOrientation(LinearLayout.HORIZONTAL))
+  val llHorizontal: Tweak[W] =
+    Tweak[W](_.setOrientation(LinearLayout.HORIZONTAL))
 
   val llVertical: Tweak[W] = Tweak[W](_.setOrientation(LinearLayout.VERTICAL))
 
@@ -23,9 +23,11 @@ object LinearLayoutTweaks {
 
   def llGravity(gravity: Int): Tweak[W] = Tweak[W](_.setGravity(gravity))
 
-  def llDividerPadding(res: Int, padding: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W] { view ⇒
+  def llDividerPadding(res: Int, padding: Int)(
+      implicit context: ContextWrapper): Tweak[W] = Tweak[W] { view ⇒
     view.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE)
-    view.setDividerDrawable(context.application.getResources.getDrawable(res))
+    view.setDividerDrawable(
+      context.application.getResources.getDrawable(res, null))
     view.setDividerPadding(padding)
   }
 
@@ -36,10 +38,10 @@ object LinearLayoutTweaks {
   }
 
   def llLayoutMargin(
-    marginLeft: Int = 0,
-    marginTop: Int = 0,
-    marginRight: Int = 0,
-    marginBottom: Int = 0
+      marginLeft: Int = 0,
+      marginTop: Int = 0,
+      marginRight: Int = 0,
+      marginBottom: Int = 0
   ): Tweak[View] = Tweak[View] { view ⇒
     val params = new LinearLayout.LayoutParams(view.getLayoutParams)
     params.setMargins(marginLeft, marginTop, marginRight, marginBottom)

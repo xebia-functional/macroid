@@ -3,22 +3,22 @@ package macroid.extras
 import android.animation.AnimatorInflater
 import android.content.res.ColorStateList
 import android.graphics.PorterDuff.Mode
-import android.graphics.drawable.{ Drawable, TransitionDrawable }
-import android.graphics.{ Outline, Paint, PorterDuffColorFilter }
+import android.graphics.drawable.{Drawable, TransitionDrawable}
+import android.graphics.{Outline, Paint, PorterDuffColorFilter}
 import android.support.design.widget.Snackbar
-import android.support.v4.view.{ TintableBackgroundView, ViewCompat }
-import android.support.v7.widget.{ ListPopupWindow, PopupMenu }
+import android.support.v4.view.{TintableBackgroundView, ViewCompat}
+import android.support.v7.widget.{ListPopupWindow, PopupMenu}
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener
 import android.view.View.OnClickListener
 import android.view.ViewGroup.LayoutParams._
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.animation.Animation
-import android.view.{ MenuItem, View, ViewGroup, ViewOutlineProvider }
+import android.view.{MenuItem, View, ViewGroup, ViewOutlineProvider}
 import android.widget.AdapterView.OnItemClickListener
-import android.widget.{ AdapterView, ArrayAdapter }
+import android.widget.{AdapterView, ArrayAdapter}
 import macroid.FullDsl._
-import macroid.extras.DeviceVersion.{ IceCreamSandwich, JellyBean }
-import macroid.{ ContextWrapper, Tweak, Ui }
+import macroid.util.DeviceVersion.{IceCreamSandwich, JellyBean, Marshmallow}
+import macroid.{ContextWrapper, Tweak, Ui}
 import macroid.extras.ResourcesExtras._
 
 object ViewTweaks {
@@ -42,65 +42,82 @@ object ViewTweaks {
 
   def vResize(size: Int): Tweak[View] = vResize(size, size)
 
-  def vResize(width: Int, height: Int): Tweak[W] = Tweak[W] {
-    view ⇒
-      val params = view.getLayoutParams
-      params.height = width
-      params.width = height
-      view.requestLayout()
+  def vResize(width: Int, height: Int): Tweak[W] = Tweak[W] { view ⇒
+    val params = view.getLayoutParams
+    params.height = width
+    params.width = height
+    view.requestLayout()
   }
 
   def vMargins(margin: Int): Tweak[W] = Tweak[W] { view ⇒
-    view
-      .getLayoutParams
+    view.getLayoutParams
       .asInstanceOf[ViewGroup.MarginLayoutParams]
       .setMargins(margin, margin, margin, margin)
     view.requestLayout()
   }
 
   def vMargin(
-    marginLeft: Int = 0,
-    marginTop: Int = 0,
-    marginRight: Int = 0,
-    marginBottom: Int = 0
+      marginLeft: Int = 0,
+      marginTop: Int = 0,
+      marginRight: Int = 0,
+      marginBottom: Int = 0
   ): Tweak[W] = Tweak[W] { view ⇒
-    view
-      .getLayoutParams
+    view.getLayoutParams
       .asInstanceOf[ViewGroup.MarginLayoutParams]
       .setMargins(marginLeft, marginTop, marginRight, marginBottom)
     view.requestLayout()
   }
 
-  def vPaddings(padding: Int): Tweak[W] = Tweak[W](_.setPadding(padding, padding, padding, padding))
+  def vPaddings(padding: Int): Tweak[W] =
+    Tweak[W](_.setPadding(padding, padding, padding, padding))
 
   def vPaddings(
-    paddingLeftRight: Int = 0,
-    paddingTopBottom: Int = 0
-  ): Tweak[W] = Tweak[W](_.setPadding(paddingLeftRight, paddingTopBottom, paddingLeftRight, paddingTopBottom))
+      paddingLeftRight: Int = 0,
+      paddingTopBottom: Int = 0
+  ): Tweak[W] =
+    Tweak[W](
+      _.setPadding(paddingLeftRight,
+                   paddingTopBottom,
+                   paddingLeftRight,
+                   paddingTopBottom))
 
   def vPadding(
-    paddingLeft: Int = 0,
-    paddingTop: Int = 0,
-    paddingRight: Int = 0,
-    paddingBottom: Int = 0
-  ): Tweak[W] = Tweak[W](_.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom))
+      paddingLeft: Int = 0,
+      paddingTop: Int = 0,
+      paddingRight: Int = 0,
+      paddingBottom: Int = 0
+  ): Tweak[W] =
+    Tweak[W](_.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom))
 
-  def vDisableHapticFeedback: Tweak[W] = Tweak[W](_.setHapticFeedbackEnabled(false))
+  def vDisableHapticFeedback: Tweak[W] =
+    Tweak[W](_.setHapticFeedbackEnabled(false))
 
-  def vActivated(activated: Boolean): Tweak[W] = Tweak[W](_.setActivated(activated))
+  def vActivated(activated: Boolean): Tweak[W] =
+    Tweak[W](_.setActivated(activated))
 
   def vBackground(res: Int): Tweak[W] = Tweak[W](_.setBackgroundResource(res))
 
-  def vBackgroundColor(color: Int): Tweak[W] = Tweak[W](_.setBackgroundColor(color))
+  def vBackgroundColor(color: Int): Tweak[W] =
+    Tweak[W](_.setBackgroundColor(color))
 
-  def vBackgroundColorResource(color: Int)(implicit context: ContextWrapper): Tweak[W] =
-    Tweak[W](_.setBackgroundColor(context.application.getResources.getColor(color)))
+  def vBackgroundColorResource(color: Int)(
+      implicit context: ContextWrapper): Tweak[W] =
+    Tweak[W](
+      _.setBackgroundColor(
+        Marshmallow ifSupportedThen context.application.getResources
+          .getColor(color, null) getOrElse
+          context.application.getResources.getColor(color)))
 
-  def vBackground(drawable: Drawable): Tweak[W] = Tweak[W](view ⇒
-    JellyBean ifSupportedThen view.setBackground(drawable) getOrElse view.setBackgroundDrawable(drawable))
+  def vBackground(drawable: Drawable): Tweak[W] =
+    Tweak[W](
+      view ⇒
+        JellyBean ifSupportedThen view.setBackground(drawable) getOrElse view
+          .setBackground(drawable))
 
-  val vBlankBackground = Tweak[W](view ⇒
-    JellyBean ifSupportedThen view.setBackground(null) getOrElse view.setBackgroundDrawable(null))
+  val vBlankBackground = Tweak[W](
+    view ⇒
+      JellyBean ifSupportedThen view.setBackground(null) getOrElse view
+        .setBackground(null))
 
   def vTag[T](tag: T) = Tweak[W](_.setTag(tag))
 
@@ -117,7 +134,8 @@ object ViewTweaks {
 
   val vInvisible: Tweak[W] = Tweak[W](_.setVisibility(View.INVISIBLE))
 
-  def vScrollBarStyle(style: Int): Tweak[W] = Tweak[W](_.setScrollBarStyle(style))
+  def vScrollBarStyle(style: Int): Tweak[W] =
+    Tweak[W](_.setScrollBarStyle(style))
 
   def vAlpha(alpha: Float): Tweak[W] = Tweak[W](_.setAlpha(alpha))
 
@@ -141,74 +159,99 @@ object ViewTweaks {
 
   def vRotation(rotation: Float) = Tweak[W](_.setRotation(rotation))
 
-  def vSelectableItemBackground(implicit contextWrapper: ContextWrapper) = Tweak[W] { view ⇒
-    val typedArray = contextWrapper.bestAvailable.obtainStyledAttributes(Seq(android.R.attr.selectableItemBackground).toArray)
-    view.setBackgroundResource(typedArray.getResourceId(0, 0))
-    typedArray.recycle()
-  }
+  def vSelectableItemBackground(implicit contextWrapper: ContextWrapper) =
+    Tweak[W] { view ⇒
+      val typedArray = contextWrapper.bestAvailable.obtainStyledAttributes(
+        Seq(android.R.attr.selectableItemBackground).toArray)
+      view.setBackgroundResource(typedArray.getResourceId(0, 0))
+      typedArray.recycle()
+    }
 
   def vFocusable(focusable: Boolean) = Tweak[W](_.setFocusable(focusable))
 
-  def vBackgroundColorFilterResource(res: Int, mode: Mode = Mode.MULTIPLY)(implicit context: ContextWrapper): Tweak[W] =
-    Tweak[W](_.getBackground.setColorFilter(new PorterDuffColorFilter(resGetColor(res), mode)))
+  def vBackgroundColorFilterResource(res: Int, mode: Mode = Mode.MULTIPLY)(
+      implicit context: ContextWrapper): Tweak[W] =
+    Tweak[W](
+      _.getBackground.setColorFilter(
+        new PorterDuffColorFilter(resGetColor(res), mode)))
 
   def vBackgroundColorFilter(color: Int, mode: Mode = Mode.MULTIPLY): Tweak[W] =
-    Tweak[W](_.getBackground.setColorFilter(new PorterDuffColorFilter(color, mode)))
+    Tweak[W](
+      _.getBackground.setColorFilter(new PorterDuffColorFilter(color, mode)))
 
-  def vBackgroundTransition(durationMillis: Int, reverse: Boolean = false): Tweak[W] = Tweak[W] { view ⇒
-    val transitionBackground = view.getBackground.asInstanceOf[TransitionDrawable]
-    if (reverse) transitionBackground.reverseTransition(durationMillis) else transitionBackground.startTransition(durationMillis)
+  def vBackgroundTransition(durationMillis: Int,
+                            reverse: Boolean = false): Tweak[W] = Tweak[W] {
+    view ⇒
+      val transitionBackground =
+        view.getBackground.asInstanceOf[TransitionDrawable]
+      if (reverse) transitionBackground.reverseTransition(durationMillis)
+      else transitionBackground.startTransition(durationMillis)
   }
 
   def vCircleOutlineProvider(padding: Int = 0): Tweak[W] = Tweak[W] { view ⇒
     view.setOutlineProvider(new ViewOutlineProvider() {
       override def getOutline(view: ViewTweaks.W, outline: Outline): Unit = {
-        outline.setOval(padding, padding, view.getWidth - padding, view.getHeight - padding)
+        outline.setOval(padding,
+                        padding,
+                        view.getWidth - padding,
+                        view.getHeight - padding)
       }
     })
     view.setClipToOutline(true)
   }
 
-  def vOutlineProvider(viewOutlineProvider: ViewOutlineProvider): Tweak[W] = Tweak[W] { view ⇒
-    view.setOutlineProvider(viewOutlineProvider)
-    view.setClipToOutline(true)
-  }
+  def vOutlineProvider(viewOutlineProvider: ViewOutlineProvider): Tweak[W] =
+    Tweak[W] { view ⇒
+      view.setOutlineProvider(viewOutlineProvider)
+      view.setClipToOutline(true)
+    }
 
   def vFitsSystemWindows(fits: Boolean): Tweak[W] = Tweak[W] { view ⇒
-    IceCreamSandwich ifSupportedThen view.setFitsSystemWindows(fits) getOrElse Tweak.blank
+    IceCreamSandwich ifSupportedThen view
+      .setFitsSystemWindows(fits) getOrElse Tweak.blank
   }
 
-  def vElevation(elevation: Float): Tweak[W] = Tweak[W](_.setElevation(elevation))
+  def vElevation(elevation: Float): Tweak[W] =
+    Tweak[W](_.setElevation(elevation))
 
   val vBringToFront: Tweak[W] = Tweak[W](_.bringToFront())
 
   val vClearAnimation: Tweak[W] = Tweak[W](_.clearAnimation())
 
-  def vAnimation(animation: Animation): Tweak[W] = Tweak[W](_.setAnimation(animation))
+  def vAnimation(animation: Animation): Tweak[W] =
+    Tweak[W](_.setAnimation(animation))
 
-  def vStartAnimation(animation: Animation): Tweak[W] = Tweak[W](_.startAnimation(animation))
+  def vStartAnimation(animation: Animation): Tweak[W] =
+    Tweak[W](_.startAnimation(animation))
 
-  def vStateListAnimator(animation: Int)(implicit context: ContextWrapper): Tweak[W] =
-    Tweak[W](_.setStateListAnimator(AnimatorInflater.loadStateListAnimator(context.application, animation)))
+  def vStateListAnimator(animation: Int)(
+      implicit context: ContextWrapper): Tweak[W] =
+    Tweak[W](
+      _.setStateListAnimator(
+        AnimatorInflater.loadStateListAnimator(context.application, animation)))
 
-  def vLayerType(layerType: Int, paint: Paint = null): Tweak[W] = Tweak[W](_.setLayerType(layerType, paint))
+  def vLayerType(layerType: Int, paint: Paint = null): Tweak[W] =
+    Tweak[W](_.setLayerType(layerType, paint))
 
-  def vLayerTypeHardware(paint: Paint = null): Tweak[W] = Tweak[W](_.setLayerType(View.LAYER_TYPE_HARDWARE, paint))
+  def vLayerTypeHardware(paint: Paint = null): Tweak[W] =
+    Tweak[W](_.setLayerType(View.LAYER_TYPE_HARDWARE, paint))
 
-  def vLayerTypeSoftware(paint: Paint = null): Tweak[W] = Tweak[W](_.setLayerType(View.LAYER_TYPE_SOFTWARE, paint))
+  def vLayerTypeSoftware(paint: Paint = null): Tweak[W] =
+    Tweak[W](_.setLayerType(View.LAYER_TYPE_SOFTWARE, paint))
 
-  def vLayerTypeNone(paint: Paint = null): Tweak[W] = Tweak[W](_.setLayerType(View.LAYER_TYPE_NONE, paint))
+  def vLayerTypeNone(paint: Paint = null): Tweak[W] =
+    Tweak[W](_.setLayerType(View.LAYER_TYPE_NONE, paint))
 
-  def vGlobalLayoutListener(globalLayoutListener: View ⇒ Ui[_]): Tweak[W] = Tweak[W] { view ⇒
-    view.getViewTreeObserver.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-      override def onGlobalLayout(): Unit = {
-        JellyBean ifSupportedThen
-          view.getViewTreeObserver.removeOnGlobalLayoutListener(this) getOrElse
-          view.getViewTreeObserver.removeGlobalOnLayoutListener(this)
-        globalLayoutListener(view).run
-      }
-    })
-  }
+  def vGlobalLayoutListener(globalLayoutListener: View ⇒ Ui[_]): Tweak[W] =
+    Tweak[W] { view ⇒
+      view.getViewTreeObserver.addOnGlobalLayoutListener(
+        new OnGlobalLayoutListener() {
+          override def onGlobalLayout(): Unit = {
+            view.getViewTreeObserver.removeOnGlobalLayoutListener(this)
+            globalLayoutListener(view).run
+          }
+        })
+    }
 
   def vOverScrollMode(mode: Int): Tweak[W] = Tweak[W](_.setOverScrollMode(mode))
 
@@ -222,7 +265,9 @@ object ViewTweaks {
 
   def vScrollY(y: Int) = Tweak[W](_.setScrollY(y))
 
-  def vClipBackground(radius: Int, verticalPadding: Int = 0, horizontalPadding: Int = 0): Tweak[W] = Tweak[W] { view ⇒
+  def vClipBackground(radius: Int,
+                      verticalPadding: Int = 0,
+                      horizontalPadding: Int = 0): Tweak[W] = Tweak[W] { view ⇒
     view.setOutlineProvider(new ViewOutlineProvider() {
       override def getOutline(view: View, outline: Outline): Unit =
         outline.setRoundRect(
@@ -243,33 +288,40 @@ object ViewTweaks {
   def vEnabled(enabled: Boolean) = Tweak[W](_.setEnabled(enabled))
 
   def vBackgroundTint(color: Int) = Tweak[W] {
-    case t: TintableBackgroundView ⇒ t.setSupportBackgroundTintList(ColorStateList.valueOf(color))
+    case t: TintableBackgroundView ⇒
+      t.setSupportBackgroundTintList(ColorStateList.valueOf(color))
     case _ ⇒
   }
 
   def vSelected(selected: Boolean) = Tweak[W](_.setSelected(selected))
 
-  def vClickable(clickable: Boolean): Tweak[W] = Tweak[W](_.setClickable(clickable))
+  def vClickable(clickable: Boolean): Tweak[W] =
+    Tweak[W](_.setClickable(clickable))
 
   def vClearClick: Tweak[W] = Tweak[W](_.setOnClickListener(null))
 
   def vInvalidate: Tweak[W] = Tweak[W](_.invalidate())
 
-  def vPopupMenuShow(menu: Int, onMenuItemClickListener: (MenuItem) ⇒ Boolean)(implicit contextWrapper: ContextWrapper) =
+  def vPopupMenuShow(menu: Int, onMenuItemClickListener: (MenuItem) ⇒ Boolean)(
+      implicit contextWrapper: ContextWrapper) =
     Tweak[W] { view ⇒
       val popupMenu = new PopupMenu(contextWrapper.bestAvailable, view)
       popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener {
-        override def onMenuItemClick(item: MenuItem): Boolean = onMenuItemClickListener(item)
+        override def onMenuItemClick(item: MenuItem): Boolean =
+          onMenuItemClickListener(item)
       })
       popupMenu.inflate(menu)
       popupMenu.show()
     }
 
-  def vPopupMenuShow(menu: Seq[String], onMenuItemClickListener: (MenuItem) ⇒ Boolean)(implicit contextWrapper: ContextWrapper) =
+  def vPopupMenuShow(menu: Seq[String],
+                     onMenuItemClickListener: (MenuItem) ⇒ Boolean)(
+      implicit contextWrapper: ContextWrapper) =
     Tweak[W] { view ⇒
       val popupMenu = new PopupMenu(contextWrapper.bestAvailable, view)
       popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener {
-        override def onMenuItemClick(item: MenuItem): Boolean = onMenuItemClickListener(item)
+        override def onMenuItemClick(item: MenuItem): Boolean =
+          onMenuItemClickListener(item)
       })
       menu.zipWithIndex foreach {
         case (item, order) ⇒ popupMenu.getMenu.add(0, 0, order, item)
@@ -278,21 +330,25 @@ object ViewTweaks {
     }
 
   def vListPopupWindowShow(
-    layout: Int,
-    menu: Seq[String],
-    onItemClickListener: (Int) ⇒ Unit,
-    width: Option[Int] = None,
-    height: Option[Int] = None
+      layout: Int,
+      menu: Seq[String],
+      onItemClickListener: (Int) ⇒ Unit,
+      width: Option[Int] = None,
+      height: Option[Int] = None
   )(implicit contextWrapper: ContextWrapper) =
     Tweak[W] { view ⇒
       val listPopupWindow = new ListPopupWindow(contextWrapper.bestAvailable)
-      listPopupWindow.setAdapter(new ArrayAdapter(contextWrapper.bestAvailable, layout, menu.toArray))
+      listPopupWindow.setAdapter(
+        new ArrayAdapter(contextWrapper.bestAvailable, layout, menu.toArray))
       listPopupWindow.setAnchorView(view)
       width foreach listPopupWindow.setWidth
       height foreach listPopupWindow.setHeight
       listPopupWindow.setModal(true)
       listPopupWindow.setOnItemClickListener(new OnItemClickListener {
-        override def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long): Unit = {
+        override def onItemClick(parent: AdapterView[_],
+                                 view: View,
+                                 position: Int,
+                                 id: Long): Unit = {
           onItemClickListener(position)
           listPopupWindow.dismiss()
         }
@@ -324,22 +380,37 @@ object ViewTweaks {
     Ui(Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE).show()).run
   }
 
-  def vSnackbarIndefiniteAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] { view ⇒
-    Ui(Snackbar.make(view, res, Snackbar.LENGTH_INDEFINITE).setAction(buttonText, new OnClickListener {
-      override def onClick(v: View): Unit = f()
-    }).show()).run
+  def vSnackbarIndefiniteAction(res: Int, buttonText: Int, f: () ⇒ Unit) =
+    Tweak[W] { view ⇒
+      Ui(
+        Snackbar
+          .make(view, res, Snackbar.LENGTH_INDEFINITE)
+          .setAction(buttonText, new OnClickListener {
+            override def onClick(v: View): Unit = f()
+          })
+          .show()).run
+    }
+
+  def vSnackbarLongAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] {
+    view ⇒
+      Ui(
+        Snackbar
+          .make(view, res, Snackbar.LENGTH_LONG)
+          .setAction(buttonText, new OnClickListener {
+            override def onClick(v: View): Unit = f()
+          })
+          .show()).run
   }
 
-  def vSnackbarLongAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] { view ⇒
-    Ui(Snackbar.make(view, res, Snackbar.LENGTH_LONG).setAction(buttonText, new OnClickListener {
-      override def onClick(v: View): Unit = f()
-    }).show()).run
-  }
-
-  def vSnackbarShortAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] { view ⇒
-    Ui(Snackbar.make(view, res, Snackbar.LENGTH_SHORT).setAction(buttonText, new OnClickListener {
-      override def onClick(v: View): Unit = f()
-    }).show()).run
+  def vSnackbarShortAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] {
+    view ⇒
+      Ui(
+        Snackbar
+          .make(view, res, Snackbar.LENGTH_SHORT)
+          .setAction(buttonText, new OnClickListener {
+            override def onClick(v: View): Unit = f()
+          })
+          .show()).run
   }
 
 }
@@ -347,6 +418,7 @@ object ViewTweaks {
 object ViewCompatTweaks {
   type W = View
 
-  def vcElevation(elevation: Float): Tweak[W] = Tweak[W](ViewCompat.setElevation(_, elevation))
+  def vcElevation(elevation: Float): Tweak[W] =
+    Tweak[W](ViewCompat.setElevation(_, elevation))
 
 }

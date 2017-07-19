@@ -29,7 +29,9 @@ class BundleMacros(val c: blackbox.Context) {
       .filter(_.name.toString.startsWith("put"))
       .filterNot(_.name.toString == "putAll")
       .map(_.asMethod)
-      .partition(x ⇒ (!x.name.toString.endsWith("Array") && !x.name.toString.endsWith("List")) || x.name.toString.contains("Sparse"))
+      .partition(x ⇒
+        (!x.name.toString.endsWith("Array") && !x.name.toString
+          .endsWith("List")) || x.name.toString.contains("Sparse"))
     val (plain, able) = singular.partition(!_.name.toString.endsWith("able"))
     val b = TermName(c.freshName("bundle"))
     val puts = pairs map { pair ⇒

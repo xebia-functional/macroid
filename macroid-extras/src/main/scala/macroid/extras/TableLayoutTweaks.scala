@@ -13,5 +13,6 @@ object TableLayoutTweaks {
     view.setLayoutParams(param)
   }
 
-  def tlStretchAllColumns(stretchAllColumns: Boolean): Tweak[W] = Tweak[W](_.setStretchAllColumns(stretchAllColumns))
+  def tlStretchAllColumns(stretchAllColumns: Boolean): Tweak[W] =
+    Tweak[W](_.setStretchAllColumns(stretchAllColumns))
 }

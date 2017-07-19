@@ -1,11 +1,13 @@
 package macroid.viewable
 
 import android.support.v4.view.PagerAdapter
-import android.view.{ ViewGroup, View }
+import android.view.{ViewGroup, View}
 import macroid.ContextWrapper
 
 /** A `PagerAdapter` based on the `Viewable` typeclass */
-class ViewablePagerAdapter[A, +W <: View](data: Seq[A])(implicit ctx: ContextWrapper, viewable: Viewable[A, W]) extends PagerAdapter {
+class ViewablePagerAdapter[A, +W <: View](
+    data: Seq[A])(implicit ctx: ContextWrapper, viewable: Viewable[A, W])
+    extends PagerAdapter {
   override def instantiateItem(container: ViewGroup, position: Int) = {
     val view = viewable.view(data(position)).get
     container.addView(view, 0)

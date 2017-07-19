@@ -6,8 +6,10 @@ import macroid.Tweak
 object ScrollViewTweaks {
   type W = ScrollView
 
-  val svRemoveVerticalScrollBar: Tweak[W] = Tweak[W](_.setVerticalScrollBarEnabled(false))
+  val svRemoveVerticalScrollBar: Tweak[W] =
+    Tweak[W](_.setVerticalScrollBarEnabled(false))
 
-  val svRemoveHorizontalScrollBar: Tweak[W] = Tweak[W](_.setHorizontalScrollBarEnabled(false))
+  val svRemoveHorizontalScrollBar: Tweak[W] =
+    Tweak[W](_.setHorizontalScrollBarEnabled(false))
 
 }

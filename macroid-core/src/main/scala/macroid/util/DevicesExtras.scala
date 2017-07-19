@@ -1,6 +1,6 @@
-package macroid.extras
+package macroid.util
 
-import android.os.Build
+import android.os._
 import macroid.ContextWrapper
 import macroid.FullDsl._
 
@@ -10,9 +10,11 @@ object DeviceMediaQueries {
 
   def tablet(implicit ctx: ContextWrapper) = widerThan(720 dp)
 
-  def landscapeTablet(implicit ctx: ContextWrapper) = widerThan(720 dp) & landscape
+  def landscapeTablet(implicit ctx: ContextWrapper) =
+    widerThan(720 dp) & landscape
 
-  def portraitTablet(implicit ctx: ContextWrapper) = widerThan(720 dp) & portrait
+  def portraitTablet(implicit ctx: ContextWrapper) =
+    widerThan(720 dp) & portrait
 
 }
 
@@ -35,15 +37,20 @@ object DeviceVersion {
 
     def isSupported: Boolean = this > CurrentVersion
 
-    def withOpThan[A](op: ⇒ Boolean)(f: ⇒ A): Option[A] = if (op) Some(f) else None
+    def withOpThan[A](op: ⇒ Boolean)(f: ⇒ A): Option[A] =
+      if (op) Some(f) else None
 
-    def ifEqualThen[A](f: ⇒ A): Option[A] = withOpThan(this == CurrentVersion)(f)
+    def ifEqualThen[A](f: ⇒ A): Option[A] =
+      withOpThan(this == CurrentVersion)(f)
 
-    def ifNotEqualThen[A](f: ⇒ A): Option[A] = withOpThan(this != CurrentVersion)(f)
+    def ifNotEqualThen[A](f: ⇒ A): Option[A] =
+      withOpThan(this != CurrentVersion)(f)
 
-    def ifSupportedThen[A](f: ⇒ A): Option[A] = withOpThan(this <= CurrentVersion)(f)
+    def ifSupportedThen[A](f: ⇒ A): Option[A] =
+      withOpThan(this <= CurrentVersion)(f)
 
-    def ifNotSupportedThen[A](f: ⇒ A): Option[A] = withOpThan(this > CurrentVersion)(f)
+    def ifNotSupportedThen[A](f: ⇒ A): Option[A] =
+      withOpThan(this > CurrentVersion)(f)
 
   }
 
@@ -61,6 +68,8 @@ object DeviceVersion {
   import Build.VERSION_CODES._
 
   case object CurrentVersion extends Version(SDK_INT)
+
+  case object Nougat extends Version(N)
 
   case object Marshmallow extends Version(M)
 

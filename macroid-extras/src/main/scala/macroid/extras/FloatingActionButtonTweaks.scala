@@ -1,7 +1,6 @@
 package macroid.extras
 
 import android.annotation._
-import android.content.res.Resources
 import android.content.res._
 import android.support.design.widget._
 import macroid.{ContextWrapper, Tweak}

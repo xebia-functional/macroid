@@ -51,7 +51,6 @@ object ProjectPlugin extends AutoPlugin {
       }),
       libraryDependencies ++= Seq(
         "org.scalatest" %% "scalatest" % "3.0.1" % Test,
-        "com.geteit" %% "robotest" % "0.12" % Test,
         "com.android.support" % "support-v4" % androidV),
       parallelExecution in Test := false,
       fork in Test := true,

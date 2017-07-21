@@ -1,23 +1,23 @@
 package macroid.extras
 
-import android.animation.AnimatorInflater
-import android.content.res.ColorStateList
-import android.graphics.PorterDuff.Mode
-import android.graphics.drawable.{Drawable, TransitionDrawable}
-import android.graphics.{Outline, Paint, PorterDuffColorFilter}
-import android.support.design.widget.Snackbar
-import android.support.v4.view.{TintableBackgroundView, ViewCompat}
-import android.support.v7.widget.{ListPopupWindow, PopupMenu}
-import android.support.v7.widget.PopupMenu.OnMenuItemClickListener
-import android.view.View.OnClickListener
+import android.animation._
+import android.annotation._
+import android.content.res._
+import android.graphics.PorterDuff._
+import android.graphics.drawable._
+import android.graphics._
+import android.support.design.widget._
+import android.support.v4.view._
+import android.support.v7.widget._
+import android.support.v7.widget.PopupMenu._
+import android.view.View._
 import android.view.ViewGroup.LayoutParams._
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.view.animation.Animation
-import android.view.{MenuItem, View, ViewGroup, ViewOutlineProvider}
-import android.widget.AdapterView.OnItemClickListener
+import android.view.ViewTreeObserver._
+import android.view.animation._
+import android.view._
+import android.widget.AdapterView._
 import android.widget.{AdapterView, ArrayAdapter}
 import macroid.FullDsl._
-import macroid.util.DeviceVersion.{IceCreamSandwich, JellyBean, Marshmallow}
 import macroid.{ContextWrapper, Tweak, Ui}
 import macroid.extras.ResourcesExtras._
 
@@ -100,24 +100,23 @@ object ViewTweaks {
   def vBackgroundColor(color: Int): Tweak[W] =
     Tweak[W](_.setBackgroundColor(color))
 
-  def vBackgroundColorResource(color: Int)(
+  @TargetApi(23)
+  def vBackgroundColorResources(color: Int)(
       implicit context: ContextWrapper): Tweak[W] =
     Tweak[W](
       _.setBackgroundColor(
-        Marshmallow ifSupportedThen context.application.getResources
-          .getColor(color, null) getOrElse
-          context.application.getResources.getColor(color)))
+        context.application.getResources.getColor(color, null)))
+
+  @deprecated(message = "", since = "API 23")
+  def vBackgroundColorResource(color: Int)(
+      implicit context: ContextWrapper): Tweak[W] =
+    Tweak[W](
+      _.setBackgroundColor(context.application.getResources.getColor(color)))
 
   def vBackground(drawable: Drawable): Tweak[W] =
-    Tweak[W](
-      view ⇒
-        JellyBean ifSupportedThen view.setBackground(drawable) getOrElse view
-          .setBackground(drawable))
+    Tweak[W](view ⇒ view.setBackground(drawable))
 
-  val vBlankBackground = Tweak[W](
-    view ⇒
-      JellyBean ifSupportedThen view.setBackground(null) getOrElse view
-        .setBackground(null))
+  val vBlankBackground = Tweak[W](view ⇒ view.setBackground(null))
 
   def vTag[T](tag: T) = Tweak[W](_.setTag(tag))
 
@@ -207,8 +206,7 @@ object ViewTweaks {
     }
 
   def vFitsSystemWindows(fits: Boolean): Tweak[W] = Tweak[W] { view ⇒
-    IceCreamSandwich ifSupportedThen view
-      .setFitsSystemWindows(fits) getOrElse Tweak.blank
+    view.setFitsSystemWindows(fits)
   }
 
   def vElevation(elevation: Float): Tweak[W] =

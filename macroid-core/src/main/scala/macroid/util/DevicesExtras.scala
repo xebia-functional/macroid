@@ -81,14 +81,5 @@ object DeviceVersion {
 
   case object KitKat extends Version(KITKAT)
 
-  case object JellyBeanMR2 extends Version(JELLY_BEAN_MR2)
-
-  case object JellyBeanMR1 extends Version(JELLY_BEAN_MR1)
-
-  case object JellyBean extends Version(JELLY_BEAN)
-
-  case object IceCreamSandwichMR1 extends Version(ICE_CREAM_SANDWICH_MR1)
-
-  case object IceCreamSandwich extends Version(ICE_CREAM_SANDWICH)
 
 }

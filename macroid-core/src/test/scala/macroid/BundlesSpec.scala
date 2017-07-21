@@ -2,7 +2,6 @@ package macroid
 
 import org.scalatest.{ Matchers, FlatSpec, RobolectricSuite }
 import macroid.FullDsl._
-import android.os.Bundle
 
 class BundlesSpec extends FlatSpec with RobolectricSuite with Matchers {
 

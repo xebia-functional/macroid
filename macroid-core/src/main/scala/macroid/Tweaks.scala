@@ -1,13 +1,15 @@
 package macroid
 
+import android.annotation._
+
 import scala.language.dynamics
 import scala.language.experimental.macros
-import android.text.Html
-import android.view.{ViewGroup, View}
-import android.widget.{LinearLayout, TextView}
-import macroid.util.DeviceVersion.Nougat
-import macrocompat.bundle
-import scala.reflect.macros.blackbox
+import android.text._
+import android.view._
+import android.widget._
+import macrocompat._
+
+import scala.reflect.macros._
 
 private[macroid] trait BasicTweaks {
 
@@ -123,10 +125,14 @@ private[macroid] trait TextTweaks {
     * @param flag Only supported for api 25 and above
     * @return
     */
+
+  @TargetApi(24)
   def html(html: String, flag: Int) =
-    Tweak[TextView](
-      _.setText(Nougat ifSupportedThen Html.fromHtml(html, flag) getOrElse Html
-        .fromHtml(html)))
+    Tweak[TextView](_.setText(Html.fromHtml(html, flag)))
+
+  @deprecated(message = "", since = "API 24")
+  def html(html: String) =
+    Tweak[TextView](_.setText(Html.fromHtml(html)))
 }
 
 private[macroid] trait EventTweaks {

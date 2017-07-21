@@ -1,19 +1,28 @@
 package macroid.extras
 
-import android.content.res.ColorStateList
-import android.support.design.widget.FloatingActionButton
+import android.annotation._
+import android.content.res.Resources
+import android.content.res._
+import android.support.design.widget._
 import macroid.{ContextWrapper, Tweak}
 import macroid.extras.ResourcesExtras._
-import macroid.util.DeviceVersion.Marshmallow
 
 object FloatingActionButtonTweaks {
   type W = FloatingActionButton
 
+  @TargetApi(23)
+  def fbaColorResources(id: Int, rippleId: Int)(
+      implicit contextWrapper: ContextWrapper) = Tweak[W] { view ⇒
+    view.setBackgroundTintList(
+      contextWrapper.application.getResources
+        .getColorStateList(id, null))
+    view.setRippleColor(resGetColor(rippleId))
+  }
+
+  @deprecated(message = "", since = "API 23")
   def fbaColorResource(id: Int, rippleId: Int)(
       implicit contextWrapper: ContextWrapper) = Tweak[W] { view ⇒
-    Marshmallow ifSupportedThen view.setBackgroundTintList(
-      contextWrapper.application.getResources
-        .getColorStateList(id, null)) getOrElse view.setBackgroundTintList(
+    view.setBackgroundTintList(
       contextWrapper.application.getResources.getColorStateList(id))
     view.setRippleColor(resGetColor(rippleId))
   }

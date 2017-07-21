@@ -48,7 +48,7 @@ abstract class FragmentActor[F <: Fragment: ClassTag] extends Actor {
   def receiveUi: PartialFunction[Any, Any] = {
     case a @ AttachUi(f: F) ⇒
       attachedUi = Some(f); a
-    case d @ DetachUi(f: F) if Some(f) == attachedUi ⇒
+    case d @ DetachUi(f: F) if attachedUi.contains(f) ⇒
       attachedUi = None; d
     case x ⇒ x
   }

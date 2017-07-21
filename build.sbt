@@ -21,18 +21,21 @@ lazy val root = (project in file("."))
 lazy val core = (project in file("macroid-core"))
   .enablePlugins(AndroidLib)
   .settings(commonSettings: _*)
-  .settings(macroSettings: _*)
+  .settings(
+    libraryDependencies += "org.scalameta" %% "scalameta" % "1.8.0" % Provided,
+    macroAnnotationSettings)
   .settings(
     name := "macroid",
     description := "A Scala GUI DSL for Android",
     homepage := Some(url("http://47deg.github.io/macroid")),
-    platformTarget in Android := platformV,
-    unmanagedClasspath in Test ++= (bootClasspath in Android).value,
-    unmanagedSourceDirectories in Test := Seq(
-      baseDirectory.value / "src" / "test" / "scala"),
     libraryDependencies ++= Seq(
-      "org.scala-lang.modules" %% "scala-async" % "0.9.6"
-    )
+      "org.scala-lang.modules" %% "scala-async" % "0.9.6"),
+    unmanagedSourceDirectories in Test := Seq(
+      baseDirectory.value / "src" / "test" / "scala")
+  )
+  .settings(
+    platformTarget in Android := platformV,
+    unmanagedClasspath in Test ++= (bootClasspath in Android).value
   )
 
 lazy val viewable = (project in file("macroid-viewable"))
@@ -41,10 +44,10 @@ lazy val viewable = (project in file("macroid-viewable"))
   .settings(
     name := "macroid-viewable",
     description := "Typeclasses to turn data into Android layouts",
-    platformTarget in Android := platformV,
-    unmanagedClasspath in Test ++= (bootClasspath in Android).value,
     homepage := Some(
-      url("http://47deg.github.io/macroid/docs/modules/Viewable.html"))
+      url("http://47deg.github.io/macroid/docs/modules/Viewable.html")),
+    platformTarget in Android := platformV,
+    unmanagedClasspath in Test ++= (bootClasspath in Android).value
   )
   .dependsOn(core)
 
@@ -54,10 +57,10 @@ lazy val akka = (project in file("macroid-akka"))
   .settings(
     name := "macroid-akka",
     description := "Helpers to attach Akka Actors to Android Fragments",
-    platformTarget in Android := platformV,
-    unmanagedClasspath in Test ++= (bootClasspath in Android).value,
     homepage := Some(
       url("http://47deg.github.io/macroid/docs/modules/Akka.html")),
+    platformTarget in Android := platformV,
+    unmanagedClasspath in Test ++= (bootClasspath in Android).value,
     libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.3"
   )
   .dependsOn(core)
@@ -76,10 +79,10 @@ lazy val extras = (project in file("macroid-extras"))
   .settings(
     name := "macroid-extras",
     description := "Tweaks and utilities for android views",
-    platformTarget in Android := platformV,
-    unmanagedClasspath in Test ++= (bootClasspath in Android).value,
     homepage := Some(
       url("http://47deg.github.io/macroid/docs/modules/Extras.html")),
+    platformTarget in Android := platformV,
+    unmanagedClasspath in Test ++= (bootClasspath in Android).value,
     libraryDependencies ++= Seq(
       "com.android.support" % "appcompat-v7" % androidV,
       "com.android.support" % "recyclerview-v7" % androidV,

@@ -28,7 +28,6 @@ object ProjectPlugin extends AutoPlugin {
     )
     val androidV = "25.0.1"
     val platformV = "android-25"
-    val paradiseVersion = "2.1.0"
 
     val commonSettings =Seq(
       version := "3.0.0-SNAPSHOT",
@@ -84,19 +83,12 @@ object ProjectPlugin extends AutoPlugin {
       "testAndCover",
       "; clean; coverage; test; coverageReport; coverageAggregate")
 
-    val macroSettings = Seq(
-      libraryDependencies ++= Seq(
-        "org.scala-lang" % "scala-reflect" % scalaVersion.value, // required by macro-compat
-        "org.typelevel" %% "macro-compat" % "1.1.1",
-        "org.scala-lang" % "scala-compiler" % scalaVersion.value,
-        compilerPlugin(
-          "org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full)
-      ),
-      libraryDependencies ++= (scalaBinaryVersion.value match {
-        case "2.10" => Seq("org.scalamacros" %% "quasiquotes" % paradiseVersion)
-        case _ ⇒ Seq()
-      })
+    lazy val macroAnnotationSettings = Seq(
+      addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M9" cross CrossVersion.full),
+      scalacOptions += "-Xplugin-require:macroparadise",
+      scalacOptions in (Compile, console) ~= (_ filterNot (_ contains "paradise")) // macroparadise plugin doesn't work in repl yet.
     )
+
   }
 
 }

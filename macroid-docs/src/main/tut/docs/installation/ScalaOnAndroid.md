@@ -20,21 +20,22 @@ This is a short guide that will help you get started.
 
 If the instructions below are too dry for your taste, check out these tutorials:
 
-* [Android & Scala (part 1)](http://blog.eigengo.com/2014/06/21/android-and-scala/) by [Jan Macháček](https://twitter.com/honzam399)
 * [Scala on Android — Preparing the environment (part 1)](http://www.47deg.com/blog/scala-on-android-preparing-the-environment) by [Federico Fernández ](https://twitter.com/@fede_fdz)
 
 ## The Android SDK
 
-The SDK can be downloaded from the [Android website](http://developer.android.com/sdk/index.html).
+The SDK can be downloaded from the [Android website](http://developer.android.com/sdk/index.html)
+ or with the IntelliJ Android plugin.
 You will also need to configure `ANDROID_HOME` environment variable to point to the installation.
 
 To use the bundled libraries, such as the support library, make sure you install the following items in the SDK manager:
 
 ![SDK manager screenshot](/macroid/img/SDK-manager.png)
 
-
 Alternatively, you can find a UNIX install script in
 [*Macroid*’s Travis config](https://github.com/47deg/macroid/blob/master/.travis.yml#L7).
+
+***Note*** If `sbt-android` doesn't find an Android SDK it will download all he need
 
 ## The build system
 

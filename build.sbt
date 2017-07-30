@@ -4,7 +4,7 @@ pgpPassphrase := Some(sys.env.getOrElse("GPG_PASSPHRASE", "").toCharArray)
 pgpPublicRing := file(s"$gpgFolder/local.pubring.asc")
 pgpSecretRing := file(s"$gpgFolder/local.secring.asc")
 
-lazy val root = (project in file("."))
+lazy val macroid = (project in file("."))
   .aggregate(core, viewable, akka, extras)
   .settings(
     publish := (),

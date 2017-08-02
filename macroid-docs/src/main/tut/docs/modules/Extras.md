@@ -10,9 +10,9 @@ An heterogenous collection of traits and objects. Macroid-Extras implements some
 
 ## Installation
 
-Assuming you already have *Macroid* `2.0` installed, add this line to your `build.sbt`:
+Assuming you already have *Macroid* `2.1.0` installed, add this line to your `build.sbt`:
 
 ```scala
-libraryDependencies += aar("org.macroid" %% "macroid-extras" % "2.0")
+libraryDependencies += aar("org.macroid" %% "macroid-extras" % "2.1.0")
 ```
 

@@ -14,10 +14,10 @@ This module provides typeclasses to convert data to Android layouts. It offers t
 
 ## Installation
 
-Assuming you already have *Macroid* `2.0.0-M4` installed, add this line to your `build.sbt`:
+Assuming you already have *Macroid* `2.1.0` installed, add this line to your `build.sbt`:
 
 ```scala
-libraryDependencies += aar("org.macroid" %% "macroid-viewable" % "2.0.0-M4")
+libraryDependencies += aar("org.macroid" %% "macroid-viewable" % "2.1.0")
 ```
 
 ## Viewable

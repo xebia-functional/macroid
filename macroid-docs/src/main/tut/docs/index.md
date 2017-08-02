@@ -13,7 +13,7 @@ Striving to be focused on one thing (GUI), *Macroid* promotes composability and 
 
 Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 19+`.
 
-Latest version: `3.0.0` ([installation](Installation.html) | [changelog](Changelog.md)).
+Latest version: `2.1.0` ([installation](Installation.html) | [changelog](Changelog.md)).
 
 * [What does it look like](Tutorial.html)
 * [How is it different from...](Differences.html)

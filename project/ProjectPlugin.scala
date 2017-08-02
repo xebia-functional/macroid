@@ -10,7 +10,7 @@ object ProjectPlugin extends AutoPlugin {
     lazy val micrositeSettings = Seq(
       micrositeName := "macroid",
       micrositeDescription := "A modular functional user interface creation language for Android," +
-        "" + " implemented with Scala macros",
+          "" + " implemented with Scala macros",
       micrositeBaseUrl := "macroid",
       micrositeDocumentationUrl := "/macroid/docs/",
       micrositeGithubOwner := "47deg",
@@ -28,9 +28,10 @@ object ProjectPlugin extends AutoPlugin {
     )
     val androidV = "25.0.1"
     val platformV = "android-25"
+    val paradiseVersion = "2.1.0"
 
     val commonSettings =Seq(
-      version := "3.0.0-SNAPSHOT",
+      version := "2.1.0-SNAPSHOT",
       licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
       scalaVersion := "2.11.11",
       crossScalaVersions := Seq("2.10.6", "2.11.11"),
@@ -62,7 +63,7 @@ object ProjectPlugin extends AutoPlugin {
       homepage := Some(url("http://47deg.github.io/macroid")),
       scmInfo := Some(
         ScmInfo(url("https://github.com/47deg/macroid"),
-                "https://github.com/47deg/macroid.git")),
+          "https://github.com/47deg/macroid.git")),
       pomExtra := <developers>
         <developer>
           <name>macroid</name>
@@ -75,20 +76,27 @@ object ProjectPlugin extends AutoPlugin {
         else Some("releases" at nexus + "service/local/staging/deploy/maven2")
       },
       credentials += Credentials("Sonatype Nexus Repository Manager",
-                                 "oss.sonatype.org",
-                                 sys.env.getOrElse("PUBLISH_USERNAME", ""),
-                                 sys.env.getOrElse("PUBLISH_PASSWORD", "")),
+        "oss.sonatype.org",
+        sys.env.getOrElse("PUBLISH_USERNAME", ""),
+        sys.env.getOrElse("PUBLISH_PASSWORD", "")),
       publishArtifact in Test := false
     ) ++ addCommandAlias(
       "testAndCover",
       "; clean; coverage; test; coverageReport; coverageAggregate")
 
-    lazy val macroAnnotationSettings = Seq(
-      addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M9" cross CrossVersion.full),
-      scalacOptions += "-Xplugin-require:macroparadise",
-      scalacOptions in (Compile, console) ~= (_ filterNot (_ contains "paradise")) // macroparadise plugin doesn't work in repl yet.
+    val macroSettings = Seq(
+      libraryDependencies ++= Seq(
+        "org.scala-lang" % "scala-reflect" % scalaVersion.value, // required by macro-compat
+        "org.typelevel" %% "macro-compat" % "1.1.1",
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+        compilerPlugin(
+          "org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full)
+      ),
+      libraryDependencies ++= (scalaBinaryVersion.value match {
+        case "2.10" => Seq("org.scalamacros" %% "quasiquotes" % paradiseVersion)
+        case _ ⇒ Seq()
+      })
     )
-
   }
 
 }

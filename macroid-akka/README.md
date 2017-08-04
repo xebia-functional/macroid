@@ -4,15 +4,15 @@ This module contains some glue to setup message-passing between Android Fragment
 
 #### Installation
 
-Assuming you already have *Macroid* `2.0.0-M4` installed, add this line to your `build.sbt`:
+Assuming you already have Macroid `2.1.0` installed, add this line to your `build.sbt`:
 
 ```scala
 libraryDependencies ++= Seq(
   // this library
-  aar("org.macroid" %% "macroid-akka" % "2.0.0-M4"),
+  aar("org.macroid" %% "macroid-akka" % "2.1.0"),
   
   // akka, if not included before
-  "com.typesafe.akka" %% "akka-actor" % "2.2.3"
+  "com.typesafe.akka" %% "akka-actor" % "2.5.3"
 )
 
 // Proguard rules

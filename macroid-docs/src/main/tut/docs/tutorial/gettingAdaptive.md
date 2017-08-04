@@ -8,7 +8,7 @@ section: tutorial
 
 As Android devices vary greatly in sizes and shapes, we often want to adapt out layouts accordingly.
 Say, we want to make our `LinearLayout` horizontal when the screen is in the landscape orientation.
-In *Macroid* this can be achieved with so-called [media queries](../guide/MediaQueries.html):
+In Macroid this can be achieved with so-called [media queries](../guide/MediaQueries.html):
 
 ```scala
 layout <~ (landscape ? horizontal | vertical)

@@ -4,7 +4,7 @@ pgpPassphrase := Some(sys.env.getOrElse("GPG_PASSPHRASE", "").toCharArray)
 pgpPublicRing := file(s"$gpgFolder/local.pubring.asc")
 pgpSecretRing := file(s"$gpgFolder/local.secring.asc")
 
-lazy val root = (project in file("."))
+lazy val macroid = (project in file("."))
   .aggregate(core, viewable, akka, extras)
   .settings(
     publish := (),
@@ -63,11 +63,15 @@ lazy val akka = (project in file("macroid-akka"))
   .dependsOn(core)
 
 lazy val docs = (project in file("macroid-docs"))
+  .enablePlugins(AndroidLib)
   .settings(commonSettings: _*)
   .settings(micrositeSettings: _*)
   .settings(moduleName := "macroid-docs")
   .enablePlugins(MicrositesPlugin)
-  .settings(name := "docs", description := "Macroid Documentation")
+  .settings(name := "docs",
+            platformTarget in Android := platformV,
+            unmanagedClasspath in Test ++= (bootClasspath in Android).value,
+            description := "Macroid Documentation")
   .dependsOn(core)
 
 lazy val extras = (project in file("macroid-extras"))

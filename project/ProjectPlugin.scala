@@ -8,12 +8,13 @@ object ProjectPlugin extends AutoPlugin {
   object autoImport {
 
     lazy val micrositeSettings = Seq(
-      micrositeName := "macroid",
+      micrositeName := "Macroid",
       micrositeDescription := "A modular functional user interface creation language for Android," +
         "" + " implemented with Scala macros",
       micrositeBaseUrl := "macroid",
-      micrositeDocumentationUrl := "/macroid/docs/",
+      micrositeDocumentationUrl := "/macroid/docs/docs.html",
       micrositeGithubOwner := "47deg",
+      micrositeOrganizationHomepage := "http://www.47deg.com",
       micrositeGithubRepo := "macroid",
       micrositePalette := Map(
         "brand-primary" -> "#F24130",
@@ -30,8 +31,8 @@ object ProjectPlugin extends AutoPlugin {
     val platformV = "android-25"
     val paradiseVersion = "2.1.0"
 
-    val commonSettings =Seq(
-      version := "3.0.0-SNAPSHOT",
+    val commonSettings = Seq(
+      version := "2.1.0-SNAPSHOT",
       licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
       scalaVersion := "2.11.11",
       crossScalaVersions := Seq("2.10.6", "2.11.11"),

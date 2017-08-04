@@ -6,7 +6,7 @@ section: guide
 
 # Imports
 
-Normally most *Macroid* features are imported via
+Normally most Macroid features are imported via
 
 ```scala
 import macroid._

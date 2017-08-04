@@ -6,11 +6,11 @@ section: guide
 
 # Understanding operators
 
-*Macroid* operators can appear puzzling at first: what’s the difference between `<~` and `<~~`,
+Macroid operators can appear puzzling at first: what’s the difference between `<~` and `<~~`,
 `~` and `~~`, `+` and `++`?
 However, there is a very simple logic behind them, which is explained in this section.
 
-*Macroid* supports two different ways of changing widget properties:
+Macroid supports two different ways of changing widget properties:
 * “fire and forget” — the property change is triggered and the world moves on
 * “apply and wait” — the property change is triggered, and the world waits until it finishes
 

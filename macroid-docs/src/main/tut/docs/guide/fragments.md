@@ -10,7 +10,7 @@ To quote the Android documentation,
 
 > A Fragment represents a behavior or a portion of user interface in an Activity. You can combine multiple fragments in a single activity to build a multi-pane UI and reuse a fragment in multiple activities.
 
-*Macroid* allows you to deal with fragments, both `android.app.Fragment` and `android.support.v4.app.Fragment`.
+Macroid allows you to deal with fragments, both `android.app.Fragment` and `android.support.v4.app.Fragment`.
 
 ## Contexts
 
@@ -42,7 +42,7 @@ class MyFragment extends Fragment with Contexts[Fragment] {
 
 ## The `f` word
 
-*Macroid* provides an `fragment` (alised as `f` for short) brick, which is somewhat similar to the [`l` and `w` bricks](Bricks.html):
+Macroid provides an `fragment` (alised as `f` for short) brick, which is somewhat similar to the [`l` and `w` bricks](Bricks.html):
 
 ```scala
 f[MapFragment]

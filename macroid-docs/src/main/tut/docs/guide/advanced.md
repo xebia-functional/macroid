@@ -116,7 +116,7 @@ val randomInts = clicks.map(_ ⇒ scala.util.Random.nextInt().toString)
 textView <~ randomInts.map(text)
 ```
 
-The respective helper declarations have been cut from *Macroid* with the intention of putting them into the newly-born
+The respective helper declarations have been cut from Macroid with the intention of putting them into the newly-born
 [macroid-frp library](../Related.html). Please stay tuned!
 
 ## Extending

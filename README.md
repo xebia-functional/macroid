@@ -2,8 +2,8 @@
 
 [![Build Status](https://travis-ci.org/47deg/macroid.png?branch=master)](https://travis-ci.org/47deg/macroid) [![Codacy Badge](https://www.codacy.com/project/badge/fb3d939567d04686bfb23da3a22b9de9)](https://www.codacy.com/public/nickstanch/macroid) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Macroid-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1529) [![Join the chat at https://gitter.im/macroid/macroid](https://img.shields.io/badge/GITTER-Join%20chat%20→-brightgreen.svg?style=flat)](https://gitter.im/macroid/macroid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Macroid is the most badass modular functional user interface creation language for Android, implemented with Scala macros.
-[Some people say](http://www.urbandictionary.com/define.php?term=macroid) it’s also a dead noodle.
+Macroid is a modular functional user interface creation language for Android, implemented with 
+Scala macros.
 
 Striving to be focused on one thing (GUI), Macroid promotes composability and high-level abstractions.
 

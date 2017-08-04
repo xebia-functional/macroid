@@ -63,11 +63,15 @@ lazy val akka = (project in file("macroid-akka"))
     .dependsOn(core)
 
 lazy val docs = (project in file("macroid-docs"))
+    .enablePlugins(AndroidLib)
     .settings(commonSettings: _*)
     .settings(micrositeSettings: _*)
     .settings(moduleName := "macroid-docs")
     .enablePlugins(MicrositesPlugin)
-    .settings(name := "docs", description := "Macroid Documentation")
+    .settings(name := "docs",
+      platformTarget in Android := platformV,
+      unmanagedClasspath in Test ++= (bootClasspath in Android).value,
+      description := "Macroid Documentation")
     .dependsOn(core)
 
 lazy val extras = (project in file("macroid-extras"))

@@ -10,11 +10,11 @@ This module provides typeclasses to convert data to Android layouts. It offers t
 
 * A clear way to declare how your data should be displayed
 * Boilerplate-free `ListAdapter`s and `PagerAdapter`s
-* *Macroid*’s trademark emphasis on composability
+* Macroid’s trademark emphasis on composability
 
 ## Installation
 
-Assuming you already have *Macroid* `2.1.0` installed, add this line to your `build.sbt`:
+Assuming you already have Macroid `2.1.0` installed, add this line to your `build.sbt`:
 
 ```scala
 libraryDependencies += aar("org.macroid" %% "macroid-viewable" % "2.1.0")
@@ -243,7 +243,7 @@ def timedPictureListable =
 
 `SlottedListable` implements the well-known
 [holder pattern](http://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder),
-but in true *Macroid* style. It’s often what you want to use when the list element has two or more widgets.
+but in true Macroid style. It’s often what you want to use when the list element has two or more widgets.
 Let’s jump straight to the code:
 
 ```scala

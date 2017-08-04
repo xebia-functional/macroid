@@ -8,7 +8,7 @@ section: docs
 
 ## Version `2.1.0`
 
-*Macroid* is packaged in the AAR format and published to [Maven Central](http://central.maven
+Macroid is packaged in the AAR format and published to [Maven Central](http://central.maven
 .org/maven2/org/macroid/macroid_2.11/2.1.0/).
 
 Assuming sbt version `0.13.x` and [sbt-android](https://github.com/scala-android/sbt-android) 
@@ -31,7 +31,7 @@ libraryDependencies ++= Seq(
 
 ## Version `2.0.0` and below
 
-*Macroid* is an ordinary Scala library and can be added to your sbt project like this:
+Macroid is an ordinary Scala library and can be added to your sbt project like this:
 
 ```scala
 resolvers += Resolver.jcenterRepo

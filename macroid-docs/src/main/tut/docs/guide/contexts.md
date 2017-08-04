@@ -12,7 +12,7 @@ two types of context: one obtained from an activity
 and one obtained from the application. The reason is that holding on to the activity context
 may cause [memory leaks](http://stackoverflow.com/questions/3346080/android-references-to-a-context-and-memory-leaks).
 
-*Macroid* automatically stores `Activity` and `Service` contexts as weak references, avoiding the problem.
+Macroid automatically stores `Activity` and `Service` contexts as weak references, avoiding the problem.
 This is done with the `ContextWrapper` trait, which has four methods:
 
 * `contextWrapper.application` will return the application context;
@@ -69,7 +69,7 @@ val ctx = ContextWrapper(myActivity)
 
 ## Usage
 
-Most *Macroid* APIs require an implicit `ContextWrapper`. If you use them inside an
+Most Macroid APIs require an implicit `ContextWrapper`. If you use them inside an
 activity or a fragment, you are golden. However sometimes you need to pass the context
 to other methods:
 

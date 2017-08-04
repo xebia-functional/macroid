@@ -6,7 +6,7 @@ section: docs
 
 # Guide
 
-This is a detailed guide covering various features of *Macroid*:
+This is a detailed guide covering various features of Macroid:
 
 * [UI actions](guide/UiActions.html)
 * [Contexts](guide/Contexts.html)

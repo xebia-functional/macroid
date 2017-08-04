@@ -6,7 +6,7 @@ section: tutorial
 
 # Tweaking widgets
 
-In *Macroid* tweaking is done with something called... [Tweaks](../guide/Tweaks.html)!
+In Macroid tweaking is done with something called... [Tweaks](../guide/Tweaks.html)!
 A tweak changes some property of a widget, for example:
 
 ```scala

@@ -19,7 +19,7 @@ Detailed diff can be found [on GitHub](https://github.com/macroid/macroid/compar
 
 ### All modules
 
-All *Macroid* modules now reside in the same repository and take advantage of a unified build setup.
+All Macroid modules now reside in the same repository and take advantage of a unified build setup.
 Note that commit history has been rewritten to include references to the relevant modules in the commit messages.
 
 ### Core

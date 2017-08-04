@@ -12,7 +12,7 @@ You have to add your version of Akka yourself (see below).
 
 ## How to use
 
-Assuming you already have *Macroid* `2.1.0` installed, add this line to your `build.sbt`:
+Assuming you already have Macroid `2.1.0` installed, add this line to your `build.sbt`:
 
 ```scala
 libraryDependencies ++= Seq(

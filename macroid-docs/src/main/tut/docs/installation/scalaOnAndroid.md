@@ -33,7 +33,7 @@ To use the bundled libraries, such as the support library, make sure you install
 ![SDK manager screenshot](/macroid/img/SDK-manager.png)
 
 Alternatively, you can find a UNIX install script in
-[*Macroid*’s Travis config](https://github.com/47deg/macroid/blob/master/.travis.yml#L7).
+[Macroid’s Travis config](https://github.com/47deg/macroid/blob/master/.travis.yml#L7).
 
 ***Note*** If `sbt-android` doesn't find an Android SDK it will download all he need
 

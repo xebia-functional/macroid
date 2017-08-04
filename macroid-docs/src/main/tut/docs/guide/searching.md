@@ -49,11 +49,11 @@ val text1: String = edit.get.getText
 val text2: Option[String] = edit.map(_.getText)
 ```
 
-This may be addressed in future versions of *Macroid*.
+This may be addressed in future versions of Macroid.
 
 ## Id and tag generation
 
-Creating your widget ids in code might not be very rewarding. *Macroid* offers an elegant solution
+Creating your widget ids in code might not be very rewarding. Macroid offers an elegant solution
 using Scala’s [`Dynamic` feature](http://docs.scala-lang.org/sips/completed/type-dynamic.html).
 
 First, create a global id generator. You can specify the starting id:
@@ -75,7 +75,7 @@ assert(Id.button == Id.button)
 ```
 
 Sometimes you also need fragment tags, which are plain strings.
-For symmetry, *Macroid* includes a `Tag` singleton:
+For symmetry, Macroid includes a `Tag` singleton:
 
 ```scala
 // Doesn’t this look better than just "map"?

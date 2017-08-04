@@ -1,90 +1,85 @@
 options:
   - title: Introduction
-    url: index.html
+    url: docs.html
 
   - title: Installation
-    url: Installation.html
-    section: installation
+    url: installation.html
 
     nested_options:
      - title: Scala on Android
-       url: installation/ScalaOnAndroid.html
+       url: installation/scalaOnAndroid.html
 
   - title: Tutorial
-    url: Tutorial.html
-    section: tutorial
+    url: tutorial.html
 
     nested_options:
      - title: Building layouts
-       url: tutorial/BuildingLayouts.html
+       url: tutorial/buildingLayouts.html
      - title: Tweaking widgets
-       url: tutorial/Tweaking.html
+       url: tutorial/tweaking.html
      - title: Handling events
-       url: tutorial/HandlingEvents.html
+       url: tutorial/handlingEvents.html
      - title: Getting adaptive
-       url: tutorial/GettingAdaptive.html
+       url: tutorial/gettingAdaptive.html
      - title: Complete code
-       url: tutorial/CompleteCode.html
+       url: tutorial/completeCode.html
 
   - title: Guide
-    url: Guide.html
-    section: guide
+    url: guide.html
 
     nested_options:
      - title: UI actions
-       url: guide/UiActions.html
+       url: guide/uiActions.html
      - title: Contexts
-       url: guide/Contexts.html
+       url: guide/contexts.html
      - title: Bricks
-       url: guide/Bricks.html
+       url: guide/bricks.html
      - title: Tweaks
-       url: guide/Tweaks.html
+       url: guide/tweaks.html
      - title: Snails
-       url: guide/Snails.html
+       url: guide/snails.html
      - title: Transformers
-       url: guide/Transformers.html
+       url: guide/transformers.html
      - title: Understand operators
-       url: guide/Operators.html
+       url: guide/operators.html
      - title: Media queries
-       url: guide/MediaQueries.html
+       url: guide/mediaQueries.html
      - title: Fragments
-       url: guide/Fragments.html
+       url: guide/fragments.html
      - title: Searching
-       url: guide/Searching.html
+       url: guide/searching.html
      - title: Toasts and dialogs
-       url: guide/ToastsDialogs.html
+       url: guide/toastsDialogs.html
      - title: Advances techniques
-       url: guide/Advanced.html
+       url: guide/advanced.html
      - title: Imports
-       url: guide/Imports.html
+       url: guide/imports.html
 
   - title: Modules
-    url: Modules.html
-    section: modules
+    url: modules.html
 
     nested_options:
      - title: Viewable
-       url: modules/Viewable.html
+       url: modules/viewable.html
      - title: Akka Integration
-       url: modules/Akka.html
+       url: modules/akka.html
      - title: Extras
-       url: modules/Extras.html
+       url: modules/extras.html
 
   - title: Differences from
-    url: Differences.html
-    section: differences
+    url: differences.html
 
     nested_options:
      - title: Vanilla Android
-       url: differences/Vanilla.html
+       url: differences/vanilla.html
      - title: Scaloid
-       url: differences/Scaloid.html
+       url: differences/scaloid.html
 
   - title: Sample Projects
-    url: Samples.html
+    url: samples.html
 
   - title: Talks
-    url: Talks.html
+    url: talks.html
 
   - title: Changelog
-    url: Changelog.html
+    url: changelog.html

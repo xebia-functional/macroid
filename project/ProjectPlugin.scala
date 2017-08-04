@@ -8,12 +8,13 @@ object ProjectPlugin extends AutoPlugin {
   object autoImport {
 
     lazy val micrositeSettings = Seq(
-      micrositeName := "macroid",
+      micrositeName := "Macroid",
       micrositeDescription := "A modular functional user interface creation language for Android," +
-          "" + " implemented with Scala macros",
+        "" + " implemented with Scala macros",
       micrositeBaseUrl := "macroid",
-      micrositeDocumentationUrl := "/macroid/docs/",
+      micrositeDocumentationUrl := "/macroid/docs/docs.html",
       micrositeGithubOwner := "47deg",
+      micrositeOrganizationHomepage := "http://www.47deg.com",
       micrositeGithubRepo := "macroid",
       micrositePalette := Map(
         "brand-primary" -> "#F24130",
@@ -30,7 +31,7 @@ object ProjectPlugin extends AutoPlugin {
     val platformV = "android-25"
     val paradiseVersion = "2.1.0"
 
-    val commonSettings =Seq(
+    val commonSettings = Seq(
       version := "2.1.0-SNAPSHOT",
       licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
       scalaVersion := "2.11.11",
@@ -63,7 +64,7 @@ object ProjectPlugin extends AutoPlugin {
       homepage := Some(url("http://47deg.github.io/macroid")),
       scmInfo := Some(
         ScmInfo(url("https://github.com/47deg/macroid"),
-          "https://github.com/47deg/macroid.git")),
+                "https://github.com/47deg/macroid.git")),
       pomExtra := <developers>
         <developer>
           <name>macroid</name>
@@ -76,9 +77,9 @@ object ProjectPlugin extends AutoPlugin {
         else Some("releases" at nexus + "service/local/staging/deploy/maven2")
       },
       credentials += Credentials("Sonatype Nexus Repository Manager",
-        "oss.sonatype.org",
-        sys.env.getOrElse("PUBLISH_USERNAME", ""),
-        sys.env.getOrElse("PUBLISH_PASSWORD", "")),
+                                 "oss.sonatype.org",
+                                 sys.env.getOrElse("PUBLISH_USERNAME", ""),
+                                 sys.env.getOrElse("PUBLISH_PASSWORD", "")),
       publishArtifact in Test := false
     ) ++ addCommandAlias(
       "testAndCover",

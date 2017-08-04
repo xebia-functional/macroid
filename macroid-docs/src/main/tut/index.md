@@ -8,10 +8,10 @@ technologies:
 
 # Macroid
 
-*Macroid* is the most badass modular functional user interface creation language for Android, implemented with Scala macros.
-[Some people say](http://www.urbandictionary.com/define.php?term=macroid) it’s also a dead noodle.
+Macroid is a modular functional user interface creation language for Android, implemented with 
+Scala macros.
 
-Striving to be focused on one thing (GUI), *Macroid* promotes composability and high-level abstractions.
+Striving to be focused on one thing (GUI), Macroid promotes composability and high-level abstractions.
 
 Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 
@@ -19,16 +19,16 @@ Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
 
 # Installation
 
-## Version `2.0`
+## Version `2.1.0`
 
-*Macroid* is packaged in the AAR format and published to [Maven Central](http://central.maven.org/maven2/org/macroid/macroid_2.11/2.0.0-M5/).
+Macroid is packaged in the AAR format and published to [Maven Central](http://central.maven.org/maven2/org/macroid/macroid_2.11/2.1.0/).
 
-Assuming sbt version `0.13.x` and [android-sdk-plugin](https://github.com/pfn/android-sdk-plugin) 
+Assuming sbt version `0.13.x` and [android-sdk-plugin](https://github.com/scala-android/sbt-android) 
 version `1.2.20` and above, you can add it to your project like this:
 
 ```scala
 libraryDependencies ++= Seq(
-  aar("org.macroid" %% "macroid" % "2.0")
+  aar("org.macroid" %% "macroid" % "2.1.0")
 ```
 
 If you want to use the SNAPSHOT version you need to add the Sonatype SNAPSHOT repo
@@ -38,5 +38,5 @@ resolvers +=
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq(
-  aar("org.macroid" %% "macroid" % "2.0.1-SNAPSHOT")
+  aar("org.macroid" %% "macroid" % "2.1.0-SNAPSHOT")
 ```

@@ -20,13 +20,11 @@ private[macroid] trait DialogBuilding {
         new AlertDialog.Builder(ctx.getOriginal, t))
 
     /** Create a dialog with the specified view */
-    def apply(view: Ui[View])(
-        implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
+    def apply(view: Ui[View])(implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
       view.map(v ⇒ builder.setView(v))
 
     /** Create a dialog with the specified message */
-    def apply(message: CharSequence)(
-        implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
+    def apply(message: CharSequence)(implicit ctx: ContextWrapper): Ui[AlertDialog.Builder] =
       Ui(builder.setMessage(message))
 
     /** Create a dialog with the specified item list and click handler */

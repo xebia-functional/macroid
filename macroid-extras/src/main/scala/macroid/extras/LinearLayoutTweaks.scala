@@ -24,12 +24,12 @@ object LinearLayoutTweaks {
 
   def llGravity(gravity: Int): Tweak[W] = Tweak[W](_.setGravity(gravity))
 
-  def llDividerPadding(res: Int, padding: Int)(
-      implicit context: ContextWrapper): Tweak[W] = Tweak[W] { view ⇒
-    view.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE)
-    view.setDividerDrawable(context.application.getResources.getDrawable(res))
-    view.setDividerPadding(padding)
-  }
+  def llDividerPadding(res: Int, padding: Int)(implicit context: ContextWrapper): Tweak[W] =
+    Tweak[W] { view ⇒
+      view.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE)
+      view.setDividerDrawable(context.application.getResources.getDrawable(res))
+      view.setDividerPadding(padding)
+    }
 
   def llLayoutGravity(gravity: Int): Tweak[View] = Tweak[View] { view ⇒
     val param = new LinearLayout.LayoutParams(view.getLayoutParams)

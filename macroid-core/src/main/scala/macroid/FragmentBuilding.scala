@@ -30,8 +30,7 @@ case class FragmentBuilder[F](constructor: Ui[F], arguments: Bundle)(
 
   /** Fragment wrapped in FrameLayout to be added to layout */
   def framed[M](id: Int, tag: String)(
-      implicit managerCtx: FragmentManagerContext[F, M])
-    : Ui[RootFrameLayout] = {
+      implicit managerCtx: FragmentManagerContext[F, M]): Ui[RootFrameLayout] = {
     import managerCtx.fragmentApi
     managerCtx.manager.findFrag[F](tag).map { f ⇒
       if (f.isEmpty) {
@@ -47,32 +46,31 @@ case class FragmentBuilder[F](constructor: Ui[F], arguments: Bundle)(
 private[macroid] trait FragmentBuilding extends Bundles {
 
   /** Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
-    */
-  def fragment[F](implicit ctx: ContextWrapper,
-                  fragment: Fragment[F]): FragmentBuilder[F] =
+   */
+  def fragment[F](implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] =
     macro FragmentBuildingMacros.fragmentImpl[F]
 
   /** Fragment builder. To create a fragment, newInstance() is called, and if that fails, class constructor is used.
-    * (This is an alias for `fragment`.)
-    */
-  def f[F](implicit ctx: ContextWrapper,
-           fragment: Fragment[F]): FragmentBuilder[F] =
+   * (This is an alias for `fragment`.)
+   */
+  def f[F](implicit ctx: ContextWrapper, fragment: Fragment[F]): FragmentBuilder[F] =
     macro FragmentBuildingMacros.fragmentImpl[F]
 
   /** Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
-    * Without arguments, newInstance() is called, and if that fails, class constructor is used.
-    */
+   * Without arguments, newInstance() is called, and if that fails, class constructor is used.
+   */
   def fragment[F](newInstanceArgs: Any*)(
       implicit ctx: ContextWrapper,
       fragment: Fragment[F]): FragmentBuilder[F] =
     macro FragmentBuildingMacros.fragmentArgImpl[F]
 
   /** Fragment builder. `newInstanceArgs` are passed to newInstance, if any.
-    * Without arguments, newInstance() is called, and if that fails, class constructor is used.
-    * (This is an alias for `fragment`.)
-    */
-  def f[F](newInstanceArgs: Any*)(implicit ctx: ContextWrapper,
-                                  fragment: Fragment[F]): FragmentBuilder[F] =
+   * Without arguments, newInstance() is called, and if that fails, class constructor is used.
+   * (This is an alias for `fragment`.)
+   */
+  def f[F](newInstanceArgs: Any*)(
+      implicit ctx: ContextWrapper,
+      fragment: Fragment[F]): FragmentBuilder[F] =
     macro FragmentBuildingMacros.fragmentArgImpl[F]
 }
 
@@ -82,8 +80,7 @@ object FragmentBuilding extends FragmentBuilding
 class FragmentBuildingMacros(val c: blackbox.Context) {
   import c.universe._
 
-  def instFrag[F: c.WeakTypeTag](args: Seq[c.Expr[Any]],
-                                 ctx: c.Expr[ContextWrapper]): Tree = {
+  def instFrag[F: c.WeakTypeTag](args: Seq[c.Expr[Any]], ctx: c.Expr[ContextWrapper]): Tree = {
     scala.util.Try {
       // try to use newInstance(args)
       c.typecheck(q"${weakTypeOf[F].typeSymbol.companion}.newInstance(..$args)")
@@ -98,8 +95,9 @@ class FragmentBuildingMacros(val c: blackbox.Context) {
     }
   }
 
-  def fragmentImpl[F: c.WeakTypeTag](ctx: c.Expr[ContextWrapper],
-                                     fragment: c.Expr[Fragment[F]]): Tree = {
+  def fragmentImpl[F: c.WeakTypeTag](
+      ctx: c.Expr[ContextWrapper],
+      fragment: c.Expr[Fragment[F]]): Tree = {
     val constructor = instFrag(Seq(), ctx)
     q"_root_.macroid.FragmentBuilder(_root_.macroid.Ui($constructor), new _root_.android.os.Bundle)($ctx, $fragment)"
   }

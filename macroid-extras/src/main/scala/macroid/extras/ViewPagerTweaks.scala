@@ -19,8 +19,9 @@ object ViewPagerTweaks {
   def vpCurrentItem(currentItem: Int, smoothScroll: Boolean): Tweak[W] =
     Tweak[W](_.setCurrentItem(currentItem, smoothScroll))
 
-  def vpPageTransformer(reverseDrawingOrder: Boolean,
-                        transformer: ViewPager.PageTransformer): Tweak[W] =
+  def vpPageTransformer(
+      reverseDrawingOrder: Boolean,
+      transformer: ViewPager.PageTransformer): Tweak[W] =
     Tweak[W](_.setPageTransformer(reverseDrawingOrder, transformer))
 
   def vpOffscreenPageLimit(limit: Int): Tweak[W] =

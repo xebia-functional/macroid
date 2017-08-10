@@ -8,17 +8,17 @@ import macroid.util.SafeCast
 import macroid.support.{Fragment, FragmentApi}
 
 /** A class to generate unique ids
-  * The recommended usage is to create a singleton for the entire app:
-  * {{{
-  * object Id extends IdGen(1000)
-  * ...
-  * w[Button] <~ id(Id.button)
-  * }}}
-  *
-  * @param start  The starting id.
-  */
+ * The recommended usage is to create a singleton for the entire app:
+ * {{{
+ * object Id extends IdGen(1000)
+ * ...
+ * w[Button] <~ id(Id.button)
+ * }}}
+ *
+ * @param start  The starting id.
+ */
 class IdGenerator(start: Int) extends Dynamic {
-  private var ids = Map.empty[String, Int]
+  private var ids     = Map.empty[String, Int]
   private var counter = start
 
   private val lock = new Object
@@ -76,17 +76,17 @@ trait CanFindFragments[-X, -F] {
 }
 
 object CanFindFragments {
-  implicit def `Activity can find fragments`[F, M, A](
-      implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[A, F] {
-    def find[F1 <: F](x: A, tag: String) =
-      Ui(fragmentApi.findFragmentByTag[F1](fragmentApi.activityManager(x), tag))
-  }
+  implicit def `Activity can find fragments`[F, M, A](implicit fragmentApi: FragmentApi[F, M, A]) =
+    new CanFindFragments[A, F] {
+      def find[F1 <: F](x: A, tag: String) =
+        Ui(fragmentApi.findFragmentByTag[F1](fragmentApi.activityManager(x), tag))
+    }
 
-  implicit def `Fragment can find fragments`[F, M, A](
-      implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[F, F] {
-    def find[F1 <: F](x: F, tag: String) =
-      Ui(fragmentApi.findFragmentByTag[F1](fragmentApi.fragmentManager(x), tag))
-  }
+  implicit def `Fragment can find fragments`[F, M, A](implicit fragmentApi: FragmentApi[F, M, A]) =
+    new CanFindFragments[F, F] {
+      def find[F1 <: F](x: F, tag: String) =
+        Ui(fragmentApi.findFragmentByTag[F1](fragmentApi.fragmentManager(x), tag))
+    }
 
   implicit def `FragmentManager can find fragments`[F, M, A](
       implicit fragmentApi: FragmentApi[F, M, A]) = new CanFindFragments[M, F] {
@@ -97,8 +97,7 @@ object CanFindFragments {
 
 private[macroid] trait FragmentFinding {
   implicit class FragmentFindingOps[X](x: X) {
-    def findFrag[F](tag: String)(
-        implicit canFindFragments: CanFindFragments[X, F]) =
+    def findFrag[F](tag: String)(implicit canFindFragments: CanFindFragments[X, F]) =
       canFindFragments.find[F](x, tag)
   }
 }

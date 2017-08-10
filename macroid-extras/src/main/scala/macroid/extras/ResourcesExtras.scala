@@ -19,8 +19,7 @@ object ResourcesExtras {
   def resGetBoolean(resourceId: Int)(implicit c: ContextWrapper): Boolean =
     c.bestAvailable.getResources.getBoolean(resourceId)
 
-  def resGetBoolean(resource: String)(
-      implicit c: ContextWrapper): Option[Boolean] =
+  def resGetBoolean(resource: String)(implicit c: ContextWrapper): Option[Boolean] =
     resGetResource(resource, "boolean")((c, resourceId) ⇒
       c.bestAvailable.getResources.getBoolean(resourceId))
 
@@ -34,30 +33,25 @@ object ResourcesExtras {
   def resGetDimension(resourceId: Int)(implicit c: ContextWrapper): Float =
     c.bestAvailable.getResources.getDimension(resourceId)
 
-  def resGetDimension(resource: String)(
-      implicit c: ContextWrapper): Option[Float] =
+  def resGetDimension(resource: String)(implicit c: ContextWrapper): Option[Float] =
     resGetResource(resource, "dimen")((c, resourceId) ⇒
       c.bestAvailable.getResources.getDimension(resourceId))
 
-  def resGetDimensionPixelSize(resourceId: Int)(
-      implicit c: ContextWrapper): Int =
+  def resGetDimensionPixelSize(resourceId: Int)(implicit c: ContextWrapper): Int =
     c.bestAvailable.getResources.getDimensionPixelSize(resourceId)
 
-  def resGetDimensionPixelSize(resource: String)(
-      implicit c: ContextWrapper): Option[Int] =
+  def resGetDimensionPixelSize(resource: String)(implicit c: ContextWrapper): Option[Int] =
     resGetResource(resource, "dimen")((c, resourceId) ⇒
       c.bestAvailable.getResources.getDimensionPixelSize(resourceId))
 
   def resGetDrawable(resourceId: Int)(implicit c: ContextWrapper): Drawable =
     ContextCompat.getDrawable(c.bestAvailable, resourceId)
 
-  def resGetDrawable(resource: String)(
-      implicit c: ContextWrapper): Option[Drawable] =
+  def resGetDrawable(resource: String)(implicit c: ContextWrapper): Option[Drawable] =
     resGetResource(resource, "drawable")((c, resourceId) ⇒
       ContextCompat.getDrawable(c.bestAvailable, resourceId))
 
-  def resGetDrawableIdentifier(resource: String)(
-      implicit c: ContextWrapper): Option[Int] =
+  def resGetDrawableIdentifier(resource: String)(implicit c: ContextWrapper): Option[Int] =
     resGetResource(resource, "drawable")((c, resourceId) ⇒ resourceId)
 
   def resGetIdentifier(resource: String, resourceType: String)(
@@ -71,20 +65,17 @@ object ResourcesExtras {
     resGetResource(resource, "integer")((c, resourceId) ⇒
       c.bestAvailable.getResources.getInteger(resourceId))
 
-  def resGetResourcePackageName(resourceId: Int)(
-      implicit c: ContextWrapper): String =
+  def resGetResourcePackageName(resourceId: Int)(implicit c: ContextWrapper): String =
     c.bestAvailable.getResources.getResourcePackageName(resourceId)
 
   def resGetString(resourceId: Int)(implicit c: ContextWrapper): String =
     c.bestAvailable.getResources.getString(resourceId)
 
-  def resGetString(resource: String)(
-      implicit c: ContextWrapper): Option[String] =
+  def resGetString(resource: String)(implicit c: ContextWrapper): Option[String] =
     resGetResource(resource, "string")((c, resourceId) ⇒
       c.bestAvailable.getResources.getString(resourceId))
 
-  def resGetString(resourceId: Int, formatArgs: AnyRef*)(
-      implicit c: ContextWrapper): String =
+  def resGetString(resourceId: Int, formatArgs: AnyRef*)(implicit c: ContextWrapper): String =
     c.bestAvailable.getResources.getString(resourceId, formatArgs: _*)
 
   def resGetString(resource: String, formatArgs: AnyRef*)(
@@ -92,8 +83,7 @@ object ResourcesExtras {
     resGetResource(resource, "string")((c, resourceId) ⇒
       c.bestAvailable.getResources.getString(resourceId, formatArgs: _*))
 
-  def resGetQuantityString(resourceId: Int, quantity: Int)(
-      implicit c: ContextWrapper): String =
+  def resGetQuantityString(resourceId: Int, quantity: Int)(implicit c: ContextWrapper): String =
     c.bestAvailable.getResources.getQuantityString(resourceId, quantity)
 
   def resGetQuantityString(resourceId: Int, quantity: Int, formatArgs: AnyRef*)(

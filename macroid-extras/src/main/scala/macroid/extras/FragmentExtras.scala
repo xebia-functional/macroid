@@ -9,8 +9,7 @@ object FragmentExtras {
       builder: FragmentBuilder[F],
       id: Option[Int] = None,
       tag: Option[String] = None
-  )(implicit managerContext: FragmentManagerContext[Fragment,
-                                                    FragmentManager]) = {
+  )(implicit managerContext: FragmentManagerContext[Fragment, FragmentManager]) = {
     builder.factory map (managerContext.manager
       .beginTransaction()
       .add(id.getOrElse(0), _, tag.getOrElse(""))
@@ -18,17 +17,14 @@ object FragmentExtras {
   }
 
   def removeFragment(fragment: Fragment)(
-      implicit managerContext: FragmentManagerContext[Fragment,
-                                                      FragmentManager]) = {
+      implicit managerContext: FragmentManagerContext[Fragment, FragmentManager]) =
     managerContext.manager.beginTransaction().remove(fragment).commit()
-  }
 
   def replaceFragment[F <: Fragment](
       builder: FragmentBuilder[F],
       id: Int,
       tag: Option[String] = None
-  )(implicit managerContext: FragmentManagerContext[Fragment,
-                                                    FragmentManager]) = {
+  )(implicit managerContext: FragmentManagerContext[Fragment, FragmentManager]) = {
     builder.factory.map(
       managerContext.manager
         .beginTransaction()
@@ -37,15 +33,10 @@ object FragmentExtras {
   }
 
   def findFragmentByTag[T <: Fragment](tag: String)(
-      implicit managerContext: FragmentManagerContext[Fragment,
-                                                      FragmentManager])
-    : Option[T] =
-    Option(managerContext.manager.findFragmentByTag(tag)) map (_.asInstanceOf[
-      T])
+      implicit managerContext: FragmentManagerContext[Fragment, FragmentManager]): Option[T] =
+    Option(managerContext.manager.findFragmentByTag(tag)) map (_.asInstanceOf[T])
 
   def findFragmentById[T <: Fragment](id: Int)(
-      implicit managerContext: FragmentManagerContext[Fragment,
-                                                      FragmentManager])
-    : Option[T] =
+      implicit managerContext: FragmentManagerContext[Fragment, FragmentManager]): Option[T] =
     Option(managerContext.manager.findFragmentById(id)) map (_.asInstanceOf[T])
 }

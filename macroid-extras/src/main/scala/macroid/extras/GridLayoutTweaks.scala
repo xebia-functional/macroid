@@ -38,12 +38,11 @@ object GridLayoutTweaks {
       bottom: Int = GridLayout.UNDEFINED
   ): Tweak[W] = Tweak[W] { rootView ⇒
     for {
-      row ← 0 until rows
+      row    ← 0 until rows
       column ← 0 until columns
     } yield {
       views.lift((row * rows) + column) foreach { view ⇒
-        val param = new GridLayout.LayoutParams(GridLayout.spec(row),
-                                                GridLayout.spec(column))
+        val param = new GridLayout.LayoutParams(GridLayout.spec(row), GridLayout.spec(column))
         param.setMargins(left, top, right, bottom)
         param.height = height
         param.width = width

@@ -1,6 +1,6 @@
 package macroid
 
-import android.view.{ViewGroup, View}
+import android.view.{View, ViewGroup}
 import scala.concurrent.Future
 
 /** A Tweak is something that mutates a widget */

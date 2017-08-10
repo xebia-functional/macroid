@@ -1,7 +1,7 @@
 package macroid
 
 import org.scalatest.FlatSpec
-import android.widget.{LinearLayout, TextView, Button}
+import android.widget.{Button, LinearLayout, TextView}
 import LayoutDsl._
 import Tweaks._
 import contrib._
@@ -18,21 +18,18 @@ class TweakingSpec extends FlatSpec {
   }
 
   it should "work with effectors on the left" in {
-    def foo() = {
+    def foo() =
       Option(List(w[Button], w[TextView])) <~ show
-    }
   }
 
   it should "work with effectors on the right" in {
-    def foo() = {
+    def foo() =
       w[Button] <~ Option(List(show, text("doge")))
-    }
   }
 
   it should "work with effectors on both sides" in {
-    def foo() = {
+    def foo() =
       Option(List(w[Button], w[TextView])) <~ Option(List(show, text("doge")))
-    }
   }
 
   it should "use provided widget type" in {
@@ -61,14 +58,12 @@ class TweakingSpec extends FlatSpec {
   }
 
   "TextTweaks.allCaps" should "be invokeable without parentheses" in {
-    def foo() = {
+    def foo() =
       w[TextView] <~ TextTweaks.allCaps
-    }
   }
 
   it should "allow an optional value" in {
-    def foo() = {
+    def foo() =
       w[TextView] <~ TextTweaks.allCaps(false)
-    }
   }
 }

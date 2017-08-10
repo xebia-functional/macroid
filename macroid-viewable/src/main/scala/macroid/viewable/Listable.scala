@@ -11,9 +11,9 @@ import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
 
 /** Expresses the fact that *some* of the values of type `A` can be displayed with a widget or layout of type `W` in two steps:
-  * 1) creating the layout
-  * 2) filling the layout
-  */
+ * 1) creating the layout
+ * 2) filling the layout
+ */
 trait PartialListable[A, +W <: View] { self ⇒
 
   /** Supported number of different layout types */
@@ -26,24 +26,21 @@ trait PartialListable[A, +W <: View] { self ⇒
   def makeView(viewType: Int)(implicit ctx: ContextWrapper): Ui[W]
 
   /** Fill the layout with data. Returns None if not defined for this value */
-  def fillView[W1 >: W <: View](view: Ui[W1], data: A)(
-      implicit ctx: ContextWrapper): Option[Ui[W1]]
+  def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ContextWrapper): Option[Ui[W1]]
 
   /** Map the underlying data type `A` */
   def contraFlatMap[B](f: B ⇒ Option[A]): PartialListable[B, W] =
     new PartialListable[B, W] {
-      def viewTypeCount = self.viewTypeCount
+      def viewTypeCount     = self.viewTypeCount
       def viewType(data: B) = f(data).flatMap(self.viewType)
       def makeView(viewType: Int)(implicit ctx: ContextWrapper) =
         self.makeView(viewType)
-      def fillView[W1 >: W <: View](view: Ui[W1], data: B)(
-          implicit ctx: ContextWrapper) =
+      def fillView[W1 >: W <: View](view: Ui[W1], data: B)(implicit ctx: ContextWrapper) =
         f(data).flatMap(self.fillView(view, _))
     }
 
   /** Combine with an alternative partial */
-  def orElse[W1 >: W <: View](
-      alternative: PartialListable[A, W1]): PartialListable[A, W1] =
+  def orElse[W1 >: W <: View](alternative: PartialListable[A, W1]): PartialListable[A, W1] =
     new PartialListable[A, W1] {
       def viewTypeCount =
         self.viewTypeCount +
@@ -60,8 +57,7 @@ trait PartialListable[A, +W <: View] { self ⇒
           alternative.makeView(viewType - self.viewTypeCount)
         }
 
-      def fillView[W2 >: W1 <: View](view: Ui[W2], data: A)(
-          implicit ctx: ContextWrapper) =
+      def fillView[W2 >: W1 <: View](view: Ui[W2], data: A)(implicit ctx: ContextWrapper) =
         self.fillView(view, data) orElse
           alternative.fillView(view, data)
     }
@@ -74,8 +70,7 @@ trait PartialListable[A, +W <: View] { self ⇒
         if (p(data)) self.viewType(data) else None
       def makeView(viewType: Int)(implicit ctx: ContextWrapper) =
         self.makeView(viewType)
-      def fillView[W1 >: W <: View](view: Ui[W1], data: A)(
-          implicit ctx: ContextWrapper) =
+      def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ContextWrapper) =
         if (p(data)) self.fillView(view, data) else None
     }
 
@@ -85,21 +80,21 @@ trait PartialListable[A, +W <: View] { self ⇒
       def viewTypeCount = self.viewTypeCount
       def viewType(data: B) = data match {
         case x: A ⇒ self.viewType(x)
-        case _ ⇒ None
+        case _    ⇒ None
       }
       def makeView(viewType: Int)(implicit ctx: ContextWrapper) =
         self.makeView(viewType)
-      def fillView[W1 >: W <: View](view: Ui[W1], data: B)(
-          implicit ctx: ContextWrapper) = data match {
-        case x: A ⇒ self.fillView(view, x)
-        case _ ⇒ None
-      }
+      def fillView[W1 >: W <: View](view: Ui[W1], data: B)(implicit ctx: ContextWrapper) =
+        data match {
+          case x: A ⇒ self.fillView(view, x)
+          case _    ⇒ None
+        }
     }
 
   /** Convert back to total listable */
   def toTotal[W1 >: W <: View]: Listable[A, W1] =
     new Listable[A, W1] {
-      def viewTypeCount = self.viewTypeCount
+      def viewTypeCount     = self.viewTypeCount
       def viewType(data: A) = self.viewType(data).get
       def makeView(viewType: Int)(implicit ctx: ContextWrapper) =
         self.makeView(viewType)
@@ -109,10 +104,10 @@ trait PartialListable[A, +W <: View] { self ⇒
 }
 
 /** Expresses the fact that data type `A` can be displayed with a widget or layout of type `W` in two steps:
-  * 1) creating the layout
-  * 2) filling the layout
-  * Therefore suitable for use in `ListAdapter`s
-  */
+ * 1) creating the layout
+ * 2) filling the layout
+ * Therefore suitable for use in `ListAdapter`s
+ */
 @implicitNotFound(
   "Don't know how to display data type ${A} in a list. Try importing an instance of Listable[${A}, ...]")
 trait Listable[A, W <: View] { self ⇒
@@ -132,7 +127,7 @@ trait Listable[A, W <: View] { self ⇒
   /** Map the underlying data type `A` */
   def contraMap[B](f: B ⇒ A): Listable[B, W] =
     new Listable[B, W] {
-      def viewTypeCount = self.viewTypeCount
+      def viewTypeCount     = self.viewTypeCount
       def viewType(data: B) = self.viewType(f(data))
       def makeView(viewType: Int)(implicit ctx: ContextWrapper) =
         self.makeView(viewType)
@@ -143,7 +138,7 @@ trait Listable[A, W <: View] { self ⇒
   /** Add extra fillView function */
   def addFillView(fill: (Ui[W], A) ⇒ Ui[W]) =
     new Listable[A, W] {
-      def viewTypeCount = self.viewTypeCount
+      def viewTypeCount     = self.viewTypeCount
       def viewType(data: A) = self.viewType(data)
       def makeView(viewType: Int)(implicit ctx: ContextWrapper) =
         self.makeView(viewType)
@@ -154,24 +149,23 @@ trait Listable[A, W <: View] { self ⇒
   /** Convert to partial listable for composition with alternatives */
   def toPartial(implicit classTag: ClassTag[W]): PartialListable[A, W] =
     new PartialListable[A, W] {
-      def viewTypeCount = self.viewTypeCount
+      def viewTypeCount     = self.viewTypeCount
       def viewType(data: A) = Some(self.viewType(data))
       def makeView(viewType: Int)(implicit ctx: ContextWrapper) =
         self.makeView(viewType)
-      def fillView[W1 >: W <: View](view: Ui[W1], data: A)(
-          implicit ctx: ContextWrapper) = view match {
-        case x: Ui[W] ⇒ Some(self.fillView(x, data))
-        case _ ⇒ None
-      }
+      def fillView[W1 >: W <: View](view: Ui[W1], data: A)(implicit ctx: ContextWrapper) =
+        view match {
+          case x: Ui[W] ⇒ Some(self.fillView(x, data))
+          case _        ⇒ None
+        }
     }
 
   /** Convert to partial listable based on a condition */
-  def cond(p: A ⇒ Boolean)(
-      implicit classTag: ClassTag[W]): PartialListable[A, W] = toPartial.cond(p)
+  def cond(p: A ⇒ Boolean)(implicit classTag: ClassTag[W]): PartialListable[A, W] =
+    toPartial.cond(p)
 
   /** Convert to partial listable defined for a subset of a supertype */
-  def toParent[B](implicit classTagA: ClassTag[A],
-                  classTagW: ClassTag[W]): PartialListable[B, W] =
+  def toParent[B](implicit classTagA: ClassTag[A], classTagW: ClassTag[W]): PartialListable[B, W] =
     toPartial.toParent[B]
 
   /** Convert to a viewable */
@@ -182,8 +176,7 @@ trait Listable[A, W <: View] { self ⇒
     }
 
   /** An adapter to use with a `ListView` */
-  def listAdapter(data: Seq[A])(
-      implicit ctx: ContextWrapper): ListableListAdapter[A, W] =
+  def listAdapter(data: Seq[A])(implicit ctx: ContextWrapper): ListableListAdapter[A, W] =
     new ListableListAdapter[A, W](data)(ctx, this)
 
   /** A tweak to set the adapter of a `ListView` */
@@ -197,8 +190,8 @@ class ListableBuilder[A] {
   /** Define a listable by providing the make and fill functions */
   def apply[W <: View](make: ⇒ Ui[W])(fill: Ui[W] ⇒ A ⇒ Ui[W]): Listable[A, W] =
     new Listable[A, W] {
-      val viewTypeCount = 1
-      def viewType(data: A) = 0
+      val viewTypeCount                                         = 1
+      def viewType(data: A)                                     = 0
       def makeView(viewType: Int)(implicit ctx: ContextWrapper) = make
       def fillView(view: Ui[W], data: A)(implicit ctx: ContextWrapper) =
         fill(view)(data)
@@ -207,8 +200,8 @@ class ListableBuilder[A] {
   /** Define a listable by providing the make function and a tweak to fill the layout with data */
   def tw[W <: View](make: ⇒ Ui[W])(fill: A ⇒ Tweak[W]): Listable[A, W] =
     new Listable[A, W] {
-      val viewTypeCount = 1
-      def viewType(data: A) = 0
+      val viewTypeCount                                         = 1
+      def viewType(data: A)                                     = 0
       def makeView(viewType: Int)(implicit ctx: ContextWrapper) = make
       def fillView(view: Ui[W], data: A)(implicit ctx: ContextWrapper) =
         view <~ fill(data)
@@ -217,8 +210,8 @@ class ListableBuilder[A] {
   /** Define a listable by providing the make function and a transformer to fill the layout with data */
   def tr[W <: ViewGroup](make: ⇒ Ui[W])(fill: A ⇒ Transformer): Listable[A, W] =
     new Listable[A, W] {
-      val viewTypeCount = 1
-      def viewType(data: A) = 0
+      val viewTypeCount                                         = 1
+      def viewType(data: A)                                     = 0
       def makeView(viewType: Int)(implicit ctx: ContextWrapper) = make
       def fillView(view: Ui[W], data: A)(implicit ctx: ContextWrapper) =
         view <~ fill(data)
@@ -233,12 +226,12 @@ object Listable {
   /** Define a listable for strings by providing the `TextView` style */
   def text(tweak: Tweak[TextView]): Listable[String, TextView] =
     new Listable[String, TextView] {
-      val viewTypeCount = 1
+      val viewTypeCount          = 1
       def viewType(data: String) = 0
       def makeView(viewType: Int)(implicit ctx: ContextWrapper) =
         w[TextView] <~ tweak
-      def fillView(view: Ui[TextView], data: String)(
-          implicit ctx: ContextWrapper) = view <~ Tweaks.text(data)
+      def fillView(view: Ui[TextView], data: String)(implicit ctx: ContextWrapper) =
+        view <~ Tweaks.text(data)
     }
 
   /** An alias for SlottedListable */
@@ -252,12 +245,12 @@ object Listable {
         var x = slot[W]
       }
 
-      override val viewTypeCount = x.viewTypeCount
+      override val viewTypeCount     = x.viewTypeCount
       override def viewType(data: A) = x.viewType(data)
 
       def makeSlots(viewType: Int)(implicit ctx: ContextWrapper) = {
         val slots = new Slots
-        val view = wrapper(x.makeView(viewType) <~ wire(slots.x))
+        val view  = wrapper(x.makeView(viewType) <~ wire(slots.x))
         (view, slots)
       }
 
@@ -295,8 +288,7 @@ object Listable {
         (view, slots)
       }
 
-      def fillSlots(slots: Slots, data: (A1, A2))(
-          implicit ctx: ContextWrapper) =
+      def fillSlots(slots: Slots, data: (A1, A2))(implicit ctx: ContextWrapper) =
         slots.x.fold(Ui.nop)(z ⇒ x.fillView(Ui(z), data._1) ~ Ui.nop) ~
           slots.y.fold(Ui.nop)(z ⇒ y.fillView(Ui(z), data._2) ~ Ui.nop)
     }

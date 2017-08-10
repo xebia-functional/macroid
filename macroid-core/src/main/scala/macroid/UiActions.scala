@@ -26,10 +26,10 @@ class Ui[+A](private[Ui] val v: () ⇒ A) {
   def withResult[B](result: B) = Ui { v(); result }
 
   /** Wait until this action is finished and replace the resulting value with a new one */
-  def withResultAsync[B, C](result: B)(implicit evidence: A <:< Future[C],
-                                       ec: ExecutionContext) = Ui {
-    evidence(v()) map (_ ⇒ result)
-  }
+  def withResultAsync[B, C](result: B)(implicit evidence: A <:< Future[C], ec: ExecutionContext) =
+    Ui {
+      evidence(v()) map (_ ⇒ result)
+    }
 
   /** Combine (sequence) with another UI action */
   def ~[B](next: ⇒ Ui[B]) = Ui { v(); next.v() }
@@ -85,10 +85,10 @@ case class UiFuture[T](future: Future[T]) extends AnyVal {
     f andThen (_.get)
 
   /** Same as map, but performed on the UI thread.
-    *
-    * If the future is already completed and the current thread is the UI thread,
-    * the UI action will be applied in-place, rather than asynchronously.
-    */
+   *
+   * If the future is already completed and the current thread is the UI thread,
+   * the UI action will be applied in-place, rather than asynchronously.
+   */
   def mapUi[S](f: Function[T, Ui[S]]) =
     if (future.isCompleted && Ui.uiThread == Thread.currentThread) {
       future.value.get.map(applyUi(f)) match {
@@ -100,10 +100,10 @@ case class UiFuture[T](future: Future[T]) extends AnyVal {
     }
 
   /** Same as flatMap, but performed on the UI thread
-    *
-    * If the future is already completed and the current thread is the UI thread,
-    * the UI action will be applied in-place, rather than asynchronously.
-    */
+   *
+   * If the future is already completed and the current thread is the UI thread,
+   * the UI action will be applied in-place, rather than asynchronously.
+   */
   def flatMapUi[S](f: Function[T, Ui[Future[S]]]) = {
     if (future.isCompleted && Ui.uiThread == Thread.currentThread) {
       future.value.get.map(applyUi(f)) match {
@@ -116,10 +116,10 @@ case class UiFuture[T](future: Future[T]) extends AnyVal {
   }
 
   /** Same as foreach, but performed on the UI thread
-    *
-    * If the future is already completed and the current thread is the UI thread,
-    * the UI action will be applied in-place, rather than asynchronously.
-    */
+   *
+   * If the future is already completed and the current thread is the UI thread,
+   * the UI action will be applied in-place, rather than asynchronously.
+   */
   def foreachUi[U](f: Function[T, Ui[U]]) =
     if (future.isCompleted && Ui.uiThread == Thread.currentThread) {
       future.value.get.foreach(applyUi(f))

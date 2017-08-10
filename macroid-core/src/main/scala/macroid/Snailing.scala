@@ -19,8 +19,10 @@ object CanSnail {
       def snail(w: W, s: Snail[W]) = s(w).withResultAsync(w)
     }
 
-  implicit def `Widget is snailable with Future[Tweak]`[W <: View]
-    : CanSnail[W, Future[Tweak[W]], W] =
+  implicit def `Widget is snailable with Future[Tweak]`[W <: View]: CanSnail[
+    W,
+    Future[Tweak[W]],
+    W] =
     new CanSnail[W, Future[Tweak[W]], W] {
       def snail(w: W, ft: Future[Tweak[W]]) = Ui {
         ft.mapUi(t ⇒ t(w).withResult(w))
@@ -73,8 +75,7 @@ object CanSnail {
     }
 
   implicit def `Widget is snailable with TraversableOnce`[W <: View, S, R](
-      implicit canSnail: CanSnail[W, S, R])
-    : CanSnail[W, TraversableOnce[S], W] =
+      implicit canSnail: CanSnail[W, S, R]): CanSnail[W, TraversableOnce[S], W] =
     new CanSnail[W, TraversableOnce[S], W] {
       def snail(w: W, l: TraversableOnce[S]) =
         Ui(async {
@@ -87,10 +88,7 @@ object CanSnail {
         }(UiThreadExecutionContext))
     }
 
-  implicit def `TraversableOnce is snailable`[W,
-                                              S,
-                                              R,
-                                              C[X] <: TraversableOnce[X]](
+  implicit def `TraversableOnce is snailable`[W, S, R, C[X] <: TraversableOnce[X]](
       implicit canSnail: CanSnail[W, S, R]): CanSnail[C[W], S, C[W]] =
     new CanSnail[C[W], S, C[W]] {
       def snail(l: C[W], s: S) =

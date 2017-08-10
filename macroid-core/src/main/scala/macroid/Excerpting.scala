@@ -13,14 +13,15 @@ trait CanExcerpt[W, -E, R] {
 }
 
 object CanExcerpt {
-  implicit def `Widget is excerptable with Excerpt`[W <: View, R]
-    : CanExcerpt[W, Excerpt[W, R], R] =
+  implicit def `Widget is excerptable with Excerpt`[W <: View, R]: CanExcerpt[W, Excerpt[W, R], R] =
     new CanExcerpt[W, Excerpt[W, R], R] {
       def excerpt(w: W, e: Excerpt[W, R]) = e(w)
     }
 
-  implicit def `Widget is excerptable with Future[Excerpt]`[W <: View, R]
-    : CanExcerpt[W, Future[Excerpt[W, R]], Future[R]] =
+  implicit def `Widget is excerptable with Future[Excerpt]`[W <: View, R]: CanExcerpt[
+    W,
+    Future[Excerpt[W, R]],
+    Future[R]] =
     new CanExcerpt[W, Future[Excerpt[W, R]], Future[R]] {
       def excerpt(w: W, ft: Future[Excerpt[W, R]]) = Ui {
         ft.mapUi(e ⇒ e(w))
@@ -28,8 +29,7 @@ object CanExcerpt {
     }
 
   implicit def `Option is excerptable`[W, E, R](
-      implicit canExcerpt: CanExcerpt[W, E, R])
-    : CanExcerpt[Option[W], E, Option[R]] =
+      implicit canExcerpt: CanExcerpt[W, E, R]): CanExcerpt[Option[W], E, Option[R]] =
     new CanExcerpt[Option[W], E, Option[R]] {
       def excerpt(o: Option[W], e: E) = o.fold(Ui(Option.empty[R])) { w ⇒
         canExcerpt.excerpt(w, e).map(Some.apply)

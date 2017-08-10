@@ -33,7 +33,7 @@ class BundleMacros(val c: blackbox.Context) {
         (!x.name.toString.endsWith("Array") && !x.name.toString
           .endsWith("List")) || x.name.toString.contains("Sparse"))
     val (plain, able) = singular.partition(!_.name.toString.endsWith("able"))
-    val b = TermName(c.freshName("bundle"))
+    val b             = TermName(c.freshName("bundle"))
     val puts = pairs map { pair ⇒
       val TypeRef(_, _, List(_, value)) = pair.actualType
       val put = plain.find(value =:= _.paramLists(0)(1).typeSignature) orElse

@@ -1,7 +1,7 @@
 package macroid.viewable
 
 import android.support.v4.view.PagerAdapter
-import android.view.{ViewGroup, View}
+import android.view.{View, ViewGroup}
 import macroid.ContextWrapper
 
 /** A `PagerAdapter` based on the `Viewable` typeclass */
@@ -14,9 +14,8 @@ class ViewablePagerAdapter[A, +W <: View](
     view
   }
 
-  override def destroyItem(container: ViewGroup, position: Int, `object`: Any) = {
+  override def destroyItem(container: ViewGroup, position: Int, `object`: Any) =
     container.removeView(`object`.asInstanceOf[View])
-  }
 
   def getCount = data.length
 

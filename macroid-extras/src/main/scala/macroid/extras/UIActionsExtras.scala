@@ -33,12 +33,11 @@ object UIActionsExtras {
       }, delayMilis)
     }
 
-  def uiVibrate(millis: Long = 100)(
-      implicit contextWrapper: ContextWrapper): Ui[Any] = Ui {
+  def uiVibrate(millis: Long = 100)(implicit contextWrapper: ContextWrapper): Ui[Any] = Ui {
     contextWrapper.application
       .getSystemService(Context.VIBRATOR_SERVICE) match {
       case vibrator: Vibrator ⇒ vibrator.vibrate(millis)
-      case _ ⇒
+      case _                  ⇒
     }
   }
 

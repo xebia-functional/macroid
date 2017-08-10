@@ -75,11 +75,7 @@ object ViewTweaks {
       paddingLeftRight: Int = 0,
       paddingTopBottom: Int = 0
   ): Tweak[W] =
-    Tweak[W](
-      _.setPadding(paddingLeftRight,
-                   paddingTopBottom,
-                   paddingLeftRight,
-                   paddingTopBottom))
+    Tweak[W](_.setPadding(paddingLeftRight, paddingTopBottom, paddingLeftRight, paddingTopBottom))
 
   def vPadding(
       paddingLeft: Int = 0,
@@ -100,10 +96,8 @@ object ViewTweaks {
   def vBackgroundColor(color: Int): Tweak[W] =
     Tweak[W](_.setBackgroundColor(color))
 
-  def vBackgroundColorResource(color: Int)(
-      implicit context: ContextWrapper): Tweak[W] =
-    Tweak[W](
-      _.setBackgroundColor(context.application.getResources.getColor(color)))
+  def vBackgroundColorResource(color: Int)(implicit context: ContextWrapper): Tweak[W] =
+    Tweak[W](_.setBackgroundColor(context.application.getResources.getColor(color)))
 
   def vBackground(drawable: Drawable): Tweak[W] =
     Tweak[W](
@@ -168,16 +162,12 @@ object ViewTweaks {
 
   def vBackgroundColorFilterResource(res: Int, mode: Mode = Mode.MULTIPLY)(
       implicit context: ContextWrapper): Tweak[W] =
-    Tweak[W](
-      _.getBackground.setColorFilter(
-        new PorterDuffColorFilter(resGetColor(res), mode)))
+    Tweak[W](_.getBackground.setColorFilter(new PorterDuffColorFilter(resGetColor(res), mode)))
 
   def vBackgroundColorFilter(color: Int, mode: Mode = Mode.MULTIPLY): Tweak[W] =
-    Tweak[W](
-      _.getBackground.setColorFilter(new PorterDuffColorFilter(color, mode)))
+    Tweak[W](_.getBackground.setColorFilter(new PorterDuffColorFilter(color, mode)))
 
-  def vBackgroundTransition(durationMillis: Int,
-                            reverse: Boolean = false): Tweak[W] = Tweak[W] {
+  def vBackgroundTransition(durationMillis: Int, reverse: Boolean = false): Tweak[W] = Tweak[W] {
     view ⇒
       val transitionBackground =
         view.getBackground.asInstanceOf[TransitionDrawable]
@@ -188,10 +178,7 @@ object ViewTweaks {
   def vCircleOutlineProvider(padding: Int = 0): Tweak[W] = Tweak[W] { view ⇒
     view.setOutlineProvider(new ViewOutlineProvider() {
       override def getOutline(view: ViewTweaks.W, outline: Outline): Unit = {
-        outline.setOval(padding,
-                        padding,
-                        view.getWidth - padding,
-                        view.getHeight - padding)
+        outline.setOval(padding, padding, view.getWidth - padding, view.getHeight - padding)
       }
     })
     view.setClipToOutline(true)
@@ -221,8 +208,7 @@ object ViewTweaks {
   def vStartAnimation(animation: Animation): Tweak[W] =
     Tweak[W](_.startAnimation(animation))
 
-  def vStateListAnimator(animation: Int)(
-      implicit context: ContextWrapper): Tweak[W] =
+  def vStateListAnimator(animation: Int)(implicit context: ContextWrapper): Tweak[W] =
     Tweak[W](
       _.setStateListAnimator(
         AnimatorInflater.loadStateListAnimator(context.application, animation)))
@@ -241,16 +227,15 @@ object ViewTweaks {
 
   def vGlobalLayoutListener(globalLayoutListener: View ⇒ Ui[_]): Tweak[W] =
     Tweak[W] { view ⇒
-      view.getViewTreeObserver.addOnGlobalLayoutListener(
-        new OnGlobalLayoutListener() {
-          override def onGlobalLayout(): Unit = {
-            JellyBean ifSupportedThen
-              view.getViewTreeObserver
-                .removeOnGlobalLayoutListener(this) getOrElse
-              view.getViewTreeObserver.removeGlobalOnLayoutListener(this)
-            globalLayoutListener(view).run
-          }
-        })
+      view.getViewTreeObserver.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+        override def onGlobalLayout(): Unit = {
+          JellyBean ifSupportedThen
+            view.getViewTreeObserver
+              .removeOnGlobalLayoutListener(this) getOrElse
+            view.getViewTreeObserver.removeGlobalOnLayoutListener(this)
+          globalLayoutListener(view).run
+        }
+      })
     }
 
   def vOverScrollMode(mode: Int): Tweak[W] = Tweak[W](_.setOverScrollMode(mode))
@@ -265,21 +250,20 @@ object ViewTweaks {
 
   def vScrollY(y: Int) = Tweak[W](_.setScrollY(y))
 
-  def vClipBackground(radius: Int,
-                      verticalPadding: Int = 0,
-                      horizontalPadding: Int = 0): Tweak[W] = Tweak[W] { view ⇒
-    view.setOutlineProvider(new ViewOutlineProvider() {
-      override def getOutline(view: View, outline: Outline): Unit =
-        outline.setRoundRect(
-          horizontalPadding,
-          verticalPadding,
-          view.getWidth - horizontalPadding,
-          view.getHeight - verticalPadding,
-          radius.toFloat
-        )
-    })
-    view.setClipToOutline(true)
-  }
+  def vClipBackground(radius: Int, verticalPadding: Int = 0, horizontalPadding: Int = 0): Tweak[W] =
+    Tweak[W] { view ⇒
+      view.setOutlineProvider(new ViewOutlineProvider() {
+        override def getOutline(view: View, outline: Outline): Unit =
+          outline.setRoundRect(
+            horizontalPadding,
+            verticalPadding,
+            view.getWidth - horizontalPadding,
+            view.getHeight - verticalPadding,
+            radius.toFloat
+          )
+      })
+      view.setClipToOutline(true)
+    }
 
   def vClearFocus = Tweak[W](_.clearFocus())
 
@@ -314,8 +298,7 @@ object ViewTweaks {
       popupMenu.show()
     }
 
-  def vPopupMenuShow(menu: Seq[String],
-                     onMenuItemClickListener: (MenuItem) ⇒ Boolean)(
+  def vPopupMenuShow(menu: Seq[String], onMenuItemClickListener: (MenuItem) ⇒ Boolean)(
       implicit contextWrapper: ContextWrapper) =
     Tweak[W] { view ⇒
       val popupMenu = new PopupMenu(contextWrapper.bestAvailable, view)
@@ -345,10 +328,11 @@ object ViewTweaks {
       height foreach listPopupWindow.setHeight
       listPopupWindow.setModal(true)
       listPopupWindow.setOnItemClickListener(new OnItemClickListener {
-        override def onItemClick(parent: AdapterView[_],
-                                 view: View,
-                                 position: Int,
-                                 id: Long): Unit = {
+        override def onItemClick(
+            parent: AdapterView[_],
+            view: View,
+            position: Int,
+            id: Long): Unit = {
           onItemClickListener(position)
           listPopupWindow.dismiss()
         }
@@ -391,26 +375,24 @@ object ViewTweaks {
           .show()).run
     }
 
-  def vSnackbarLongAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] {
-    view ⇒
-      Ui(
-        Snackbar
-          .make(view, res, Snackbar.LENGTH_LONG)
-          .setAction(buttonText, new OnClickListener {
-            override def onClick(v: View): Unit = f()
-          })
-          .show()).run
+  def vSnackbarLongAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] { view ⇒
+    Ui(
+      Snackbar
+        .make(view, res, Snackbar.LENGTH_LONG)
+        .setAction(buttonText, new OnClickListener {
+          override def onClick(v: View): Unit = f()
+        })
+        .show()).run
   }
 
-  def vSnackbarShortAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] {
-    view ⇒
-      Ui(
-        Snackbar
-          .make(view, res, Snackbar.LENGTH_SHORT)
-          .setAction(buttonText, new OnClickListener {
-            override def onClick(v: View): Unit = f()
-          })
-          .show()).run
+  def vSnackbarShortAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] { view ⇒
+    Ui(
+      Snackbar
+        .make(view, res, Snackbar.LENGTH_SHORT)
+        .setAction(buttonText, new OnClickListener {
+          override def onClick(v: View): Unit = f()
+        })
+        .show()).run
   }
 
 }

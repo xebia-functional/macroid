@@ -21,10 +21,9 @@ object Layouts {
   class RuleRelativeLayout(ctx: Context) extends RelativeLayout(ctx)
   object RuleRelativeLayout {
     case class Rule(verb: Int, anchor: Int = -1)
-    class LayoutParams(w: Int, h: Int, rules: Rule*)
-        extends RelativeLayout.LayoutParams(w, h) {
+    class LayoutParams(w: Int, h: Int, rules: Rule*) extends RelativeLayout.LayoutParams(w, h) {
       rules foreach {
-        case Rule(verb, -1) ⇒ addRule(verb)
+        case Rule(verb, -1)     ⇒ addRule(verb)
         case Rule(verb, anchor) ⇒ addRule(verb, anchor)
       }
     }

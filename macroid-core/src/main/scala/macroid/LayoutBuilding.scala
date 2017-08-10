@@ -1,7 +1,7 @@
 package macroid
 
 import scala.language.experimental.macros
-import android.view.{ViewGroup, View}
+import android.view.{View, ViewGroup}
 import macrocompat.bundle
 import scala.reflect.macros.blackbox
 
@@ -25,13 +25,11 @@ private[macroid] trait LayoutBuilding {
     macro LayoutBuildingMacros.widgetArgImpl[W]
 
   /** Define a layout */
-  def layout[L <: ViewGroup](children: Ui[View]*)(
-      implicit ctx: ContextWrapper): Ui[L] =
+  def layout[L <: ViewGroup](children: Ui[View]*)(implicit ctx: ContextWrapper): Ui[L] =
     macro LayoutBuildingMacros.layoutUiImpl[L]
 
   /** Define a layout (an alias for `layout`) */
-  def l[L <: ViewGroup](children: Ui[View]*)(
-      implicit ctx: ContextWrapper): Ui[L] =
+  def l[L <: ViewGroup](children: Ui[View]*)(implicit ctx: ContextWrapper): Ui[L] =
     macro LayoutBuildingMacros.layoutUiImpl[L]
 
   /** Define a slot */
@@ -44,14 +42,12 @@ object LayoutBuilding extends LayoutBuilding
 class LayoutBuildingMacros(val c: blackbox.Context) {
   import c.universe._
 
-  def widgetImpl[W <: View: c.WeakTypeTag](ctx: c.Expr[ContextWrapper]): Tree = {
+  def widgetImpl[W <: View: c.WeakTypeTag](ctx: c.Expr[ContextWrapper]): Tree =
     q"_root_.macroid.Ui(new ${weakTypeOf[W]}($ctx.getOriginal))"
-  }
 
   def widgetArgImpl[W <: View: c.WeakTypeTag](args: c.Expr[Any]*)(
-      ctx: c.Expr[ContextWrapper]): Tree = {
+      ctx: c.Expr[ContextWrapper]): Tree =
     q"_root_.macroid.Ui(new ${weakTypeOf[W]}($ctx.getOriginal, ..$args))"
-  }
 
   def layoutUiImpl[L <: ViewGroup: c.WeakTypeTag](children: c.Expr[Ui[View]]*)(
       ctx: c.Expr[ContextWrapper]): Tree = {

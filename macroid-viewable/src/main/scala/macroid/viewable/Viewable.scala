@@ -23,8 +23,7 @@ trait PartialViewable[A, +W <: View] { self ⇒
     }
 
   /** Combine with an alternative partial */
-  def orElse[W1 >: W <: View](
-      alternative: PartialViewable[A, W1]): PartialViewable[A, W1] =
+  def orElse[W1 >: W <: View](alternative: PartialViewable[A, W1]): PartialViewable[A, W1] =
     new PartialViewable[A, W1] {
       def view(data: A)(implicit ctx: ContextWrapper) =
         self.view(data) orElse alternative.view(data)
@@ -42,7 +41,7 @@ trait PartialViewable[A, +W <: View] { self ⇒
     new PartialViewable[B, W] {
       def view(data: B)(implicit ctx: ContextWrapper) = data match {
         case x: A ⇒ self.view(x)
-        case _ ⇒ None
+        case _    ⇒ None
       }
     }
 
@@ -84,8 +83,7 @@ trait Viewable[A, +W <: View] { self ⇒
     toPartial.toParent[B]
 
   /** An adapter to use with a `ViewPager` */
-  def pagerAdapter(data: Seq[A])(
-      implicit ctx: ContextWrapper): ViewablePagerAdapter[A, W] =
+  def pagerAdapter(data: Seq[A])(implicit ctx: ContextWrapper): ViewablePagerAdapter[A, W] =
     new ViewablePagerAdapter[A, W](data)(ctx, this)
 
   /** A tweak to set the adapter of a `ViewPager` */

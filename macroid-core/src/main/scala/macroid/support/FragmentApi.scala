@@ -14,8 +14,8 @@ sealed trait Fragment[-F] {
 private[macroid] trait ModernFragment {
   import android.app.{Fragment ⇒ F}
   implicit object modernFragment extends Fragment[F] {
-    def view = _.getView
-    def activity = _.getActivity
+    def view                          = _.getView
+    def activity                      = _.getActivity
     def setArguments(f: F, b: Bundle) = f.setArguments(b)
   }
 }
@@ -23,8 +23,8 @@ private[macroid] trait ModernFragment {
 private[macroid] trait LegacyFragment {
   import android.support.v4.app.{Fragment ⇒ F}
   implicit object legacyFragment extends Fragment[F] {
-    def view = _.getView
-    def activity = _.getActivity
+    def view                          = _.getView
+    def activity                      = _.getActivity
     def setArguments(f: F, b: Bundle) = f.setArguments(b)
   }
 }
@@ -51,11 +51,7 @@ private[macroid] trait ModernFragmentApi {
 }
 
 private[macroid] trait LegacyFragmentApi {
-  import android.support.v4.app.{
-    Fragment ⇒ F,
-    FragmentManager ⇒ M,
-    FragmentActivity ⇒ A
-  }
+  import android.support.v4.app.{Fragment ⇒ F, FragmentManager ⇒ M, FragmentActivity ⇒ A}
   implicit object legacyFragmentApi extends FragmentApi[F, M, A] {
     def fragmentManager = _.getChildFragmentManager
     def activityManager = _.getSupportFragmentManager

@@ -18,8 +18,7 @@ object ViewGroupTweaks {
     views foreach rootView.addView
   }
 
-  def vgAddViews[V <: View](views: Seq[V],
-                            params: ViewGroup.LayoutParams): Tweak[W] =
+  def vgAddViews[V <: View](views: Seq[V], params: ViewGroup.LayoutParams): Tweak[W] =
     Tweak[W] { rootView ⇒
       views foreach (rootView.addView(_, params))
     }

@@ -15,8 +15,7 @@ object SwitchCompatTweaks {
       implicit contextWrapper: ContextWrapper) =
     Tweak[W](
       _.setOnCheckedChangeListener(new OnCheckedChangeListener {
-        override def onCheckedChanged(buttonView: CompoundButton,
-                                      isChecked: Boolean): Unit =
+        override def onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean): Unit =
           onCheckedChange(isChecked)
       })
     )

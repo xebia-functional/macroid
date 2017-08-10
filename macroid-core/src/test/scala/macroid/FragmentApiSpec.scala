@@ -5,11 +5,9 @@ import macroid.FullDsl._
 
 class FragmentApiSpec extends FlatSpec {
   "FragmentApi" should "work with legacy fragments in activity" in {
-    import android.support.v4.app.{FragmentActivity, Fragment}
+    import android.support.v4.app.{Fragment, FragmentActivity}
     def foo() = {
-      class MyActivity
-          extends FragmentActivity
-          with Contexts[FragmentActivity] {
+      class MyActivity extends FragmentActivity with Contexts[FragmentActivity] {
         f[Fragment].framed(1, "1")
         this.findFrag[Fragment]("1")
       }

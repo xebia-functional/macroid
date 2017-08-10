@@ -16,8 +16,7 @@ object RecyclerViewTweaks {
   def rvLayoutManager(layoutManager: RecyclerView.LayoutManager): Tweak[W] =
     Tweak[W](_.setLayoutManager(layoutManager))
 
-  def rvAdapter[VH <: RecyclerView.ViewHolder](
-      adapter: RecyclerView.Adapter[VH]): Tweak[W] =
+  def rvAdapter[VH <: RecyclerView.ViewHolder](adapter: RecyclerView.Adapter[VH]): Tweak[W] =
     Tweak[W](_.setAdapter(adapter))
 
   def rvAddItemDecoration(decoration: RecyclerView.ItemDecoration): Tweak[W] =
@@ -28,12 +27,10 @@ object RecyclerViewTweaks {
 
   def rvLayoutAnimation(res: Int)(implicit contextWrapper: ContextWrapper) =
     Tweak[W] { view ⇒
-      view.setLayoutAnimation(
-        AnimationUtils.loadLayoutAnimation(contextWrapper.application, res))
+      view.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(contextWrapper.application, res))
     }
 
-  def rvSwapAdapter[VH <: RecyclerView.ViewHolder](
-      adapter: RecyclerView.Adapter[VH]): Tweak[W] =
+  def rvSwapAdapter[VH <: RecyclerView.ViewHolder](adapter: RecyclerView.Adapter[VH]): Tweak[W] =
     Tweak[RecyclerView](_.swapAdapter(adapter, false))
 
   def rvScrollToTop: Tweak[W] = Tweak[W](_.scrollToPosition(0))
@@ -52,12 +49,9 @@ object RecyclerViewTweaks {
       scrollStateChanged: (Int) ⇒ Unit
   ): Tweak[W] =
     Tweak[RecyclerView](_.addOnScrollListener(new OnScrollListener {
-      override def onScrolled(recyclerView: RecyclerView,
-                              dx: Int,
-                              dy: Int): Unit = scrolled(dx, dy)
+      override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = scrolled(dx, dy)
 
-      override def onScrollStateChanged(recyclerView: RecyclerView,
-                                        newState: Int): Unit =
+      override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit =
         scrollStateChanged(newState)
     }))
 

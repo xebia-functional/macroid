@@ -12,8 +12,8 @@ object RevealSnails {
 
   val showCircularReveal: Snail[View] = Snail[View] { view ⇒
     val animPromise = Promise[Unit]()
-    val x = view.getWidth / 2
-    val y = view.getHeight / 2
+    val x           = view.getWidth / 2
+    val y           = view.getHeight / 2
     val radius =
       SnailsUtils.calculateRadius(x, y, view.getWidth, view.getHeight)
     val anim: Animator =
@@ -31,8 +31,8 @@ object RevealSnails {
 
   val hideCircularReveal: Snail[View] = Snail[View] { view ⇒
     val animPromise = Promise[Unit]()
-    val x = view.getWidth / 2
-    val y = view.getHeight / 2
+    val x           = view.getWidth / 2
+    val y           = view.getHeight / 2
     val radius =
       SnailsUtils.calculateRadius(x, y, view.getWidth, view.getHeight)
     val anim: Animator =
@@ -56,10 +56,8 @@ object MoveSnails {
     val animPromise = Promise[Unit]()
 
     maybeToView foreach { toView ⇒
-      val finalX
-        : Float = toView.getX + (toView.getWidth / 2) - ((view.getWidth / 2) + view.getX)
-      val finalY
-        : Float = toView.getY + (toView.getHeight / 2) - ((view.getHeight / 2) + view.getY)
+      val finalX: Float = toView.getX + (toView.getWidth / 2) - ((view.getWidth / 2) + view.getX)
+      val finalY: Float = toView.getY + (toView.getHeight / 2) - ((view.getHeight / 2) + view.getY)
 
       view.animate
         .translationX(finalX)
@@ -80,10 +78,8 @@ object MoveSnails {
     val animPromise = Promise[Unit]()
 
     maybeToView foreach { toView ⇒
-      val finalX
-        : Float = toView.getX + (toView.getWidth / 2) - ((view.getWidth / 2) + view.getX)
-      val finalY
-        : Float = toView.getY + (toView.getHeight / 2) - ((view.getHeight / 2) + view.getY)
+      val finalX: Float = toView.getX + (toView.getWidth / 2) - ((view.getWidth / 2) + view.getX)
+      val finalY: Float = toView.getY + (toView.getHeight / 2) - ((view.getHeight / 2) + view.getY)
 
       view.animate
         .translationXBy(finalX)
@@ -104,10 +100,7 @@ object MoveSnails {
 
 object SnailsUtils {
 
-  def calculateRadius(x: Int = 0,
-                      y: Int = 0,
-                      width: Int = 0,
-                      height: Int = 0): Float = {
+  def calculateRadius(x: Int = 0, y: Int = 0, width: Int = 0, height: Int = 0): Float = {
     val catheti1: Int = if (x < width / 2) width - x else x
     val catheti2: Int = if (y < height / 2) height - y else y
     Math.sqrt((catheti1 * catheti1) + (catheti2 * catheti2)).toFloat

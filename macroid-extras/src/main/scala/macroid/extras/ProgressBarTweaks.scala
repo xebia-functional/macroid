@@ -8,8 +8,6 @@ object ProgressBarTweaks {
   type W = ProgressBar
 
   def pbColor(color: Int): Tweak[W] =
-    Tweak[W](
-      _.getIndeterminateDrawable.setColorFilter(color,
-                                                PorterDuff.Mode.MULTIPLY))
+    Tweak[W](_.getIndeterminateDrawable.setColorFilter(color, PorterDuff.Mode.MULTIPLY))
 
 }

@@ -3,7 +3,7 @@ package macroid
 import scala.language.dynamics
 import scala.language.experimental.macros
 import android.text.Html
-import android.view.{ViewGroup, View}
+import android.view.{View, ViewGroup}
 import android.widget.{LinearLayout, TextView}
 import macrocompat.bundle
 import scala.reflect.macros.blackbox
@@ -52,11 +52,7 @@ private[macroid] trait PaddingTweaks {
   // TODO: replace with setPaddingRelative!
 
   /** Set padding */
-  def padding(left: Int = 0,
-              top: Int = 0,
-              right: Int = 0,
-              bottom: Int = 0,
-              all: Int = -1) =
+  def padding(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0, all: Int = -1) =
     if (all >= 0) {
       Tweak[View](_.setPadding(all, all, all, all))
     } else {
@@ -82,12 +78,11 @@ private[macroid] trait LayoutTweaks {
     Tweak[LinearLayout](_.setOrientation(LinearLayout.HORIZONTAL))
 
   /** Add views to the layout */
-  def addViews(children: Seq[Ui[View]],
-               removeOld: Boolean = false,
-               reverse: Boolean = false) = Tweak[ViewGroup] { x ⇒
-    if (removeOld) x.removeAllViews()
-    children.foreach(c ⇒ if (reverse) x.addView(c.get, 0) else x.addView(c.get))
-  }
+  def addViews(children: Seq[Ui[View]], removeOld: Boolean = false, reverse: Boolean = false) =
+    Tweak[ViewGroup] { x ⇒
+      if (removeOld) x.removeAllViews()
+      children.foreach(c ⇒ if (reverse) x.addView(c.get, 0) else x.addView(c.get))
+    }
 }
 
 private[macroid] trait TextTweaks {
@@ -101,7 +96,7 @@ private[macroid] trait TextTweaks {
   /** Set text */
   def text(text: Either[Int, CharSequence]) = text match {
     case Right(t) ⇒ Tweak[TextView](_.setText(t))
-    case Left(t) ⇒ Tweak[TextView](_.setText(t))
+    case Left(t)  ⇒ Tweak[TextView](_.setText(t))
   }
 
   /** Set hint */
@@ -113,7 +108,7 @@ private[macroid] trait TextTweaks {
   /** Set hint */
   def hint(hint: Either[Int, CharSequence]) = hint match {
     case Right(t) ⇒ Tweak[TextView](_.setHint(t))
-    case Left(t) ⇒ Tweak[TextView](_.setHint(t))
+    case Left(t)  ⇒ Tweak[TextView](_.setHint(t))
   }
 
   def html(html: String) = Tweak[TextView](_.setText(Html.fromHtml(html)))
@@ -152,22 +147,19 @@ object Tweaks extends Tweaks
 class BasicTweakMacros(val c: blackbox.Context) {
   import c.universe._
 
-  def wireImpl[W <: View: c.WeakTypeTag](v: c.Expr[W]): Tree = {
+  def wireImpl[W <: View: c.WeakTypeTag](v: c.Expr[W]): Tree =
     q"_root_.macroid.Tweak[${weakTypeOf[W]}] { x ⇒ $v = x }"
-  }
 
-  def wireOptionImpl[W <: View: c.WeakTypeTag](v: c.Expr[Option[W]]): Tree = {
+  def wireOptionImpl[W <: View: c.WeakTypeTag](v: c.Expr[Option[W]]): Tree =
     q"_root_.macroid.Tweak[${weakTypeOf[W]}] { x ⇒ $v = Some(x) }"
-  }
 }
 
 @bundle
 class LayoutTweakMacros(val c: blackbox.Context) {
   import c.universe._
 
-  def layoutParams(l: c.Type, params: Seq[c.Expr[Any]]) = {
+  def layoutParams(l: c.Type, params: Seq[c.Expr[Any]]) =
     q"_root_.macroid.Tweak[_root_.android.view.View] { x ⇒ x.setLayoutParams(new ${l.typeSymbol.companion}.LayoutParams(..$params)) }"
-  }
 
   def findLayoutParams(layoutType: c.Type, params: Seq[c.Expr[Any]]): Tree = {
     var tp = layoutType
@@ -177,17 +169,14 @@ class LayoutTweakMacros(val c: blackbox.Context) {
       if (tp.baseClasses.length > 2) {
         tp = tp.baseClasses(1).asType.toType
       } else {
-        c.abort(c.enclosingPosition,
-                "Could not find the appropriate LayoutParams constructor")
+        c.abort(c.enclosingPosition, "Could not find the appropriate LayoutParams constructor")
       }
     }
     layoutParams(tp, params)
   }
 
-  def layoutParamsImpl[L <: ViewGroup: c.WeakTypeTag](
-      params: c.Expr[Any]*): Tree = {
+  def layoutParamsImpl[L <: ViewGroup: c.WeakTypeTag](params: c.Expr[Any]*): Tree =
     findLayoutParams(c.weakTypeOf[L], params)
-  }
 }
 
 @bundle
@@ -213,8 +202,7 @@ class EventTweakMacros(val c: blackbox.Context) {
       val x = listener.member(TermName(s"on${eventName.capitalize}")).asMethod
       assert(x != NoSymbol); x
     } getOrElse {
-      c.abort(c.enclosingPosition,
-              s"Unsupported event listener class in $setter")
+      c.abort(c.enclosingPosition, s"Unsupported event listener class in $setter")
     }
 
     (setter, listener, on, tp)
@@ -224,12 +212,13 @@ class EventTweakMacros(val c: blackbox.Context) {
   object FuncListener extends ListenerType
   object UnitListener extends ListenerType
 
-  def getListener(tpe: c.Type,
-                  setter: c.universe.MethodSymbol,
-                  listener: c.Type,
-                  on: c.universe.MethodSymbol,
-                  f: c.Expr[Any],
-                  mode: ListenerType): Tree = {
+  def getListener(
+      tpe: c.Type,
+      setter: c.universe.MethodSymbol,
+      listener: c.Type,
+      on: c.universe.MethodSymbol,
+      f: c.Expr[Any],
+      mode: ListenerType): Tree = {
     val args = on.paramLists(0).map(_ ⇒ TermName(c.freshName("arg")))
     val params = args zip on.paramLists(0) map {
       case (a, p) ⇒ q"val $a: ${p.typeSignature}"
@@ -242,40 +231,26 @@ class EventTweakMacros(val c: blackbox.Context) {
     q"_root_.macroid.Tweak[$tpe] { x ⇒ x.$setter(new $listener { override def ${on.name.toTermName}(..$params) = $impl })}"
   }
 
-  def onUnitImpl[W <: View: c.WeakTypeTag](event: c.Expr[String])(
-      handler: c.Expr[Ui[Any]]): Tree = {
+  def onUnitImpl[W <: View: c.WeakTypeTag](event: c.Expr[String])(handler: c.Expr[Ui[Any]]): Tree = {
     val (setter, listener, on, tp) = onBase(event, weakTypeOf[W])
     scala.util.Try {
       if (!(on.returnType =:= typeOf[Unit])) assert((handler.actualType match {
         case TypeRef(_, _, t :: _) ⇒ t
       }) <:< on.returnType)
-      getListener(tp,
-                  setter,
-                  listener,
-                  on,
-                  c.Expr(c.untypecheck(handler.tree)),
-                  UnitListener)
+      getListener(tp, setter, listener, on, c.Expr(c.untypecheck(handler.tree)), UnitListener)
     } getOrElse {
-      c.abort(c.enclosingPosition,
-              s"handler should be of type Ui[${on.returnType}]")
+      c.abort(c.enclosingPosition, s"handler should be of type Ui[${on.returnType}]")
     }
   }
 
-  def onFuncImpl[W <: View: c.WeakTypeTag](event: c.Expr[String])(
-      handler: c.Expr[Any]): Tree = {
+  def onFuncImpl[W <: View: c.WeakTypeTag](event: c.Expr[String])(handler: c.Expr[Any]): Tree = {
     val (setter, listener, on, tp) = onBase(event, weakTypeOf[W])
     scala.util.Try {
       c.typecheck(
-        getListener(tp,
-                    setter,
-                    listener,
-                    on,
-                    c.Expr(c.untypecheck(handler.tree)),
-                    FuncListener))
+        getListener(tp, setter, listener, on, c.Expr(c.untypecheck(handler.tree)), FuncListener))
     } getOrElse {
-      c.abort(c.enclosingPosition,
-              s"handler should have type signature ${on.paramLists.head
-                .mkString("(", ",", ")")}⇒Ui[${on.returnType}]")
+      c.abort(c.enclosingPosition, s"handler should have type signature ${on.paramLists.head
+        .mkString("(", ",", ")")}⇒Ui[${on.returnType}]")
     }
   }
 }

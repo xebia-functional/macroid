@@ -12,7 +12,7 @@ case class MediaQuery(b: Boolean) {
   /** Return Some(v) if the queried condition holds, otherwise None */
   def ?[A](v: A) = if (b) Some(v) else None
   // boolean ops
-  def unary_! = MediaQuery(!b)
+  def unary_!          = MediaQuery(!b)
   def &(q: MediaQuery) = MediaQuery(b && q.b)
   def |(q: MediaQuery) = MediaQuery(b || q.b)
 }
@@ -54,8 +54,7 @@ private[macroid] trait OrientationQueries {
 }
 
 private[macroid] trait DisplayUnits extends MediaQueryEssentials {
-  implicit class Units[A](v: A)(implicit ctx: ContextWrapper,
-                                numeric: Numeric[A]) {
+  implicit class Units[A](v: A)(implicit ctx: ContextWrapper, numeric: Numeric[A]) {
     import Numeric.Implicits.infixNumericOps
 
     /** Using pixels is strictly discouraged! */
@@ -120,7 +119,7 @@ private[macroid] trait MediaQueries
 
   implicit class RichOption[A](o: Option[A]) {
     def |[B >: A](alternative: ⇒ Option[B]) = o orElse alternative
-    def |[B >: A](default: ⇒ B) = o getOrElse default
+    def |[B >: A](default: ⇒ B)             = o getOrElse default
   }
 }
 

@@ -41,8 +41,7 @@ object ImageViewTweaks {
 
   def ivColorFilterResource(res: Int, mode: Mode = Mode.MULTIPLY)(
       implicit context: ContextWrapper): Tweak[W] =
-    Tweak[W](
-      _.setColorFilter(new PorterDuffColorFilter(resGetColor(res), mode)))
+    Tweak[W](_.setColorFilter(new PorterDuffColorFilter(resGetColor(res), mode)))
 
   def ivColorFilter(color: Int, mode: Mode = Mode.MULTIPLY): Tweak[W] =
     Tweak[W](_.setColorFilter(new PorterDuffColorFilter(color, mode)))

@@ -17,10 +17,11 @@ object SpinnerTweaks {
     Tweak[W](_.setOnItemSelectedListener(new OnItemSelectedListener {
       override def onNothingSelected(parent: AdapterView[_]): Unit = {}
 
-      override def onItemSelected(parent: AdapterView[_],
-                                  view: View,
-                                  position: Int,
-                                  id: Long): Unit = onItem(position)
+      override def onItemSelected(
+          parent: AdapterView[_],
+          view: View,
+          position: Int,
+          id: Long): Unit = onItem(position)
     }))
 
   def sChangeDropdownColor(color: Int) =

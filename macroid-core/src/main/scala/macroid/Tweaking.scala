@@ -1,7 +1,7 @@
 package macroid
 
 import scala.language.higherKinds
-import android.view.{ViewGroup, View}
+import android.view.{View, ViewGroup}
 import scala.annotation.implicitNotFound
 import macroid.util.Effector
 
@@ -12,20 +12,17 @@ trait CanTweak[W, -T, R] {
 }
 
 object CanTweak {
-  implicit def `Widget is tweakable with Tweak`[W <: View]
-    : CanTweak[W, Tweak[W], W] =
+  implicit def `Widget is tweakable with Tweak`[W <: View]: CanTweak[W, Tweak[W], W] =
     new CanTweak[W, Tweak[W], W] {
       def tweak(w: W, t: Tweak[W]) = t(w).withResult(w)
     }
 
-  implicit def `Widget is tweakable with Snail`[W <: View]
-    : CanTweak[W, Snail[W], W] =
+  implicit def `Widget is tweakable with Snail`[W <: View]: CanTweak[W, Snail[W], W] =
     new CanTweak[W, Snail[W], W] {
       def tweak(w: W, s: Snail[W]) = s(w).withResult(w)
     }
 
-  implicit def `Layout is tweakable with Transformer`[L <: ViewGroup]
-    : CanTweak[L, Transformer, L] =
+  implicit def `Layout is tweakable with Transformer`[L <: ViewGroup]: CanTweak[L, Transformer, L] =
     new CanTweak[L, Transformer, L] {
       def tweak(l: L, t: Transformer) = t(l).withResult(l)
     }

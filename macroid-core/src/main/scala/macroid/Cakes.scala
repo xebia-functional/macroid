@@ -1,9 +1,6 @@
 package macroid
 
-private[macroid] trait LayoutDsl
-    extends Searching
-    with LayoutBuilding
-    with FragmentBuilding
+private[macroid] trait LayoutDsl extends Searching with LayoutBuilding with FragmentBuilding
 
 object LayoutDsl extends LayoutDsl
 

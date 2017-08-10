@@ -1,6 +1,6 @@
 package macroid
 
-import org.scalatest.{ Matchers, FlatSpec, RobolectricSuite }
+import org.scalatest.{Matchers, FlatSpec, RobolectricSuite}
 import macroid.FullDsl._
 import android.os.Bundle
 

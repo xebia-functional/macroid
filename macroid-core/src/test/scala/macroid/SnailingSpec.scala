@@ -1,6 +1,6 @@
 package macroid
 
-import android.widget.{ TextView, Button }
+import android.widget.{TextView, Button}
 import org.scalatest.FlatSpec
 
 import macroid.FullDsl._

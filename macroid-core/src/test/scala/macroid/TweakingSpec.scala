@@ -1,7 +1,7 @@
 package macroid
 
 import org.scalatest.FlatSpec
-import android.widget.{ LinearLayout, TextView, Button }
+import android.widget.{LinearLayout, TextView, Button}
 import LayoutDsl._
 import Tweaks._
 import contrib._
@@ -12,7 +12,8 @@ class TweakingSpec extends FlatSpec {
   "Tweaking" should "work with widgets and tweaks" in {
     def foo() = {
       val action = Ui(println("Hmm..."))
-      w[Button] <~ On.click(action) <~ text("Hi") <~ id(2) <~ text("Hey") <~ On.click(action)
+      w[Button] <~ On.click(action) <~ text("Hi") <~ id(2) <~ text("Hey") <~ On
+        .click(action)
     }
   }
 
@@ -44,7 +45,9 @@ class TweakingSpec extends FlatSpec {
   it should "allow setting method handlers" in {
     def foo() = {
       w[Button] <~ On.click(Ui(println("duh")))
-      w[Button] <~ On.editorAction[Button] { for (_ ← Ui(println("duhduh"))) yield true }
+      w[Button] <~ On.editorAction[Button] {
+        for (_ ← Ui(println("duhduh"))) yield true
+      }
     }
   }
 

@@ -3,10 +3,11 @@ package macroid.viewable
 import android.view.View
 import macroid.Tweaks._
 import macroid.util.SafeCast
-import macroid.{ ContextWrapper, Ui }
+import macroid.{ContextWrapper, Ui}
 
 /** A `Listable` that works by saving widget slots inside the layout's tag and filling them later */
 trait SlottedListable[A] extends Listable[A, View] {
+
   /** The slots type. Example:
     * {{{
     * class Slots {
@@ -38,8 +39,11 @@ trait SlottedListable[A] extends Listable[A, View] {
     v <~ hold(s)
   }
 
-  def fillView(view: Ui[View], data: A)(implicit ctx: ContextWrapper) = view flatMap { v ⇒
-    val (v1, s) = SafeCast[Any, Slots](v.getTag).map(x ⇒ (Ui(v), x)).getOrElse(makeSlots(viewType(data)))
-    fillSlots(s, data).flatMap(_ ⇒ v1)
-  }
+  def fillView(view: Ui[View], data: A)(implicit ctx: ContextWrapper) =
+    view flatMap { v ⇒
+      val (v1, s) = SafeCast[Any, Slots](v.getTag)
+        .map(x ⇒ (Ui(v), x))
+        .getOrElse(makeSlots(viewType(data)))
+      fillSlots(s, data).flatMap(_ ⇒ v1)
+    }
 }

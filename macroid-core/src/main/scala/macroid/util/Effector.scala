@@ -3,7 +3,7 @@ package macroid.util
 import macroid._
 
 import scala.language.higherKinds
-import scala.concurrent.{ Future, ExecutionContext }
+import scala.concurrent.{Future, ExecutionContext}
 import scala.util.Try
 
 trait Effector[-F[_]] {
@@ -12,8 +12,10 @@ trait Effector[-F[_]] {
 
 object Effector {
 
-  implicit object `TraversableOnce is Effector` extends Effector[TraversableOnce] {
-    override def foreach[A](fa: TraversableOnce[A])(f: A ⇒ Ui[Any]): Unit = fa.foreach(a ⇒ f(a).run)
+  implicit object `TraversableOnce is Effector`
+      extends Effector[TraversableOnce] {
+    override def foreach[A](fa: TraversableOnce[A])(f: A ⇒ Ui[Any]): Unit =
+      fa.foreach(a ⇒ f(a).run)
   }
 
   implicit object `Option is Effector` extends Effector[Option] {
@@ -24,7 +26,8 @@ object Effector {
     def foreach[A](fa: Try[A])(f: A ⇒ Ui[Any]) = fa.foreach(a ⇒ f(a).run)
   }
 
-  implicit def `Future is Effector`(implicit ec: ExecutionContext) = new Effector[Future] {
-    def foreach[A](fa: Future[A])(f: A ⇒ Ui[Any]) = fa.mapUi(f)
-  }
+  implicit def `Future is Effector`(implicit ec: ExecutionContext) =
+    new Effector[Future] {
+      def foreach[A](fa: Future[A])(f: A ⇒ Ui[Any]) = fa.mapUi(f)
+    }
 }

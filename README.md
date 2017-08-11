@@ -72,4 +72,4 @@ Although this is not crucial, updating the docs under `macroid-docs` together wi
 
 #### Commercial Support
 
-47 Degrees offers commercial support for the Macroid library and associated technologies. To find out more, visit [47 Degrees' Open Source Support](https://www.47deg.com/services/open-source-support/){:target="_blank"}.
+47 Degrees offers commercial support for the Macroid library and associated technologies. To find out more, visit [47 Degrees' Open Source Support](https://www.47deg.com/services/open-source-support/).

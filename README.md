@@ -69,3 +69,7 @@ Following this convention greatly simplifies writing the changelogs.
 ##### Documentation
 
 Although this is not crucial, updating the docs under `macroid-docs` together with the code changes might save some time in the future, and thus is highly appreciated. It can be done in the same commit.
+
+#### Commercial Support
+
+47 Degrees offers commercial support for the Macroid library and associated technologies. To find out more, visit [47 Degrees' Open Source Support](https://www.47deg.com/services/open-source-support/){:target="_blank"}.

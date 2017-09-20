@@ -14,7 +14,6 @@ object ProjectPlugin extends AutoPlugin {
       micrositeBaseUrl := "macroid",
       micrositeDocumentationUrl := "/macroid/docs/docs.html",
       micrositeGithubOwner := "47deg",
-      micrositeOrganizationHomepage := "http://www.47deg.com",
       micrositeGithubRepo := "macroid",
       micrositePalette := Map(
         "brand-primary" -> "#F24130",
@@ -55,8 +54,8 @@ object ProjectPlugin extends AutoPlugin {
         "com.android.support" % "support-v4" % androidV),
       parallelExecution in Test := false,
       fork in Test := true,
-      organization := "org.47deg",
-      organizationName := "47 Degrees",
+      organization := "org.macroid",
+      organizationName := "macroid",
       organizationHomepage := Some(new URL("http://47deg.github.io/macroid")),
       publishMavenStyle := true,
       startYear := Some(2015),

@@ -1,4 +1,4 @@
-addSbtPlugin("org.scala-android" % "sbt-android" % "1.7.8")
+addSbtPlugin("org.scala-android" % "sbt-android" % "1.7.10")
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.0")
 

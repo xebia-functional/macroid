@@ -30,9 +30,13 @@ lazy val core = (project in file("macroid-core"))
     unmanagedClasspath in Test ++= (bootClasspath in Android).value,
     unmanagedSourceDirectories in Test := Seq(
       baseDirectory.value / "src" / "test" / "scala"),
-    libraryDependencies ++= Seq(
-      "org.scala-lang.modules" %% "scala-async" % "0.9.6"
-    )
+    libraryDependencies += {
+      val scalaAsyncVersion = (scalaBinaryVersion in update).value match {
+        case "2.10" => "0.9.5"
+        case _ => "0.9.7"
+      }
+      "org.scala-lang.modules" %% "scala-async" % scalaAsyncVersion
+    }
   )
 
 lazy val viewable = (project in file("macroid-viewable"))
@@ -58,7 +62,7 @@ lazy val akka = (project in file("macroid-akka"))
     unmanagedClasspath in Test ++= (bootClasspath in Android).value,
     homepage := Some(
       url("http://47deg.github.io/macroid/docs/modules/Akka.html")),
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.3"
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.16"
   )
   .dependsOn(core)
 

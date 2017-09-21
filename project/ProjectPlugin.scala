@@ -39,7 +39,6 @@ object ProjectPlugin extends AutoPlugin {
       scalacOptions ++= Seq(
         "-feature",
         "-deprecation",
-        "-target:jvm-1.8",
         "-encoding",
         "UTF-8",
         "-unchecked",
@@ -47,7 +46,7 @@ object ProjectPlugin extends AutoPlugin {
         "-Yno-adapted-args",
         "-Ywarn-dead-code") ++ (scalaBinaryVersion.value match {
         case "2.10" => Seq.empty
-        case v      => Seq("-Ywarn-unused-import")
+        case v      => Seq("-target:jvm-1.8", "-Ywarn-unused-import")
       }),
       libraryDependencies ++= Seq(
         "org.scalatest" %% "scalatest" % "3.0.1" % Test,

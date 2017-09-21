@@ -10,7 +10,7 @@ It is well-known that
 
 > The Andoid UI toolkit is not thread-safe. So, you must not manipulate your UI from a worker thread—you must do all manipulation to your user interface from the UI thread.
 
-In order to enforce correct thread usage, *Macroid* introduces UI actions.
+In order to enforce correct thread usage, Macroid introduces UI actions.
 
 ## What are they
 
@@ -60,9 +60,9 @@ The major advantages of using UI actions are:
 * We can ensure that the UI code is always run on the correct thread;
 * When submitting several UI commands from a background thread, we can combine them and batch in a single `Runnable`, so that the operation is atomic.
 
-## Usage in *Macroid* APIs
+## Usage in Macroid APIs
 
-In *Macroid* all UI-related methods return UI actions. This includes the layout bricks:
+In Macroid all UI-related methods return UI actions. This includes the layout bricks:
 
 ```scala
 val button: Ui[Button] = w[Button]
@@ -143,7 +143,7 @@ which allow to use UI actions as callbacks for `Future`s:
 
 Since the UI thread has to be cherished, it is a good practice to demarkate the parts of
 your code that need to use it. Returning UI actions instead of just executing the code
-allows to do just that. That’s why, for example, setting an event handler in *Macroid*
+allows to do just that. That’s why, for example, setting an event handler in Macroid
 requires you to provide a UI action. Declaring your methods as UI actions also helps
 when they should be evaluated each time they are called (which is normally the case with event handlers).
 
@@ -153,5 +153,5 @@ template.
 
 ## Low-level threading utilities
 
-*Macroid* also provides `macroid.UiThreadExecutionContext`, which allows to run futures on the UI thread.
+Macroid also provides `macroid.UiThreadExecutionContext`, which allows to run futures on the UI thread.
 You probably wouldn’t need to use this directly.

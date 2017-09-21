@@ -22,15 +22,17 @@ object FrameLayoutTweaks {
     view.setLayoutParams(param)
   }
 
-  def flForeground(drawable: Drawable): Tweak[W] = Tweak[W](_.setForeground(drawable))
+  def flForeground(drawable: Drawable): Tweak[W] =
+    Tweak[W](_.setForeground(drawable))
 
-  def flForegroundGravity(foregroundGravity: Int): Tweak[W] = Tweak[W](_.setForegroundGravity(foregroundGravity))
+  def flForegroundGravity(foregroundGravity: Int): Tweak[W] =
+    Tweak[W](_.setForegroundGravity(foregroundGravity))
 
   def flLayoutMargin(
-    marginLeft: Int = 0,
-    marginTop: Int = 0,
-    marginRight: Int = 0,
-    marginBottom: Int = 0
+      marginLeft: Int = 0,
+      marginTop: Int = 0,
+      marginRight: Int = 0,
+      marginBottom: Int = 0
   ): Tweak[View] = Tweak[View] { view ⇒
     val params = new FrameLayout.LayoutParams(view.getLayoutParams)
     params.setMargins(marginLeft, marginTop, marginRight, marginBottom)

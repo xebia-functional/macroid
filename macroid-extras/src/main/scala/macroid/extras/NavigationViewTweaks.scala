@@ -8,9 +8,12 @@ import macroid.Tweak
 object NavigationViewTweaks {
   type W = NavigationView
 
-  def nvNavigationItemSelectedListener(onItem: (Int) ⇒ Boolean) = Tweak[W](_.setNavigationItemSelectedListener(
-    new OnNavigationItemSelectedListener {
-      override def onNavigationItemSelected(menuItem: MenuItem): Boolean = onItem(menuItem.getItemId)
-    }
-  ))
+  def nvNavigationItemSelectedListener(onItem: (Int) ⇒ Boolean) =
+    Tweak[W](
+      _.setNavigationItemSelectedListener(
+        new OnNavigationItemSelectedListener {
+          override def onNavigationItemSelected(menuItem: MenuItem): Boolean =
+            onItem(menuItem.getItemId)
+        }
+      ))
 }

@@ -6,7 +6,7 @@ section: guide
 
 # Bricks
 
-*Macroid* bricks offer a concise and composable way of creating GUI layouts.
+Macroid bricks offer a concise and composable way of creating GUI layouts.
 
 ## What are they
 

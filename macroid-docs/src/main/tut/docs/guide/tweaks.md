@@ -44,19 +44,16 @@ first the caption will be set and then `bringToFront` will be called.
 
 ## Tweaking
 
-Tweaking is one of *Macroid*’s most powerful operations ([here’s why](Advanced.html)). We’ve already seen this example:
+Tweaking is one of Macroid’s most powerful operations ([here’s why](Advanced.html)). We’ve already seen this example:
 
-```tut:invisible
+```scala
 val textView = slot[TextView]
-```
-
-```tut:book:silent
 textView <~ text("Hi")
 ```
 
 In fact, we can chain a few tweaks in one operation:
 
-```tut:book:silent
+```scala
 textView <~ text("Hi") <~ show
 ```
 
@@ -67,7 +64,7 @@ val textView2: Ui[TextView] =
   textView <~ text("Hi") <~ show
 ```
 
-Note that tweaking does not require the widgets to be created with *Macroid* bricks.
+Note that tweaking does not require the widgets to be created with Macroid bricks.
 
 ## Standard tweaks
 

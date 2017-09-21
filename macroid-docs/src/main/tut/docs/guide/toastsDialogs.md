@@ -6,7 +6,7 @@ section: guide
 
 # Toasts and dialogs
 
-Being an important part of Android interfaces, these two things are covered in *Macroid* as well.
+Being an important part of Android interfaces, these two things are covered in Macroid as well.
 
 ## Toasts
 

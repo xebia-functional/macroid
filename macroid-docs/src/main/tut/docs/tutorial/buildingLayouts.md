@@ -6,7 +6,7 @@ section: tutorial
 
 # Building Layouts
 
-*Macroid* comes with concise and easy to use layout [bricks](../guide/Bricks.html):
+Macroid comes with concise and easy to use layout [bricks](../guide/Bricks.html):
 
 * Layouts: `layout[LinearLayout](...)` (or just `l[LinearLayout](...)`)
 * Widgets: `widget[TextView](...)` (or just `w[TextWidget]`)
@@ -48,7 +48,7 @@ class GreetingActivity extends Activity with Contexts[Activity] {
 }
 ```
 
-By the way, a really nice thing about *Macroid* is its emphasis on composability.
+By the way, a really nice thing about Macroid is its emphasis on composability.
 Unlike Android XML,
 we can declare the widgets wherever we want and stack them together as needed:
 

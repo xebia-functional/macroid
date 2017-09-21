@@ -1,6 +1,6 @@
 package macroid
 
-import android.view.{ ViewGroup, View }
+import android.view.{ViewGroup, View}
 import scala.concurrent.Future
 
 /** A Tweak is something that mutates a widget */
@@ -21,6 +21,7 @@ case class Tweak[-W <: View](f: W ⇒ Unit) {
 }
 
 object Tweak {
+
   /** A tweak that does nothing */
   def blank[W <: View] = Tweak[W](_ ⇒ ())
 }
@@ -43,6 +44,7 @@ case class Snail[-W <: View](f: W ⇒ Future[Unit]) {
 }
 
 object Snail {
+
   /** A snail that does nothing */
   def blank[W <: View] = Snail[W](_ ⇒ Future.successful(()))
 }
@@ -51,7 +53,8 @@ case class Transformer(f: PartialFunction[View, Ui[Any]]) {
   def apply(w: View): Ui[Any] = {
     val self = f.applyOrElse(w, Function.const(Ui.nop))
     val children = w match {
-      case Transformer.Layout(children @ _*) ⇒ Ui.sequence(children.map(apply): _*)
+      case Transformer.Layout(children @ _*) ⇒
+        Ui.sequence(children.map(apply): _*)
       case _ ⇒ Ui.nop
     }
     self ~ children
@@ -59,13 +62,15 @@ case class Transformer(f: PartialFunction[View, Ui[Any]]) {
 }
 
 object Transformer {
+
   /** A Transformer that does nothing */
   def blank = Transformer(PartialFunction.empty)
 
   /** Layout extractor */
   object Layout {
     def unapplySeq(w: View): Option[Seq[View]] = w match {
-      case g: ViewGroup ⇒ Some((0 until g.getChildCount).map(i ⇒ g.getChildAt(i)))
+      case g: ViewGroup ⇒
+        Some((0 until g.getChildCount).map(i ⇒ g.getChildAt(i)))
       case _ ⇒ None
     }
   }

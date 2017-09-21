@@ -1,6 +1,6 @@
 package macroid.akka
 
-import akka.actor.{ ActorSelection, ActorSystem, Actor }
+import akka.actor.{ActorSelection, ActorSystem, Actor}
 import android.support.v4.app.Fragment
 import com.typesafe.config.ConfigFactory
 import android.app.Activity
@@ -48,7 +48,7 @@ abstract class FragmentActor[F <: Fragment: ClassTag] extends Actor {
   def receiveUi: PartialFunction[Any, Any] = {
     case a @ AttachUi(f: F) ⇒
       attachedUi = Some(f); a
-    case d @ DetachUi(f: F) if Some(f) == attachedUi ⇒
+    case d @ DetachUi(f: F) if attachedUi.contains(f) ⇒
       attachedUi = None; d
     case x ⇒ x
   }

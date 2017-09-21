@@ -1,10 +1,7 @@
-addSbtPlugin("org.scala-android" % "sbt-android" % "1.7.2")
+addSbtPlugin("org.scala-android" % "sbt-android" % "1.7.8")
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
-
-addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.6.0")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.0")
 
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
 
-addSbtPlugin("com.fortysevendeg"  % "sbt-microsites" % "0.2.5")
-
+addSbtPlugin("com.47deg" % "sbt-microsites" % "0.6.1")

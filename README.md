@@ -7,7 +7,7 @@ Scala macros.
 
 Striving to be focused on one thing (GUI), Macroid promotes composability and high-level abstractions.
 
-Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 9+`.
+Prerequisites: Scala `2.10.x` or `2.11.x`, Android `API 19+`.
 
 Latest version: `2.1.0`
 

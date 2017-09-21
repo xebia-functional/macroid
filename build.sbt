@@ -62,7 +62,7 @@ lazy val akka = (project in file("macroid-akka"))
     unmanagedClasspath in Test ++= (bootClasspath in Android).value,
     homepage := Some(
       url("http://47deg.github.io/macroid/docs/modules/Akka.html")),
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.4"
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.16"
   )
   .dependsOn(core)
 

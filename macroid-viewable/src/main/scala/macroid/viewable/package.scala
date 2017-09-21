@@ -4,14 +4,12 @@ import android.view.View
 
 package object viewable {
   implicit class ViewableOps[A](data: A) {
-
     /** Create layout for this value */
     def view[W <: View](implicit ctx: ContextWrapper, viewable: Viewable[A, W]) =
       viewable.view(data)
   }
 
   implicit class PagerAdapterOps[A](data: Seq[A]) {
-
     /** Create a `PagerAdapter` for this sequence */
     def pagerAdapter[W <: View](implicit ctx: ContextWrapper, viewable: Viewable[A, W]) =
       viewable.pagerAdapter(data)
@@ -22,7 +20,6 @@ package object viewable {
   }
 
   implicit class ListAdapterOps[A](data: Seq[A]) {
-
     /** Create a `ListAdapter` for this sequence */
     def listAdapter[W <: View](implicit ctx: ContextWrapper, listable: Listable[A, W]) =
       listable.listAdapter(data)

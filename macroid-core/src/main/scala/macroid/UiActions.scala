@@ -1,9 +1,9 @@
 package macroid
 
-import android.os.{Handler, Looper}
+import android.os.{ Handler, Looper }
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success, Try }
 
 /** An ExecutionContext associated with the UI thread */
 object UiThreadExecutionContext extends ExecutionContext {
@@ -15,7 +15,6 @@ object UiThreadExecutionContext extends ExecutionContext {
 
 /** A UI action that can be sent to the UI thread for execution */
 class Ui[+A](private[Ui] val v: () ⇒ A) {
-
   /** map combinator */
   def map[B](f: A ⇒ B) = Ui(f(v()))
 
@@ -26,10 +25,9 @@ class Ui[+A](private[Ui] val v: () ⇒ A) {
   def withResult[B](result: B) = Ui { v(); result }
 
   /** Wait until this action is finished and replace the resulting value with a new one */
-  def withResultAsync[B, C](result: B)(implicit evidence: A <:< Future[C], ec: ExecutionContext) =
-    Ui {
-      evidence(v()) map (_ ⇒ result)
-    }
+  def withResultAsync[B, C](result: B)(implicit evidence: A <:< Future[C], ec: ExecutionContext) = Ui {
+    evidence(v()) map (_ ⇒ result)
+  }
 
   /** Combine (sequence) with another UI action */
   def ~[B](next: ⇒ Ui[B]) = Ui { v(); next.v() }
@@ -40,15 +38,14 @@ class Ui[+A](private[Ui] val v: () ⇒ A) {
   }
 
   /** Run the action on the UI thread */
-  def run =
-    if (Ui.uiThread == Thread.currentThread) {
-      Try(v()) match {
-        case Success(x) ⇒ Future.successful(x)
-        case Failure(x) ⇒ Future.failed(x)
-      }
-    } else {
-      Future(v())(UiThreadExecutionContext)
+  def run = if (Ui.uiThread == Thread.currentThread) {
+    Try(v()) match {
+      case Success(x) ⇒ Future.successful(x)
+      case Failure(x) ⇒ Future.failed(x)
     }
+  } else {
+    Future(v())(UiThreadExecutionContext)
+  }
 
   /** Get the result of executing the action on the current (hopefully, UI!) thread */
   def get = v()
@@ -70,8 +67,7 @@ object Ui {
   def run[A](ui: Ui[A]) = ui.run
 
   /** Run several UI actions on the UI thread */
-  def run[A](ui1: Ui[A], ui2: Ui[A], uis: Ui[A]*) =
-    sequence(ui1 +: ui2 +: uis: _*).run
+  def run[A](ui1: Ui[A], ui2: Ui[A], uis: Ui[A]*) = sequence(ui1 +: ui2 +: uis: _*).run
 
   /** Get the result of executing an UI action on the current (hopefully, UI!) thread */
   def get[A](ui: Ui[A]) = ui.get
@@ -79,16 +75,14 @@ object Ui {
 
 /** Helpers to run UI actions as Future callbacks */
 case class UiFuture[T](future: Future[T]) extends AnyVal {
-  private def applyUi[A, B](f: Function[A, Ui[B]]): Function[A, B] =
-    x ⇒ f(x).get
-  private def partialApplyUi[A, B](f: PartialFunction[A, Ui[B]]) =
-    f andThen (_.get)
+  private def applyUi[A, B](f: Function[A, Ui[B]]): Function[A, B] = x ⇒ f(x).get
+  private def partialApplyUi[A, B](f: PartialFunction[A, Ui[B]]) = f andThen (_.get)
 
   /** Same as map, but performed on the UI thread.
-   *
-   * If the future is already completed and the current thread is the UI thread,
-   * the UI action will be applied in-place, rather than asynchronously.
-   */
+    *
+    * If the future is already completed and the current thread is the UI thread,
+    * the UI action will be applied in-place, rather than asynchronously.
+    */
   def mapUi[S](f: Function[T, Ui[S]]) =
     if (future.isCompleted && Ui.uiThread == Thread.currentThread) {
       future.value.get.map(applyUi(f)) match {
@@ -100,10 +94,10 @@ case class UiFuture[T](future: Future[T]) extends AnyVal {
     }
 
   /** Same as flatMap, but performed on the UI thread
-   *
-   * If the future is already completed and the current thread is the UI thread,
-   * the UI action will be applied in-place, rather than asynchronously.
-   */
+    *
+    * If the future is already completed and the current thread is the UI thread,
+    * the UI action will be applied in-place, rather than asynchronously.
+    */
   def flatMapUi[S](f: Function[T, Ui[Future[S]]]) = {
     if (future.isCompleted && Ui.uiThread == Thread.currentThread) {
       future.value.get.map(applyUi(f)) match {
@@ -116,10 +110,10 @@ case class UiFuture[T](future: Future[T]) extends AnyVal {
   }
 
   /** Same as foreach, but performed on the UI thread
-   *
-   * If the future is already completed and the current thread is the UI thread,
-   * the UI action will be applied in-place, rather than asynchronously.
-   */
+    *
+    * If the future is already completed and the current thread is the UI thread,
+    * the UI action will be applied in-place, rather than asynchronously.
+    */
   def foreachUi[U](f: Function[T, Ui[U]]) =
     if (future.isCompleted && Ui.uiThread == Thread.currentThread) {
       future.value.get.foreach(applyUi(f))

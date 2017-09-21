@@ -10,11 +10,9 @@ object DeviceMediaQueries {
 
   def tablet(implicit ctx: ContextWrapper) = widerThan(720 dp)
 
-  def landscapeTablet(implicit ctx: ContextWrapper) =
-    widerThan(720 dp) & landscape
+  def landscapeTablet(implicit ctx: ContextWrapper) = widerThan(720 dp) & landscape
 
-  def portraitTablet(implicit ctx: ContextWrapper) =
-    widerThan(720 dp) & portrait
+  def portraitTablet(implicit ctx: ContextWrapper) = widerThan(720 dp) & portrait
 
 }
 
@@ -37,20 +35,15 @@ object DeviceVersion {
 
     def isSupported: Boolean = this > CurrentVersion
 
-    def withOpThan[A](op: ⇒ Boolean)(f: ⇒ A): Option[A] =
-      if (op) Some(f) else None
+    def withOpThan[A](op: ⇒ Boolean)(f: ⇒ A): Option[A] = if (op) Some(f) else None
 
-    def ifEqualThen[A](f: ⇒ A): Option[A] =
-      withOpThan(this == CurrentVersion)(f)
+    def ifEqualThen[A](f: ⇒ A): Option[A] = withOpThan(this == CurrentVersion)(f)
 
-    def ifNotEqualThen[A](f: ⇒ A): Option[A] =
-      withOpThan(this != CurrentVersion)(f)
+    def ifNotEqualThen[A](f: ⇒ A): Option[A] = withOpThan(this != CurrentVersion)(f)
 
-    def ifSupportedThen[A](f: ⇒ A): Option[A] =
-      withOpThan(this <= CurrentVersion)(f)
+    def ifSupportedThen[A](f: ⇒ A): Option[A] = withOpThan(this <= CurrentVersion)(f)
 
-    def ifNotSupportedThen[A](f: ⇒ A): Option[A] =
-      withOpThan(this > CurrentVersion)(f)
+    def ifNotSupportedThen[A](f: ⇒ A): Option[A] = withOpThan(this > CurrentVersion)(f)
 
   }
 

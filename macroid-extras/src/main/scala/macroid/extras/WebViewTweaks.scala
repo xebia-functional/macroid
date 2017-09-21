@@ -1,6 +1,6 @@
 package macroid.extras
 
-import android.webkit.{WebView, WebViewClient}
+import android.webkit.{ WebView, WebViewClient }
 import macroid.Tweak
 
 object WebViewTweaks {
@@ -8,7 +8,6 @@ object WebViewTweaks {
 
   def wvLoadUrl(url: String): Tweak[W] = Tweak[W](_.loadUrl(url))
 
-  def wvClient(webViewClient: WebViewClient): Tweak[W] =
-    Tweak[W](_.setWebViewClient(webViewClient))
+  def wvClient(webViewClient: WebViewClient): Tweak[W] = Tweak[W](_.setWebViewClient(webViewClient))
 
 }

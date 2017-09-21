@@ -11,7 +11,6 @@ import scala.reflect.ClassTag
 
 /** Expresses the fact that *some* of the values of type `A` can be displayed with a widget or layout of type `W` */
 trait PartialViewable[A, +W <: View] { self ⇒
-
   /** Create the layout for a value of type `A`. Returns None if not defined for this value */
   def view(data: A)(implicit ctx: ContextWrapper): Option[Ui[W]]
 
@@ -41,7 +40,7 @@ trait PartialViewable[A, +W <: View] { self ⇒
     new PartialViewable[B, W] {
       def view(data: B)(implicit ctx: ContextWrapper) = data match {
         case x: A ⇒ self.view(x)
-        case _    ⇒ None
+        case _ ⇒ None
       }
     }
 
@@ -54,10 +53,8 @@ trait PartialViewable[A, +W <: View] { self ⇒
 }
 
 /** Expresses the fact that data type `A` can be displayed with a widget or layout of type `W` */
-@implicitNotFound(
-  "Don't know how to display data type ${A}. Try importing an instance of Viewable[${A}, ...]")
+@implicitNotFound("Don't know how to display data type ${A}. Try importing an instance of Viewable[${A}, ...]")
 trait Viewable[A, +W <: View] { self ⇒
-
   /** Create the layout for a value of type `A` */
   def view(data: A)(implicit ctx: ContextWrapper): Ui[W]
 
@@ -79,8 +76,7 @@ trait Viewable[A, +W <: View] { self ⇒
   def cond(p: A ⇒ Boolean): PartialViewable[A, W] = toPartial.cond(p)
 
   /** Convert to partial viewable defined for a subset of a supertype */
-  def toParent[B](implicit evidence: ClassTag[A]): PartialViewable[B, W] =
-    toPartial.toParent[B]
+  def toParent[B](implicit evidence: ClassTag[A]): PartialViewable[B, W] = toPartial.toParent[B]
 
   /** An adapter to use with a `ViewPager` */
   def pagerAdapter(data: Seq[A])(implicit ctx: ContextWrapper): ViewablePagerAdapter[A, W] =
@@ -93,7 +89,6 @@ trait Viewable[A, +W <: View] { self ⇒
 
 /** A builder to define viewables for a particular data type */
 class ViewableBuilder[A] {
-
   /** Define a viewable by providing the layout function */
   def apply[W <: View](layout: A ⇒ Ui[W]): Viewable[A, W] =
     new Viewable[A, W] {
@@ -102,8 +97,7 @@ class ViewableBuilder[A] {
 }
 
 object Viewable {
-  implicit def `Listable is Viewable`[A, W <: View](
-      implicit listable: Listable[A, W]): Viewable[A, W] =
+  implicit def `Listable is Viewable`[A, W <: View](implicit listable: Listable[A, W]): Viewable[A, W] =
     new Viewable[A, W] {
       def view(data: A)(implicit ctx: ContextWrapper) =
         listable.fillView(listable.makeView(listable.viewType(data)), data)

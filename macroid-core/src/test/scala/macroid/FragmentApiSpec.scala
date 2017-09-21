@@ -5,7 +5,7 @@ import macroid.FullDsl._
 
 class FragmentApiSpec extends FlatSpec {
   "FragmentApi" should "work with legacy fragments in activity" in {
-    import android.support.v4.app.{Fragment, FragmentActivity}
+    import android.support.v4.app.{ FragmentActivity, Fragment }
     def foo() = {
       class MyActivity extends FragmentActivity with Contexts[FragmentActivity] {
         f[Fragment].framed(1, "1")
@@ -15,7 +15,7 @@ class FragmentApiSpec extends FlatSpec {
   }
 
   it should "work with modern fragments in activity" in {
-    import android.app.{Activity, Fragment}
+    import android.app.{ Activity, Fragment }
     def foo() = {
       class MyActivity extends Activity with Contexts[Activity] {
         f[Fragment].framed(1, "1")

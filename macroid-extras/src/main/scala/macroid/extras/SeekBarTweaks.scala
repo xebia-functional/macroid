@@ -9,9 +9,7 @@ object SeekBarTweaks {
 
   def sbMax(maxValue: Int): Tweak[W] = Tweak[W](_.setMax(maxValue))
 
-  def sbProgress(progressValue: Int): Tweak[W] =
-    Tweak[W](_.setProgress(progressValue))
+  def sbProgress(progressValue: Int): Tweak[W] = Tweak[W](_.setProgress(progressValue))
 
-  def sbOnSeekBarChangeListener(listener: OnSeekBarChangeListener): Tweak[W] =
-    Tweak[W](_.setOnSeekBarChangeListener(listener))
+  def sbOnSeekBarChangeListener(listener: OnSeekBarChangeListener): Tweak[W] = Tweak[W](_.setOnSeekBarChangeListener(listener))
 }

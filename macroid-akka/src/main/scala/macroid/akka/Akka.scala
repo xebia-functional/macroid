@@ -1,6 +1,6 @@
 package macroid.akka
 
-import akka.actor.{ ActorSelection, ActorSystem, Actor }
+import akka.actor.{Actor, ActorSelection, ActorSystem}
 import android.support.v4.app.Fragment
 import com.typesafe.config.ConfigFactory
 import android.app.Activity

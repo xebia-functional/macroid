@@ -1,8 +1,8 @@
 package macroid.extras
 
-import android.animation.{ Animator, AnimatorListenerAdapter }
+import android.animation.{Animator, AnimatorListenerAdapter}
 import android.view.View._
-import android.view.{ View, ViewAnimationUtils }
+import android.view.{View, ViewAnimationUtils}
 import macroid.Snail
 
 import scala.concurrent.Promise
@@ -10,84 +10,90 @@ import scala.util.Success
 
 object RevealSnails {
 
-  val showCircularReveal: Snail[View] = Snail[View] {
-    view ⇒
-      val animPromise = Promise[Unit]()
-      val x = view.getWidth / 2
-      val y = view.getHeight / 2
-      val radius = SnailsUtils.calculateRadius(x, y, view.getWidth, view.getHeight)
-      val anim: Animator = ViewAnimationUtils.createCircularReveal(view, x, y, 0f, radius)
-      anim.addListener(new AnimatorListenerAdapter {
-        override def onAnimationEnd(animation: Animator) = {
-          super.onAnimationEnd(animation)
-          animPromise.complete(Success(()))
-        }
-      })
-      view.setVisibility(VISIBLE)
-      anim.start()
-      animPromise.future
+  val showCircularReveal: Snail[View] = Snail[View] { view ⇒
+    val animPromise = Promise[Unit]()
+    val x           = view.getWidth / 2
+    val y           = view.getHeight / 2
+    val radius =
+      SnailsUtils.calculateRadius(x, y, view.getWidth, view.getHeight)
+    val anim: Animator =
+      ViewAnimationUtils.createCircularReveal(view, x, y, 0f, radius)
+    anim.addListener(new AnimatorListenerAdapter {
+      override def onAnimationEnd(animation: Animator) = {
+        super.onAnimationEnd(animation)
+        animPromise.complete(Success(()))
+      }
+    })
+    view.setVisibility(VISIBLE)
+    anim.start()
+    animPromise.future
   }
 
-  val hideCircularReveal: Snail[View] = Snail[View] {
-    view ⇒
-      val animPromise = Promise[Unit]()
-      val x = view.getWidth / 2
-      val y = view.getHeight / 2
-      val radius = SnailsUtils.calculateRadius(x, y, view.getWidth, view.getHeight)
-      val anim: Animator = ViewAnimationUtils.createCircularReveal(view, x, y, radius, 0f)
-      anim.addListener(new AnimatorListenerAdapter {
-        override def onAnimationEnd(animation: Animator) = {
-          super.onAnimationEnd(animation)
-          view.setVisibility(INVISIBLE)
-          animPromise.complete(Success(()))
-        }
-      })
-      anim.start()
-      animPromise.future
+  val hideCircularReveal: Snail[View] = Snail[View] { view ⇒
+    val animPromise = Promise[Unit]()
+    val x           = view.getWidth / 2
+    val y           = view.getHeight / 2
+    val radius =
+      SnailsUtils.calculateRadius(x, y, view.getWidth, view.getHeight)
+    val anim: Animator =
+      ViewAnimationUtils.createCircularReveal(view, x, y, radius, 0f)
+    anim.addListener(new AnimatorListenerAdapter {
+      override def onAnimationEnd(animation: Animator) = {
+        super.onAnimationEnd(animation)
+        view.setVisibility(INVISIBLE)
+        animPromise.complete(Success(()))
+      }
+    })
+    anim.start()
+    animPromise.future
   }
 
 }
 
 object MoveSnails {
 
-  def move(maybeToView: Option[View]): Snail[View] = Snail[View] {
-    view ⇒
-      val animPromise = Promise[Unit]()
+  def move(maybeToView: Option[View]): Snail[View] = Snail[View] { view ⇒
+    val animPromise = Promise[Unit]()
 
-      maybeToView foreach {
-        toView ⇒
-          val finalX: Float = toView.getX + (toView.getWidth / 2) - ((view.getWidth / 2) + view.getX)
-          val finalY: Float = toView.getY + (toView.getHeight / 2) - ((view.getHeight / 2) + view.getY)
+    maybeToView foreach { toView ⇒
+      val finalX: Float = toView.getX + (toView.getWidth / 2) - ((view.getWidth / 2) + view.getX)
+      val finalY: Float = toView.getY + (toView.getHeight / 2) - ((view.getHeight / 2) + view.getY)
 
-          view.animate.translationX(finalX).translationY(finalY).setListener(new AnimatorListenerAdapter {
-            override def onAnimationEnd(animation: Animator) = {
-              super.onAnimationEnd(animation)
-              animPromise.complete(Success(()))
-            }
-          }).start()
+      view.animate
+        .translationX(finalX)
+        .translationY(finalY)
+        .setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) = {
+            super.onAnimationEnd(animation)
+            animPromise.complete(Success(()))
+          }
+        })
+        .start()
 
-      }
-      animPromise.future
+    }
+    animPromise.future
   }
 
-  def moveBy(maybeToView: Option[View]): Snail[View] = Snail[View] {
-    view ⇒
-      val animPromise = Promise[Unit]()
+  def moveBy(maybeToView: Option[View]): Snail[View] = Snail[View] { view ⇒
+    val animPromise = Promise[Unit]()
 
-      maybeToView foreach {
-        toView ⇒
-          val finalX: Float = toView.getX + (toView.getWidth / 2) - ((view.getWidth / 2) + view.getX)
-          val finalY: Float = toView.getY + (toView.getHeight / 2) - ((view.getHeight / 2) + view.getY)
+    maybeToView foreach { toView ⇒
+      val finalX: Float = toView.getX + (toView.getWidth / 2) - ((view.getWidth / 2) + view.getX)
+      val finalY: Float = toView.getY + (toView.getHeight / 2) - ((view.getHeight / 2) + view.getY)
 
-          view.animate.translationXBy(finalX).translationYBy(finalY).setListener(new AnimatorListenerAdapter {
-            override def onAnimationEnd(animation: Animator) = {
-              super.onAnimationEnd(animation)
-              animPromise.complete(Success(()))
-            }
-          }).start()
+      view.animate
+        .translationXBy(finalX)
+        .translationYBy(finalY)
+        .setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) = {
+            super.onAnimationEnd(animation)
+            animPromise.complete(Success(()))
+          }
+        })
+        .start()
 
-      }
-      animPromise.future
+    }
+    animPromise.future
   }
 
 }
@@ -101,4 +107,3 @@ object SnailsUtils {
   }
 
 }
-

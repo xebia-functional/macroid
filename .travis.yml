@@ -43,9 +43,11 @@ before_install:
 - echo yes | android update sdk --all --filter android-24 --no-ui
 - echo yes | android update sdk --all --filter extra-android-support --no-ui
 - echo yes | android update sdk --all --filter extra-android-m2repository --no-ui
-- export GPG_FOLDER=$TRAVIS_BUILD_DIR
-- openssl aes-256-cbc -K $encrypted_7931e7eaa203_key -iv $encrypted_7931e7eaa203_iv -in rings.tar.enc -out rings.tar -d
-- tar -xvf $TRAVIS_BUILD_DIR/rings.tar -C $TRAVIS_BUILD_DIR
+- if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    export GPG_FOLDER=$TRAVIS_BUILD_DIR;
+    openssl aes-256-cbc -K $encrypted_7931e7eaa203_key -iv $encrypted_7931e7eaa203_iv -in rings.tar.enc -out rings.tar -d;
+    tar -xvf $TRAVIS_BUILD_DIR/rings.tar -C $TRAVIS_BUILD_DIR;
+  fi
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean test
 after_success:
